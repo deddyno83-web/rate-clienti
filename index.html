@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Rate Clienti" />
+  <title>Rate Clienti</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeecea;
+      --text: #1a1a1a; --text2: #666; --text3: #999;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.18);
+      --green: #0F6E56; --green-bg: #E1F5EE; --green-mid: #1D9E75;
+      --amber: #854F0B; --amber-bg: #FAEEDA; --amber-mid: #BA7517;
+      --red: #A32D2D; --red-bg: #FCEBEB;
+      --blue: #185FA5; --blue-bg: #E6F1FB;
+      --radius: 12px; --radius-sm: 8px;
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg3); color: var(--text); font-size: 15px; min-height: 100vh; }
+
+    /* LOGIN */
+    #login-screen { display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 100vh; padding: 2rem; gap: 1.5rem; }
+    #login-screen h1 { font-size: 24px; font-weight: 600; }
+    #login-screen p { color: var(--text2); font-size: 14px; text-align: center; }
+    .btn-google { display: flex; align-items: center; gap: 12px; padding: 12px 24px;
+      border-radius: var(--radius); border: 1px solid var(--border2); background: var(--bg);
+      font-size: 15px; font-weight: 500; cursor: pointer; transition: all .15s; width: 100%; max-width: 320px; justify-content: center; }
+    .btn-google:hover { background: var(--bg2); }
+    .google-icon { width: 20px; height: 20px; }
+
+    /* LAYOUT */
+    #app { display: none; max-width: 500px; margin: 0 auto; padding-bottom: 80px; }
+    .topbar { position: sticky; top: 0; z-index: 100; background: var(--bg);
+      border-bottom: 1px solid var(--border); padding: 14px 16px;
+      display: flex; align-items: center; justify-content: space-between; }
+    .topbar h1 { font-size: 17px; font-weight: 600; }
+    .topbar-actions { display: flex; gap: 8px; }
+    .icon-btn { background: none; border: none; cursor: pointer; padding: 6px;
+      border-radius: var(--radius-sm); color: var(--text2); font-size: 18px; transition: all .15s; }
+    .icon-btn:hover { background: var(--bg2); color: var(--text); }
+
+    /* NAV */
+    .nav { position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      background: var(--bg); border-top: 1px solid var(--border);
+      display: flex; max-width: 500px; margin: 0 auto; }
+    .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: 3px; padding: 10px 4px; border: none; background: none; cursor: pointer;
+      color: var(--text3); font-size: 11px; font-weight: 500; transition: color .15s; }
+    .nav-btn.active { color: var(--blue); }
+    .nav-icon { font-size: 22px; line-height: 1; }
+
+    /* SEZIONI */
+    .section { display: none; padding: 16px; }
+    .section.active { display: block; }
+
+    /* CARD */
+    .card { background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 16px; margin-bottom: 12px; }
+
+    /* METRICHE DASHBOARD */
+    .metrics-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 12px; }
+    .metrics-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 12px; }
+    .metric { background: var(--bg); border-radius: var(--radius-sm); padding: 12px;
+      border: 1px solid var(--border); }
+    .metric-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
+    .metric-value { font-size: 20px; font-weight: 600; }
+    .metric-value.green { color: var(--green); }
+    .metric-value.amber { color: var(--amber-mid); }
+    .metric-value.red { color: var(--red); }
+    .metric-value.blue { color: var(--blue); }
+
+    /* NOTIFICHE */
+    .notif { display: flex; gap: 10px; padding: 12px 14px; border-radius: var(--radius-sm);
+      font-size: 13px; margin-bottom: 10px; align-items: flex-start; }
+    .notif.amber { background: var(--amber-bg); color: var(--amber); border: 1px solid #FAC775; }
+    .notif.red { background: var(--red-bg); color: var(--red); border: 1px solid #F09595; }
+    .notif-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+    .notif.amber .notif-dot { background: var(--amber-mid); }
+    .notif.red .notif-dot { background: var(--red); }
+
+    /* SEZIONE TITOLO */
+    .sec-title { font-size: 11px; font-weight: 600; color: var(--text2);
+      text-transform: uppercase; letter-spacing: .05em; margin: 16px 0 8px; }
+
+    /* GRAFICO */
+    .chart-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+    .chart-label { width: 80px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
+    .chart-track { flex: 1; height: 16px; background: var(--bg2); border-radius: 4px; overflow: hidden; }
+    .chart-fill { height: 100%; display: flex; align-items: center; padding-left: 6px; font-size: 10px; font-weight: 600; min-width: 2px; border-radius: 4px; }
+    .chart-fill.green { background: #9FE1CB; color: #085041; }
+    .chart-fill.gray { background: #D3D1C7; color: #444; }
+    .chart-fill.amber { background: #FAC775; color: #633806; }
+
+    /* LISTA CLIENTI */
+    .client-card { background: var(--bg); border-radius: var(--radius); border: 1px solid var(--border);
+      padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: border-color .15s; }
+    .client-card:hover { border-color: var(--border2); }
+    .client-header { display: flex; align-items: center; gap: 10px; }
+    .avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0; }
+    .av-0 { background: #B5D4F4; color: #0C447C; }
+    .av-1 { background: #9FE1CB; color: #085041; }
+    .av-2 { background: #CECBF6; color: #3C3489; }
+    .av-3 { background: #F5C4B3; color: #712B13; }
+    .av-4 { background: #FAC775; color: #633806; }
+    .client-name { font-size: 15px; font-weight: 500; }
+    .client-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; }
+    .badge-green { background: #EAF3DE; color: #3B6D11; }
+    .badge-amber { background: var(--amber-bg); color: var(--amber); }
+    .badge-red { background: var(--red-bg); color: var(--red); }
+    .badge-gray { background: #F1EFE8; color: #444; }
+    .progress-bar { height: 5px; border-radius: 3px; background: var(--bg2); overflow: hidden; margin-top: 10px; }
+    .progress-fill { height: 100%; border-radius: 3px; background: var(--green-mid); transition: width .3s; }
+    .progress-fill.amber { background: var(--amber-mid); }
+
+    /* FORM */
+    .form-group { margin-bottom: 14px; }
+    .form-group label { display: block; font-size: 13px; color: var(--text2); margin-bottom: 5px; font-weight: 500; }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--border2);
+      border-radius: var(--radius-sm); font-size: 15px; font-family: inherit;
+      background: var(--bg); color: var(--text); outline: none; transition: border-color .15s; }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--blue); }
+    .form-group textarea { resize: vertical; min-height: 72px; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .preview-box { background: var(--bg2); border-radius: var(--radius-sm); padding: 10px 14px;
+      font-size: 13px; color: var(--text2); margin-top: 4px; display: none; }
+    .btn-primary { width: 100%; padding: 13px; background: var(--text); color: var(--bg);
+      border: none; border-radius: var(--radius); font-size: 15px; font-weight: 600;
+      cursor: pointer; transition: opacity .15s; margin-top: 8px; }
+    .btn-primary:hover { opacity: 0.85; }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* SCADENZE */
+    .sc-row { display: flex; align-items: center; gap: 10px; padding: 10px 0;
+      border-bottom: 1px solid var(--border); }
+    .sc-row:last-child { border-bottom: none; }
+    .sc-info { flex: 1; }
+    .sc-name { font-size: 13px; font-weight: 500; }
+    .sc-date { font-size: 12px; color: var(--text2); margin-top: 1px; }
+    .btn-pay { padding: 5px 12px; font-size: 12px; border-radius: 6px; border: 1px solid #5DCAA5;
+      background: transparent; cursor: pointer; color: var(--green); font-weight: 500; }
+    .btn-pay:hover { background: var(--green-bg); }
+
+    /* DETTAGLIO */
+    #detail-view { display: none; position: fixed; inset: 0; background: var(--bg3);
+      z-index: 200; overflow-y: auto; }
+    .detail-topbar { position: sticky; top: 0; background: var(--bg);
+      border-bottom: 1px solid var(--border); padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; }
+    .back-btn { background: none; border: none; font-size: 22px; cursor: pointer;
+      color: var(--text2); padding: 0; line-height: 1; }
+    .detail-body { padding: 16px; max-width: 500px; margin: 0 auto; padding-bottom: 40px; }
+    .totale-row { display: flex; justify-content: space-between; padding: 8px 0;
+      font-size: 14px; border-bottom: 1px solid var(--border); }
+    .totale-row:last-child { border-bottom: none; font-weight: 600; }
+    .rate-row { display: flex; align-items: center; padding: 10px 0;
+      border-bottom: 1px solid var(--border); gap: 8px; }
+    .rate-row:last-child { border-bottom: none; }
+    .rate-num { font-size: 12px; color: var(--text2); width: 50px; flex-shrink: 0; }
+    .rate-date { font-size: 13px; flex: 1; }
+    .rate-amount { font-size: 14px; font-weight: 600; text-align: right; flex-shrink: 0; width: 72px; }
+    .rate-status { width: 82px; text-align: right; flex-shrink: 0; }
+    .action-row { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .btn-outline { flex: 1; padding: 11px; border: 1px solid var(--border2); border-radius: var(--radius);
+      background: var(--bg); font-size: 14px; font-weight: 500; cursor: pointer;
+      transition: background .15s; min-width: 120px; }
+    .btn-outline:hover { background: var(--bg2); }
+    .btn-outline.red { color: var(--red); border-color: #F09595; }
+    .btn-outline.red:hover { background: var(--red-bg); }
+    .btn-outline.blue { color: var(--blue); border-color: #85B7EB; }
+    .btn-outline.blue:hover { background: var(--blue-bg); }
+
+    /* SEARCH */
+    .search-wrap { position: relative; margin-bottom: 14px; }
+    .search-wrap input { padding-left: 36px; }
+    .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      color: var(--text3); font-size: 16px; pointer-events: none; }
+
+    /* LOADING */
+    #loading { display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; font-size: 14px; color: var(--text2); }
+
+    /* EMPTY */
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--text2); font-size: 14px; }
+
+    /* STAMPA */
+    @media print {
+      body * { visibility: hidden !important; }
+      #print-area, #print-area * { visibility: visible !important; }
+      #print-area { position: fixed !important; inset: 0; background: #fff !important;
+        font-family: Arial, sans-serif; font-size: 12pt; color: #000; padding: 28px 36px; z-index: 9999; }
+    }
+    #print-area { display: none; }
+    .p-header { border-bottom: 2px solid #333; padding-bottom: 12px; margin-bottom: 16px; }
+    .p-title { font-size: 20pt; font-weight: 700; }
+    .p-sub { font-size: 10pt; color: #666; margin-top: 4px; }
+    .p-note { font-size: 10pt; color: #555; font-style: italic; margin-top: 2px; }
+    .p-sec { font-size: 9pt; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: #555; margin: 14px 0 6px; }
+    .p-summary { display: flex; gap: 20px; margin-bottom: 8px; }
+    .p-sum-item .lbl { font-size: 9pt; color: #777; }
+    .p-sum-item .val { font-size: 14pt; font-weight: 700; }
+    .p-sum-item .val.green { color: #0a6e3f; }
+    .p-sum-item .val.amber { color: #7a4700; }
+    .p-bar-wrap { height: 10px; background: #eee; border-radius: 5px; overflow: hidden; margin-bottom: 4px; }
+    .p-bar-fill { height: 100%; background: #1D9E75; border-radius: 5px; }
+    .p-table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 4px; }
+    .p-table th { background: #f0f0f0; padding: 6px 10px; text-align: left; font-weight: 600; border: 1px solid #ccc; }
+    .p-table td { padding: 6px 10px; border: 1px solid #e0e0e0; }
+    .p-table tr.pagata td { color: #999; }
+    .p-table tr.scaduta td { color: #a00; font-weight: 600; }
+    .p-footer { margin-top: 20px; padding-top: 8px; border-top: 1px solid #ccc; font-size: 9pt; color: #999; text-align: center; }
+  </style>
+</head>
+<body>
+
+<div id="loading">Caricamento...</div>
+
+<div id="login-screen" style="display:none">
+  <div style="font-size:40px">📋</div>
+  <h1>Rate Clienti</h1>
+  <p>Gestisci gli acconti e le rate mensili<br>dei tuoi clienti in un unico posto.</p>
+  <button class="btn-google" onclick="loginGoogle()">
+    <svg class="google-icon" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+    Accedi con Google
+  </button>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <h1 id="topbar-title">Dashboard</h1>
+    <div class="topbar-actions">
+      <button class="icon-btn" onclick="logoutUtente()" title="Esci">⎋</button>
+    </div>
+  </div>
+
+  <div id="sec-dashboard" class="section active">
+    <div id="dash-notifiche"></div>
+    <div class="metrics-3">
+      <div class="metric"><div class="metric-label">Clienti</div><div class="metric-value blue" id="m-clienti">0</div></div>
+      <div class="metric"><div class="metric-label">Riscosso</div><div class="metric-value green" id="m-risc">€0</div></div>
+      <div class="metric"><div class="metric-label">Residuo</div><div class="metric-value amber" id="m-res">€0</div></div>
+    </div>
+    <div class="metrics-2">
+      <div class="metric"><div class="metric-label">Rate scadute</div><div class="metric-value red" id="m-scad">0</div></div>
+      <div class="metric"><div class="metric-label">In arrivo (14 gg)</div><div class="metric-value amber" id="m-arrivo">0</div></div>
+    </div>
+    <div class="sec-title">Avanzamento clienti</div>
+    <div class="card" style="padding:14px 16px"><div id="dash-chart"></div></div>
+    <div class="sec-title">Prossime scadenze</div>
+    <div class="card" style="padding:8px 16px" id="dash-scadenze"></div>
+  </div>
+
+  <div id="sec-clienti" class="section">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="Cerca cliente..." oninput="filterClienti(this.value)" style="padding-left:36px" />
+    </div>
+    <div id="client-list"></div>
+    <div class="empty" id="empty-msg" style="display:none">Nessun cliente. Aggiungine uno!</div>
+  </div>
+
+  <div id="sec-nuovo" class="section">
+    <div class="card">
+      <div class="form-group">
+        <label>Nome e cognome</label>
+        <input type="text" id="n-nome" placeholder="es. Mario Rossi" />
+      </div>
+      <div class="form-group">
+        <label>Note</label>
+        <textarea id="n-note" placeholder="es. Cucina su misura, pagamento mensile..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Importo totale (€)</label>
+        <input type="number" id="n-totale" placeholder="es. 5000" min="0" step="0.01" oninput="calcolaPreview()" />
+      </div>
+      <div class="form-group">
+        <label>Acconto iniziale (€)</label>
+        <input type="number" id="n-acconto" placeholder="es. 1000" min="0" step="0.01" oninput="calcolaPreview()" />
+      </div>
+      <div class="row2">
+        <div class="form-group">
+          <label>N° rate mensili</label>
+          <input type="number" id="n-nrate" placeholder="es. 6" min="1" max="60" oninput="calcolaPreview()" />
+        </div>
+        <div class="form-group">
+          <label>Prima scadenza</label>
+          <input type="date" id="n-data" />
+        </div>
+      </div>
+      <div class="preview-box" id="rate-preview"></div>
+      <button class="btn-primary" id="btn-salva" onclick="aggiungiCliente()">Salva cliente</button>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-btn active" onclick="switchSection('dashboard',this)">
+      <span class="nav-icon">📊</span>Dashboard
+    </button>
+    <button class="nav-btn" onclick="switchSection('clienti',this)">
+      <span class="nav-icon">👥</span>Clienti
+    </button>
+    <button class="nav-btn" onclick="switchSection('nuovo',this)">
+      <span class="nav-icon">➕</span>Nuovo
+    </button>
+  </nav>
+</div>
+
+<!-- DETTAGLIO CLIENTE -->
+<div id="detail-view">
+  <div class="detail-topbar">
+    <button class="back-btn" onclick="chiudiDettaglio()">←</button>
+    <span id="detail-title" style="font-size:16px;font-weight:600"></span>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+</div>
+
+<!-- AREA STAMPA -->
+<div id="print-area"></div>
+
+<!-- FIREBASE SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, where }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAi8gk-SkIVb-qFcoyQdxEPvjqfH2pfFyo",
+    authDomain: "rate-clienti.firebaseapp.com",
+    projectId: "rate-clienti",
+    storageBucket: "rate-clienti.firebasestorage.app",
+    messagingSenderId: "675338241803",
+    appId: "1:675338241803:web:950d3a025be661e26d840e"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  let clienti = [];
+  let filtro = '';
+  let unsubscribe = null;
+
+  // ---- UTILITÀ ----
+  const fmt = n => '€' + Number(n).toLocaleString('it-IT', {minimumFractionDigits:2, maximumFractionDigits:2});
+  const fmtS = n => '€' + Math.round(n).toLocaleString('it-IT');
+  const iniziali = n => n.split(' ').map(p=>p[0]||'').slice(0,2).join('').toUpperCase();
+  const oggi = () => new Date().toISOString().slice(0,10);
+  const fmtData = s => { if(!s) return ''; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; };
+  const diffGg = s => Math.ceil((new Date(s)-new Date(oggi()))/(864e5));
+  const addMesi = (s,n) => { const d=new Date(s); d.setMonth(d.getMonth()+n); return d.toISOString().slice(0,10); };
+  const riscosso = c => c.acconto + c.rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
+  const residuo = c => Math.max(c.totale - riscosso(c), 0);
+  const avColor = i => ['av-0','av-1','av-2','av-3','av-4'][i % 5];
+
+  // ---- AUTH ----
+  window.loginGoogle = async () => {
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+    catch(e) { alert('Errore login: ' + e.message); }
+  };
+  window.logoutUtente = async () => {
+    if(confirm('Vuoi uscire?')) { if(unsubscribe) unsubscribe(); await signOut(auth); }
+  };
+
+  onAuthStateChanged(auth, user => {
+    document.getElementById('loading').style.display = 'none';
+    if(user) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      ascoltaClienti(user.uid);
+    } else {
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+      if(unsubscribe) { unsubscribe(); unsubscribe = null; }
+      clienti = [];
+    }
+  });
+
+  // ---- FIRESTORE ----
+  function ascoltaClienti(uid) {
+    const q = query(collection(db, 'clienti'), where('uid', '==', uid));
+    unsubscribe = onSnapshot(q, snap => {
+      clienti = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      clienti.sort((a,b) => a.nome.localeCompare(b.nome));
+      renderTutto();
+    });
+  }
+
+  async function salvaCliente(c) {
+    const uid = auth.currentUser?.uid;
+    if(!uid) return;
+    await setDoc(doc(db, 'clienti', c.id), {...c, uid});
+  }
+
+  window.eliminaClienteDB = async (id) => {
+    if(!confirm('Eliminare questo cliente?')) return;
+    await deleteDoc(doc(db, 'clienti', id));
+    chiudiDettaglio();
+  };
+
+  // ---- FORM NUOVO ----
+  window.calcolaPreview = () => {
+    const tot = parseFloat(document.getElementById('n-totale').value)||0;
+    const acc = parseFloat(document.getElementById('n-acconto').value)||0;
+    const nr  = parseInt(document.getElementById('n-nrate').value)||0;
+    const el  = document.getElementById('rate-preview');
+    if(tot>0 && nr>0) {
+      el.style.display = 'block';
+      el.innerHTML = `Residuo <strong>${fmt(tot-acc)}</strong> → ${nr} rate da <strong>${fmt((tot-acc)/nr)}</strong> cad.`;
+    } else el.style.display = 'none';
+  };
+
+  window.aggiungiCliente = async () => {
+    const nome   = document.getElementById('n-nome').value.trim();
+    const note   = document.getElementById('n-note').value.trim();
+    const totale = parseFloat(document.getElementById('n-totale').value);
+    const acconto= parseFloat(document.getElementById('n-acconto').value)||0;
+    const nrate  = parseInt(document.getElementById('n-nrate').value);
+    const data   = document.getElementById('n-data').value;
+    if(!nome||!totale||!nrate||!data) { alert('Compila: nome, importo totale, n° rate e prima scadenza.'); return; }
+    const rata = (totale-acconto)/nrate;
+    const rate = Array.from({length:nrate},(_,i) => ({data:addMesi(data,i), importo:rata, pagata:false}));
+    const c = { id: Date.now().toString(), nome, note, totale, acconto, nrate, rate, colorIdx: clienti.length };
+    const btn = document.getElementById('btn-salva');
+    btn.disabled = true; btn.textContent = 'Salvataggio...';
+    await salvaCliente(c);
+    btn.disabled = false; btn.textContent = 'Salva cliente';
+    ['n-nome','n-note','n-totale','n-acconto','n-nrate','n-data'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('rate-preview').style.display='none';
+    switchSection('clienti', document.querySelectorAll('.nav-btn')[1]);
+  };
+
+  // ---- RENDER ----
+  function renderTutto() { renderClienti(); renderDashboard(); }
+
+  window.filterClienti = v => { filtro=v; renderClienti(); };
+
+  function renderClienti() {
+    const list  = document.getElementById('client-list');
+    const empty = document.getElementById('empty-msg');
+    const fil   = clienti.filter(c=>c.nome.toLowerCase().includes(filtro.toLowerCase()));
+    if(!fil.length) { list.innerHTML=''; empty.style.display='block'; return; }
+    empty.style.display='none';
+    list.innerHTML = fil.map(c => {
+      const risc = riscosso(c);
+      const perc = Math.min(Math.round(risc/c.totale*100),100);
+      const scad = c.rate.filter(r=>!r.pagata&&r.data<oggi()).length;
+      const pag  = c.rate.filter(r=>r.pagata).length;
+      const badge = perc>=100 ? '<span class="badge badge-green">Saldato</span>'
+                  : scad>0    ? `<span class="badge badge-red">${scad} scad.</span>`
+                               : `<span class="badge badge-gray">${pag}/${c.rate.length}</span>`;
+      const fillCls = scad>0 ? 'amber' : '';
+      return `<div class="client-card" onclick="apriDettaglio('${c.id}')">
+        <div class="client-header">
+          <div class="avatar ${avColor(c.colorIdx||0)}">${iniziali(c.nome)}</div>
+          <div style="flex:1">
+            <div class="client-name">${c.nome}</div>
+            <div class="client-sub">${c.note ? c.note.slice(0,42)+(c.note.length>42?'…':'') : fmt(c.totale)+' totale'}</div>
+          </div>
+          ${badge}
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${fillCls}" style="width:${perc}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderDashboard() {
+    const og = oggi();
+    let totRisc=0, totRes=0, nScad=0, nArrivo=0;
+    clienti.forEach(c => {
+      totRisc += riscosso(c); totRes += residuo(c);
+      c.rate.forEach(r => { if(!r.pagata){ const d=diffGg(r.data); if(d<=0)nScad++; else if(d<=14)nArrivo++; }});
+    });
+    document.getElementById('m-clienti').textContent = clienti.length;
+    document.getElementById('m-risc').textContent    = fmtS(totRisc);
+    document.getElementById('m-res').textContent     = fmtS(totRes);
+    document.getElementById('m-scad').textContent    = nScad;
+    document.getElementById('m-arrivo').textContent  = nArrivo;
+
+    let notif='';
+    if(nScad>0)   notif+=`<div class="notif red"><div class="notif-dot"></div><div><strong>${nScad} ${nScad===1?'rata scaduta':'rate scadute'}</strong> — controlla i clienti in rosso.</div></div>`;
+    if(nArrivo>0) notif+=`<div class="notif amber"><div class="notif-dot"></div><div><strong>${nArrivo} ${nArrivo===1?'rata in scadenza':'rate in scadenza'}</strong> nei prossimi 14 giorni.</div></div>`;
+    document.getElementById('dash-notifiche').innerHTML = notif;
+
+    document.getElementById('dash-chart').innerHTML = clienti.length
+      ? clienti.slice(0,6).map(c => {
+          const risc=riscosso(c), res=residuo(c);
+          const pw=Math.round(risc/c.totale*100), rw=Math.round(res/c.totale*100);
+          const scad=c.rate.some(r=>!r.pagata&&r.data<og);
+          return `<div class="chart-row">
+            <div class="chart-label">${c.nome.split(' ')[0]}</div>
+            <div class="chart-track"><div style="display:flex;height:100%">
+              <div class="chart-fill green" style="width:${pw}%">${pw>15?fmtS(risc):''}</div>
+              <div class="chart-fill ${scad?'amber':'gray'}" style="width:${rw}%">${rw>12?fmtS(res):''}</div>
+            </div></div></div>`;
+        }).join('')
+      : '<div style="font-size:13px;color:var(--text2)">Nessun cliente ancora.</div>';
+
+    const prossime=[];
+    clienti.forEach(c=>c.rate.forEach((r,i)=>{ if(!r.pagata) prossime.push({c,r,i,diff:diffGg(r.data)}); }));
+    prossime.sort((a,b)=>a.r.data.localeCompare(b.r.data));
+    document.getElementById('dash-scadenze').innerHTML = prossime.slice(0,5).map(p=>{
+      const d=p.diff;
+      const lbl = d<0  ? `<span style="color:var(--red)">Scaduta da ${Math.abs(d)} gg</span>`
+                : d===0? `<span style="color:var(--amber-mid)">Oggi</span>`
+                : d<=14? `<span style="color:var(--amber-mid)">Tra ${d} gg</span>`
+                       : `Tra ${d} gg`;
+      return `<div class="sc-row">
+        <div class="avatar ${avColor(p.c.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniziali(p.c.nome)}</div>
+        <div class="sc-info"><div class="sc-name">${p.c.nome}</div><div class="sc-date">${fmtData(p.r.data)} · ${lbl}</div></div>
+        <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(p.r.importo)}</div>
+        <button class="btn-pay" onclick="pagaRataScad('${p.c.id}',${p.i})">Pagata</button>
+      </div>`;
+    }).join('') || '<div style="font-size:13px;color:var(--text2);padding:8px 0">Nessuna rata da riscuotere.</div>';
+  }
+
+  window.pagaRataScad = async (cid, idx) => {
+    const c = clienti.find(x=>x.id===cid);
+    if(!c) return;
+    c.rate[idx].pagata = true;
+    await salvaCliente(c);
+  };
+
+  // ---- DETTAGLIO ----
+  window.apriDettaglio = id => {
+    const c = clienti.find(x=>x.id===id); if(!c) return;
+    document.getElementById('detail-title').textContent = c.nome;
+    const risc = riscosso(c), res = residuo(c);
+    const perc = Math.min(Math.round(risc/c.totale*100),100);
+    const og = oggi();
+    const rateHtml = c.rate.map((r,i)=>{
+      const scad = !r.pagata && r.data<og;
+      return `<div class="rate-row">
+        <span class="rate-num">Rata ${i+1}</span>
+        <span class="rate-date">${fmtData(r.data)}${scad?' <span style="color:var(--red);font-size:9px">●</span>':''}</span>
+        <span class="rate-amount">${fmt(r.importo)}</span>
+        <span class="rate-status">${r.pagata
+          ? '<span class="badge badge-green">Pagata</span>'
+          : `<button class="btn-pay" onclick="pagaRataDettaglio('${c.id}',${i})">Pagata</button>`}</span>
+      </div>`;
+    }).join('');
+    document.getElementById('detail-body').innerHTML=`
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="avatar ${avColor(c.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniziali(c.nome)}</div>
+          <div><div style="font-size:17px;font-weight:600">${c.nome}</div>
+          ${c.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${c.note}</div>`:''}</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="totale-row"><span style="color:var(--text2)">Importo totale</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
+        <div class="totale-row"><span style="color:var(--text2)">Acconto versato</span><span style="color:var(--green)">${fmt(c.acconto)}</span></div>
+        <div class="totale-row"><span style="color:var(--text2)">Rate incassate</span><span style="color:var(--green)">${fmt(risc-c.acconto)}</span></div>
+        <div class="totale-row"><span>Residuo</span><span style="color:${res>0?'var(--amber-mid)':'var(--green)'}">${fmt(res)}</span></div>
+        <div style="margin-top:12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px">
+            <span>Avanzamento pagamenti</span><span>${perc}%</span></div>
+          <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${perc}%"></div></div>
+        </div>
+      </div>
+      <div class="sec-title">Piano rate mensili</div>
+      <div class="card" style="padding:8px 16px">${rateHtml}</div>
+      <div class="action-row">
+        <button class="btn-outline red" onclick="eliminaClienteDB('${c.id}')">🗑 Elimina</button>
+        <button class="btn-outline blue" onclick="stampaPDF('${c.id}')">🖨 Stampa PDF</button>
+      </div>`;
+    document.getElementById('detail-view').style.display='block';
+    document.documentElement.style.overflow='hidden';
+  };
+
+  window.chiudiDettaglio = () => {
+    document.getElementById('detail-view').style.display='none';
+    document.documentElement.style.overflow='';
+  };
+
+  window.pagaRataDettaglio = async (cid, idx) => {
+    const c = clienti.find(x=>x.id===cid); if(!c) return;
+    c.rate[idx].pagata=true;
+    await salvaCliente(c);
+    apriDettaglio(cid);
+  };
+
+  // ---- STAMPA ----
+  window.stampaPDF = id => {
+    const c = clienti.find(x=>x.id===id); if(!c) return;
+    const risc=riscosso(c), res=residuo(c);
+    const perc=Math.min(Math.round(risc/c.totale*100),100);
+    const og=oggi();
+    const rateRows=c.rate.map((r,i)=>{
+      const scad=!r.pagata&&r.data<og;
+      return `<tr class="${r.pagata?'pagata':scad?'scaduta':''}">
+        <td>Rata ${i+1}</td><td>${fmtData(r.data)}</td>
+        <td style="text-align:right">${fmt(r.importo)}</td>
+        <td style="text-align:center">${r.pagata?'Pagata':scad?'SCADUTA':'In attesa'}</td>
+      </tr>`;
+    }).join('');
+    document.getElementById('print-area').innerHTML=`
+      <div class="p-header">
+        <div class="p-title">${c.nome}</div>
+        ${c.note?`<div class="p-note">${c.note}</div>`:''}
+        <div class="p-sub">Riepilogo pagamenti · Stampato il ${fmtData(og)}</div>
+      </div>
+      <div class="p-sec">Riepilogo finanziario</div>
+      <div class="p-summary">
+        <div class="p-sum-item"><div class="lbl">Totale</div><div class="val">${fmt(c.totale)}</div></div>
+        <div class="p-sum-item"><div class="lbl">Acconto</div><div class="val green">${fmt(c.acconto)}</div></div>
+        <div class="p-sum-item"><div class="lbl">Riscosso</div><div class="val green">${fmt(risc)}</div></div>
+        <div class="p-sum-item"><div class="lbl">Residuo</div><div class="val amber">${fmt(res)}</div></div>
+      </div>
+      <div class="p-bar-wrap"><div class="p-bar-fill" style="width:${perc}%"></div></div>
+      <div style="font-size:9pt;color:#777;margin-bottom:8px">Avanzamento: ${perc}%</div>
+      <div class="p-sec">Piano rate mensili</div>
+      <table class="p-table">
+        <thead><tr><th>N°</th><th>Scadenza</th><th style="text-align:right">Importo</th><th style="text-align:center">Stato</th></tr></thead>
+        <tbody>${rateRows}</tbody>
+      </table>
+      <div class="p-footer">Documento generato automaticamente · ${fmtData(og)}</div>`;
+    setTimeout(()=>window.print(),80);
+  };
+
+  // ---- NAVIGAZIONE ----
+  window.switchSection = (name, btn) => {
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    document.getElementById('sec-'+name).classList.add('active');
+    btn.classList.add('active');
+    const titles={dashboard:'Dashboard',clienti:'Clienti',nuovo:'Nuovo cliente'};
+    document.getElementById('topbar-title').textContent = titles[name]||name;
+    if(name==='dashboard') renderDashboard();
+  };
+
+  // data default
+  document.getElementById('n-data').value = oggi();
+</script>
+</body>
+</html>
