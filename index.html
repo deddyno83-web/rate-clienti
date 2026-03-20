@@ -339,7 +339,8 @@
 <div id="detail-view">
   <div class="detail-topbar">
     <button class="back-btn" onclick="chiudiDettaglio()">←</button>
-    <span id="detail-title" style="font-size:16px;font-weight:600"></span>
+    <span id="detail-title" style="font-size:16px;font-weight:600;flex:1"></span>
+    <button id="detail-edit-btn" onclick="" style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:7px 14px;font-size:14px;font-weight:500;cursor:pointer;color:var(--text)">✏️ Modifica</button>
   </div>
   <div class="detail-body" id="detail-body"></div>
 </div>
@@ -373,8 +374,19 @@
       <input type="number" id="e-acconto" min="0" step="0.01" />
     </div>
     <div class="edit-section-title">Rate mensili</div>
+    <div style="display:flex;gap:10px;align-items:flex-end;margin-bottom:10px">
+      <div class="form-group" style="flex:1;margin-bottom:0">
+        <label>Numero rate totali</label>
+        <input type="number" id="e-nrate" min="1" max="120" step="1" oninput="aggiornaNumRate()" />
+      </div>
+      <div class="form-group" style="flex:1;margin-bottom:0">
+        <label>Ricalcola importo</label>
+        <button type="button" onclick="ricalcolaRate()" style="width:100%;padding:10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);font-size:13px;font-weight:500;cursor:pointer">⟳ Ricalcola</button>
+      </div>
+    </div>
     <div class="card" style="padding:8px 16px">
       <div id="e-rate-list"></div>
+      <button type="button" onclick="aggiungiRataEdit()" style="width:100%;padding:9px;margin-top:8px;border:1px dashed var(--border2);border-radius:var(--radius-sm);background:transparent;font-size:13px;color:var(--text2);cursor:pointer">+ Aggiungi rata</button>
     </div>
     <button class="btn-save-edit" onclick="salvaModifica()">💾 Salva modifiche</button>
   </div>
@@ -588,6 +600,7 @@
   window.apriDettaglio = id => {
     const c = clienti.find(x=>x.id===id); if(!c) return;
     document.getElementById('detail-title').textContent = c.nome;
+    document.getElementById('detail-edit-btn').onclick = () => apriModifica(id);
     const risc = riscosso(c), res = residuo(c);
     const perc = Math.min(Math.round(risc/c.totale*100),100);
     const og = oggi();
@@ -623,10 +636,12 @@
       </div>
       <div class="sec-title">Piano rate mensili</div>
       <div class="card" style="padding:8px 16px">${rateHtml}</div>
-      <div class="action-row">
-        <button class="btn-outline red" onclick="eliminaClienteDB('${c.id}')">🗑 Elimina</button>
-        <button class="btn-outline" onclick="apriModifica('${c.id}')">✏️ Modifica</button>
-        <button class="btn-outline blue" onclick="stampaPDF('${c.id}')">🖨 Stampa PDF</button>
+      <div class="action-row" style="flex-direction:column;gap:10px">
+        <div style="display:flex;gap:10px">
+          <button class="btn-outline" style="flex:1" onclick="apriModifica('${c.id}')">✏️ Modifica cliente</button>
+          <button class="btn-outline blue" style="flex:1" onclick="stampaPDF('${c.id}')">🖨 Stampa PDF</button>
+        </div>
+        <button class="btn-outline red" style="width:100%" onclick="eliminaClienteDB('${c.id}')">🗑 Elimina cliente</button>
       </div>`;
     document.getElementById('detail-view').style.display='block';
     document.documentElement.style.overflow='hidden';
@@ -697,6 +712,74 @@
   // ---- MODIFICA ----
   let _editId = null;
 
+  // Legge le rate dal DOM edit
+  function leggiRateDOM() {
+    const rows = document.querySelectorAll('#e-rate-list .edit-rate-row');
+    return Array.from(rows).map((row, i) => ({
+      data:    row.querySelector('.er-data').value || oggi(),
+      importo: parseFloat(row.querySelector('.er-imp').value) || 0,
+      pagata:  row.querySelector('.er-pag').checked
+    }));
+  }
+
+  function renderRateEdit(rate) {
+    document.getElementById('e-rate-list').innerHTML = rate.map((r,i) =>
+      `<div class="edit-rate-row">
+        <span class="edit-rate-num">Rata ${i+1}</span>
+        <input type="date" class="er-data" value="${r.data}" />
+        <input type="number" class="er-imp" value="${r.importo.toFixed(2)}" min="0" step="0.01" style="width:88px" />
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);flex-shrink:0">
+          <input type="checkbox" class="er-pag" ${r.pagata?'checked':''} style="width:auto" /> Pag.
+        </label>
+        <button type="button" onclick="this.closest('.edit-rate-row').remove();aggiornaNumRateDisplay()" style="background:none;border:none;color:var(--red);font-size:16px;cursor:pointer;padding:0 4px">×</button>
+      </div>`
+    ).join('');
+  }
+
+  function aggiornaNumRateDisplay() {
+    const n = document.querySelectorAll('#e-rate-list .edit-rate-row').length;
+    document.getElementById('e-nrate').value = n;
+  }
+
+  window.aggiornaNumRate = () => {
+    const nNuovo = parseInt(document.getElementById('e-nrate').value)||0;
+    if(nNuovo < 1) return;
+    const rateAttuali = leggiRateDOM();
+    const nAttuali = rateAttuali.length;
+    if(nNuovo > nAttuali) {
+      // Aggiungi rate in fondo
+      const ultima = rateAttuali[nAttuali-1];
+      for(let i=nAttuali; i<nNuovo; i++) {
+        const d = new Date(ultima ? ultima.data : oggi());
+        d.setMonth(d.getMonth() + (i - nAttuali + 1));
+        rateAttuali.push({data: d.toISOString().slice(0,10), importo: ultima ? ultima.importo : 0, pagata: false});
+      }
+    } else {
+      rateAttuali.splice(nNuovo);
+    }
+    renderRateEdit(rateAttuali);
+  };
+
+  window.ricalcolaRate = () => {
+    const tot = parseFloat(document.getElementById('e-totale').value)||0;
+    const acc = parseFloat(document.getElementById('e-acconto').value)||0;
+    const rate = leggiRateDOM();
+    if(!rate.length || tot<=0) return;
+    const rata = (tot - acc) / rate.length;
+    const nuove = rate.map(r => ({...r, importo: rata}));
+    renderRateEdit(nuove);
+  };
+
+  window.aggiungiRataEdit = () => {
+    const rate = leggiRateDOM();
+    const ultima = rate[rate.length-1];
+    const d = new Date(ultima ? ultima.data : oggi());
+    d.setMonth(d.getMonth()+1);
+    rate.push({data: d.toISOString().slice(0,10), importo: ultima ? ultima.importo : 0, pagata: false});
+    renderRateEdit(rate);
+    aggiornaNumRateDisplay();
+  };
+
   window.apriModifica = id => {
     const c = clienti.find(x=>x.id===id); if(!c) return;
     _editId = id;
@@ -704,17 +787,8 @@
     document.getElementById('e-note').value = c.note||'';
     document.getElementById('e-totale').value = c.totale;
     document.getElementById('e-acconto').value = c.acconto;
-    // Render rate editabili
-    document.getElementById('e-rate-list').innerHTML = c.rate.map((r,i)=>`
-      <div class="edit-rate-row">
-        <span class="edit-rate-num">Rata ${i+1}</span>
-        <input type="date" id="er-data-${i}" value="${r.data}" />
-        <input type="number" id="er-imp-${i}" value="${r.importo.toFixed(2)}" min="0" step="0.01" style="width:90px" />
-        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);flex-shrink:0">
-          <input type="checkbox" id="er-pag-${i}" ${r.pagata?'checked':''} style="width:auto" />
-          Pag.
-        </label>
-      </div>`).join('');
+    document.getElementById('e-nrate').value = c.rate.length;
+    renderRateEdit(c.rate);
     document.getElementById('edit-overlay').style.display='block';
     document.documentElement.style.overflow='hidden';
   };
@@ -729,19 +803,18 @@
     const c = clienti.find(x=>x.id===_editId); if(!c) return;
     const nome = document.getElementById('e-nome').value.trim();
     if(!nome) { alert('Il nome non può essere vuoto.'); return; }
-    c.nome   = nome;
-    c.note   = document.getElementById('e-note').value.trim();
-    c.totale = parseFloat(document.getElementById('e-totale').value)||c.totale;
-    c.acconto= parseFloat(document.getElementById('e-acconto').value)||0;
-    // Aggiorna ogni rata
-    c.rate = c.rate.map((r,i) => ({
-      data:    document.getElementById('er-data-'+i)?.value || r.data,
-      importo: parseFloat(document.getElementById('er-imp-'+i)?.value)||r.importo,
-      pagata:  document.getElementById('er-pag-'+i)?.checked || false
-    }));
+    const rate = leggiRateDOM();
+    if(!rate.length) { alert('Devi avere almeno una rata.'); return; }
+    c.nome    = nome;
+    c.note    = document.getElementById('e-note').value.trim();
+    c.totale  = parseFloat(document.getElementById('e-totale').value)||c.totale;
+    c.acconto = parseFloat(document.getElementById('e-acconto').value)||0;
+    c.nrate   = rate.length;
+    c.rate    = rate;
+    const savedId = _editId;
     await salvaCliente(c);
     chiudiModifica();
-    apriDettaglio(_editId===null?c.id:_editId);
+    apriDettaglio(savedId);
   };
 
   // ---- NAVIGAZIONE ----
