@@ -188,10 +188,7 @@
 </head>
 <body>
 
-<div id="loading" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;font-size:14px;color:#666;padding:20px;gap:12px">
-  <div>Caricamento...</div>
-  <div id="debug-log" style="font-size:11px;color:#999;text-align:left;max-width:400px;line-height:1.8;background:#f5f5f3;padding:10px;border-radius:8px;min-width:280px"></div>
-</div>
+<div id="loading" style="display:flex;align-items:center;justify-content:center;min-height:100vh;font-size:14px;color:#666">Caricamento...</div>
 
 <div id="login-screen" style="display:none">
   <div style="font-size:44px">📋</div>
@@ -217,7 +214,6 @@
   <!-- DASHBOARD -->
   <div id="sec-dashboard" class="section active">
     <div id="dash-notifiche"></div>
-    <div id="debug-log-app" style="font-size:11px;color:#999;background:#f5f5f3;padding:8px 12px;border-radius:8px;margin-bottom:10px;display:none"></div>
     <div class="metrics-3">
       <div class="metric"><div class="metric-label">Clienti</div><div class="metric-value blue" id="m-clienti">0</div></div>
       <div class="metric"><div class="metric-label">Riscosso</div><div class="metric-value green" id="m-risc">€0</div></div>
@@ -433,11 +429,9 @@ window.logoutUtente = async () => {
 
 onAuthStateChanged(auth, user => {
   document.getElementById('loading').style.display='none';
-  dbg('Auth callback — user: ' + (user ? user.email : 'null'));
   if(user) {
     document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block';
-    dbg('Chiamo ascoltaDati...'); ascoltaDati(user.uid);
+    document.getElementById('app').style.display='block'; ascoltaDati(user.uid);
   } else {
     document.getElementById('login-screen').style.display='flex';
     document.getElementById('app').style.display='none';
@@ -489,7 +483,6 @@ function ascoltaDati(uid) {
     });
 
     clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
-    dbg('Render — clienti: ' + clienti.length + ' contratti: ' + contratti.length);
     renderTutto();
     if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
     if(window.currentContrattoId) {
@@ -502,7 +495,6 @@ function ascoltaDati(uid) {
   unsubClienti = onSnapshot(qc, snap => {
     snapClienti = snap.docs.map(d=>({id:d.id,...d.data()}));
     clientiPronti = true;
-    dbg('Clienti ricevuti: ' + snapClienti.length + ' — vecchio formato: ' + snapClienti.filter(d=>d.rate!==undefined).length);
     aggiorna();
   });
 
@@ -510,7 +502,6 @@ function ascoltaDati(uid) {
   unsubContratti = onSnapshot(qct, snap => {
     snapContratti = snap.docs.map(d=>({id:d.id,...d.data()}));
     contrattiPronti = true;
-    dbg('Contratti ricevuti: ' + snapContratti.length);
     aggiorna();
   });
 }
