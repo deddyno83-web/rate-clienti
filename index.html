@@ -219,6 +219,21 @@
     .p-table tr.pagata td { color: #999; }
     .p-table tr.scaduta td { color: #a00; font-weight: 600; }
     .p-footer { margin-top: 20px; padding-top: 8px; border-top: 1px solid #ccc; font-size: 9pt; color: #999; text-align: center; }
+
+    /* EDIT OVERLAY */
+    #edit-overlay { display:none; position:fixed; inset:0; background:var(--bg3); z-index:300; overflow-y:auto; }
+    .edit-topbar { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--border);
+      padding:14px 16px; display:flex; align-items:center; gap:12px; }
+    .edit-section-title { font-size:13px; font-weight:600; color:var(--text2); margin:16px 0 8px; }
+    .edit-rate-row { display:flex; align-items:center; gap:8px; padding:10px 0; border-bottom:1px solid var(--border); }
+    .edit-rate-row:last-child { border-bottom:none; }
+    .edit-rate-row input { flex:1; padding:7px 10px; font-size:14px; border:1px solid var(--border2);
+      border-radius:var(--radius-sm); background:var(--bg); color:var(--text); }
+    .edit-rate-row input[type=date] { flex:1.4; }
+    .edit-rate-num { font-size:12px; color:var(--text2); width:44px; flex-shrink:0; }
+    .btn-save-edit { width:100%; padding:14px; background:var(--text); color:var(--bg); border:none;
+      border-radius:var(--radius); font-size:15px; font-weight:600; cursor:pointer; margin-top:12px; }
+    .btn-save-edit:hover { opacity:0.85; }
   </style>
 </head>
 <body>
@@ -331,6 +346,39 @@
 
 <!-- AREA STAMPA -->
 <div id="print-area"></div>
+
+
+<!-- EDIT OVERLAY -->
+<div id="edit-overlay">
+  <div class="edit-topbar">
+    <button class="back-btn" onclick="chiudiModifica()">←</button>
+    <span style="font-size:16px;font-weight:600">Modifica cliente</span>
+    <button class="btn-save-edit" style="width:auto;padding:8px 18px;margin:0;font-size:14px" onclick="salvaModifica()">Salva</button>
+  </div>
+  <div style="padding:16px;max-width:500px;margin:0 auto;padding-bottom:40px">
+    <div class="form-group">
+      <label>Nome e cognome</label>
+      <input type="text" id="e-nome" />
+    </div>
+    <div class="form-group">
+      <label>Note</label>
+      <textarea id="e-note" style="min-height:64px;resize:vertical"></textarea>
+    </div>
+    <div class="form-group">
+      <label>Importo totale (€)</label>
+      <input type="number" id="e-totale" min="0" step="0.01" />
+    </div>
+    <div class="form-group">
+      <label>Acconto iniziale (€)</label>
+      <input type="number" id="e-acconto" min="0" step="0.01" />
+    </div>
+    <div class="edit-section-title">Rate mensili</div>
+    <div class="card" style="padding:8px 16px">
+      <div id="e-rate-list"></div>
+    </div>
+    <button class="btn-save-edit" onclick="salvaModifica()">💾 Salva modifiche</button>
+  </div>
+</div>
 
 <!-- FIREBASE SDK -->
 <script type="module">
@@ -577,6 +625,7 @@
       <div class="card" style="padding:8px 16px">${rateHtml}</div>
       <div class="action-row">
         <button class="btn-outline red" onclick="eliminaClienteDB('${c.id}')">🗑 Elimina</button>
+        <button class="btn-outline" onclick="apriModifica('${c.id}')">✏️ Modifica</button>
         <button class="btn-outline blue" onclick="stampaPDF('${c.id}')">🖨 Stampa PDF</button>
       </div>`;
     document.getElementById('detail-view').style.display='block';
@@ -603,55 +652,96 @@
     const og=oggi();
     const rateRows=c.rate.map((r,i)=>{
       const scad=!r.pagata&&r.data<og;
-      return `<tr class="${r.pagata?'pagata':scad?'scaduta':''}">
-        <td>Rata ${i+1}</td><td>${fmtData(r.data)}</td>
-        <td style="text-align:right">${fmt(r.importo)}</td>
-        <td style="text-align:center">${r.pagata?'Pagata':scad?'SCADUTA':'In attesa'}</td>
-      </tr>`;
+      return '<tr class="'+(r.pagata?'pagata':scad?'scaduta':'')+'">'
+        +'<td>Rata '+(i+1)+'</td><td>'+fmtData(r.data)+'</td>'
+        +'<td style="text-align:right">'+fmt(r.importo)+'</td>'
+        +'<td style="text-align:center">'+(r.pagata?'Pagata':scad?'SCADUTA':'In attesa')+'</td></tr>';
     }).join('');
-    const _html=[
-      '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"/>',
-      '<meta name="viewport" content="width=device-width,initial-scale=1"/>',
-      '<title>Riepilogo '+c.nome+'</title>',
-      '<style>body{font-family:Arial,sans-serif;font-size:12pt;color:#111;padding:28px 36px;max-width:700px;margin:0 auto}',
-      '.ph{border-bottom:2px solid #333;padding-bottom:12px;margin-bottom:16px}',
-      '.pt{font-size:20pt;font-weight:700}.ps{font-size:10pt;color:#666;margin-top:4px}',
-      '.pn{font-size:10pt;color:#555;font-style:italic;margin-top:2px}',
-      '.psec{font-size:9pt;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin:16px 0 6px}',
-      '.psum{display:flex;gap:20px;margin-bottom:8px;flex-wrap:wrap}',
-      '.lbl{font-size:9pt;color:#777}.val{font-size:14pt;font-weight:700}',
-      '.val.green{color:#0a6e3f}.val.amber{color:#7a4700}',
-      '.pbw{height:10px;background:#eee;border-radius:5px;overflow:hidden;margin-bottom:4px}',
-      '.pbf{height:100%;background:#1D9E75;border-radius:5px}',
-      'table{width:100%;border-collapse:collapse;font-size:10pt;margin-top:4px}',
-      'th{background:#f0f0f0;padding:7px 10px;text-align:left;font-weight:600;border:1px solid #ccc}',
-      'td{padding:7px 10px;border:1px solid #e0e0e0}',
-      'tr.pagata td{color:#999}tr.scaduta td{color:#a00;font-weight:600}',
-      '.footer{margin-top:24px;padding-top:8px;border-top:1px solid #ccc;font-size:9pt;color:#999;text-align:center}',
-      '.hint{background:#e6f1fb;padding:12px 16px;border-radius:8px;margin-bottom:20px;font-size:11pt}',
-      '@media print{.hint{display:none}}</style></head><body>',
-      '<div class="hint">Su cellulare: menu browser &rarr; <strong>Condividi &rarr; Stampa</strong> o <strong>Salva come PDF</strong></div>',
-      '<div class="ph"><div class="pt">'+c.nome+'</div>',
-      (c.note?'<div class="pn">'+c.note+'</div>':''),
-      '<div class="ps">Riepilogo pagamenti &middot; '+fmtData(og)+'</div></div>',
-      '<div class="psec">Riepilogo finanziario</div>',
-      '<div class="psum">',
-      '<div><div class="lbl">Totale</div><div class="val">'+fmt(c.totale)+'</div></div>',
-      '<div><div class="lbl">Acconto</div><div class="val green">'+fmt(c.acconto)+'</div></div>',
-      '<div><div class="lbl">Riscosso</div><div class="val green">'+fmt(risc)+'</div></div>',
-      '<div><div class="lbl">Residuo</div><div class="val amber">'+fmt(res)+'</div></div>',
-      '</div>',
-      '<div class="pbw"><div class="pbf" style="width:'+perc+'%"></div></div>',
-      '<div style="font-size:9pt;color:#777;margin-bottom:8px">Avanzamento: '+perc+'%</div>',
-      '<div class="psec">Piano rate mensili</div>',
-      '<table><thead><tr><th>N.</th><th>Scadenza</th><th style="text-align:right">Importo</th><th style="text-align:center">Stato</th></tr></thead>',
-      '<tbody>'+rateRows+'</tbody></table>',
-      '<div class="footer">Documento generato &middot; '+fmtData(og)+'</div>',
-      '</body></html>'
-    ].join('');
-    const w=window.open('','_blank');
-    if(w){w.document.write(_html);w.document.close();}
-    else alert('Abilita i popup nel browser, oppure usa Condividi dal cellulare.');
+    // Rimuovi eventuale pannello precedente
+    const old=document.getElementById('print-overlay');
+    if(old) old.remove();
+    // Crea overlay a schermo intero
+    const overlay=document.createElement('div');
+    overlay.id='print-overlay';
+    overlay.style.cssText='position:fixed;inset:0;background:#fff;z-index:9999;overflow-y:auto;font-family:Arial,sans-serif;color:#111';
+    overlay.innerHTML=
+      '<div style="position:sticky;top:0;background:#185FA5;color:#fff;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px">'
+      +'<button onclick="document.getElementById(\"print-overlay\").remove()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:15px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer">← Chiudi</button>'
+      +'<span style="font-size:15px;font-weight:600">Riepilogo</span>'
+      +'<button onclick="window.print()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:15px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer">🖨 Stampa</button>'
+      +'</div>'
+      +'<div style="padding:20px 16px;max-width:700px;margin:0 auto">'
+      +'<div style="border-bottom:2px solid #333;padding-bottom:12px;margin-bottom:16px">'
+      +'<div style="font-size:22px;font-weight:700">'+c.nome+'</div>'
+      +(c.note?'<div style="font-size:13px;color:#555;font-style:italic;margin-top:3px">'+c.note+'</div>':'')
+      +'<div style="font-size:12px;color:#666;margin-top:4px">Riepilogo pagamenti &middot; '+fmtData(og)+'</div></div>'
+      +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin:14px 0 8px">Riepilogo finanziario</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">'
+      +'<div style="background:#f5f5f3;border-radius:8px;padding:10px"><div style="font-size:11px;color:#777">Totale</div><div style="font-size:18px;font-weight:700">'+fmt(c.totale)+'</div></div>'
+      +'<div style="background:#f5f5f3;border-radius:8px;padding:10px"><div style="font-size:11px;color:#777">Acconto</div><div style="font-size:18px;font-weight:700;color:#0a6e3f">'+fmt(c.acconto)+'</div></div>'
+      +'<div style="background:#f5f5f3;border-radius:8px;padding:10px"><div style="font-size:11px;color:#777">Riscosso</div><div style="font-size:18px;font-weight:700;color:#0a6e3f">'+fmt(risc)+'</div></div>'
+      +'<div style="background:#f5f5f3;border-radius:8px;padding:10px"><div style="font-size:11px;color:#777">Residuo</div><div style="font-size:18px;font-weight:700;color:#7a4700">'+fmt(res)+'</div></div>'
+      +'</div>'
+      +'<div style="height:8px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:4px"><div style="height:100%;background:#1D9E75;border-radius:4px;width:'+perc+'%"></div></div>'
+      +'<div style="font-size:11px;color:#777;margin-bottom:14px">Avanzamento: '+perc+'%</div>'
+      +'<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#555;margin-bottom:8px">Piano rate mensili</div>'
+      +'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">'
+      +'<thead><tr style="background:#f0f0f0"><th style="padding:8px 10px;text-align:left;border:1px solid #ccc">N.</th><th style="padding:8px 10px;text-align:left;border:1px solid #ccc">Scadenza</th><th style="padding:8px 10px;text-align:right;border:1px solid #ccc">Importo</th><th style="padding:8px 10px;text-align:center;border:1px solid #ccc">Stato</th></tr></thead>'
+      +'<tbody>'+rateRows+'</tbody></table></div>'
+      +'<div style="margin-top:20px;padding-top:8px;border-top:1px solid #ddd;font-size:11px;color:#999;text-align:center">Documento generato automaticamente &middot; '+fmtData(og)+'</div>'
+      +'</div>';
+    document.body.appendChild(overlay);
+  };
+
+
+  // ---- MODIFICA ----
+  let _editId = null;
+
+  window.apriModifica = id => {
+    const c = clienti.find(x=>x.id===id); if(!c) return;
+    _editId = id;
+    document.getElementById('e-nome').value = c.nome;
+    document.getElementById('e-note').value = c.note||'';
+    document.getElementById('e-totale').value = c.totale;
+    document.getElementById('e-acconto').value = c.acconto;
+    // Render rate editabili
+    document.getElementById('e-rate-list').innerHTML = c.rate.map((r,i)=>`
+      <div class="edit-rate-row">
+        <span class="edit-rate-num">Rata ${i+1}</span>
+        <input type="date" id="er-data-${i}" value="${r.data}" />
+        <input type="number" id="er-imp-${i}" value="${r.importo.toFixed(2)}" min="0" step="0.01" style="width:90px" />
+        <label style="display:flex;align-items:center;gap:4px;font-size:12px;color:var(--text2);flex-shrink:0">
+          <input type="checkbox" id="er-pag-${i}" ${r.pagata?'checked':''} style="width:auto" />
+          Pag.
+        </label>
+      </div>`).join('');
+    document.getElementById('edit-overlay').style.display='block';
+    document.documentElement.style.overflow='hidden';
+  };
+
+  window.chiudiModifica = () => {
+    document.getElementById('edit-overlay').style.display='none';
+    document.documentElement.style.overflow='';
+    _editId = null;
+  };
+
+  window.salvaModifica = async () => {
+    const c = clienti.find(x=>x.id===_editId); if(!c) return;
+    const nome = document.getElementById('e-nome').value.trim();
+    if(!nome) { alert('Il nome non può essere vuoto.'); return; }
+    c.nome   = nome;
+    c.note   = document.getElementById('e-note').value.trim();
+    c.totale = parseFloat(document.getElementById('e-totale').value)||c.totale;
+    c.acconto= parseFloat(document.getElementById('e-acconto').value)||0;
+    // Aggiorna ogni rata
+    c.rate = c.rate.map((r,i) => ({
+      data:    document.getElementById('er-data-'+i)?.value || r.data,
+      importo: parseFloat(document.getElementById('er-imp-'+i)?.value)||r.importo,
+      pagata:  document.getElementById('er-pag-'+i)?.checked || false
+    }));
+    await salvaCliente(c);
+    chiudiModifica();
+    apriDettaglio(_editId===null?c.id:_editId);
   };
 
   // ---- NAVIGAZIONE ----
