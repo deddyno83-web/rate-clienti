@@ -9,6 +9,9 @@
   <meta name="apple-mobile-web-app-title" content="Rate Clienti" />
   <meta name="apple-mobile-web-app-start-url" content="https://deddyno83-web.github.io/rate-clienti/" />
   <title>Rate Clienti</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="https://deddyno83-web.github.io/rate-clienti/manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
@@ -442,7 +445,45 @@ onAuthStateChanged(auth, user => {
 // ── FIRESTORE ──────────────────────────────────────────
 
 function ascoltaDati(uid) {
+  // Teniamo separati i due insiemi e li mergiamo sempre insieme
+  let snapClienti   = [];
+  let snapContratti = [];
+  let clientiPronti    = false;
+  let contrattiPronti  = false;
+
   const aggiorna = () => {
+    if(!clientiPronti || !contrattiPronti) return;
+    clienti   = [];
+    contratti = [...snapContratti];
+
+    snapClienti.forEach(data => {
+      if(data.rate !== undefined) {
+        // VECCHIO FORMATO — cliente con rate incorporate
+        clienti.push({id:data.id, nome:data.nome||'Cliente', note:data.note||'', colorIdx:data.colorIdx||0, uid});
+        // aggiungi contratto virtuale solo se non esiste gia uno migrato per questo cliente
+        const giaMigrato = contratti.some(c=>c.clienteId===data.id);
+        if(!giaMigrato) {
+          contratti.push({
+            id: data.id+'_v',
+            clienteId: data.id,
+            tipo: data.tipo||'rate',
+            desc: data.desc||(data.note?data.note.slice(0,30):'Contratto'),
+            totale: data.totale||0,
+            acconto: data.acconto||0,
+            nrate: data.nrate||0,
+            rate: data.rate||[],
+            pagato: data.pagato||false,
+            _vecchioFormato: true,
+            uid
+          });
+        }
+      } else {
+        // NUOVO FORMATO — solo anagrafica
+        clienti.push(data);
+      }
+    });
+
+    clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
     renderTutto();
     if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
     if(window.currentContrattoId) {
@@ -453,53 +494,15 @@ function ascoltaDati(uid) {
 
   const qc = query(collection(db,'clienti'), where('uid','==',uid));
   unsubClienti = onSnapshot(qc, snap => {
-    // Supporta sia vecchio formato (con rate dentro) che nuovo (solo anagrafica)
-    clienti = [];
-    const contrattiDaVecchi = [];
-    snap.docs.forEach(d => {
-      const data = {id:d.id, ...d.data()};
-      if(data.rate !== undefined) {
-        // VECCHIO FORMATO: cliente con rate incorporate
-        // Crea un cliente pulito
-        clienti.push({
-          id: data.id,
-          nome: data.nome || 'Cliente',
-          note: data.note || '',
-          colorIdx: data.colorIdx || 0,
-          uid
-        });
-        // Crea un contratto virtuale (solo in memoria, non su Firebase)
-        contrattiDaVecchi.push({
-          id: data.id + '_v',
-          clienteId: data.id,
-          tipo: data.tipo || 'rate',
-          desc: data.desc || data.note?.slice(0,30) || 'Contratto',
-          totale: data.totale || 0,
-          acconto: data.acconto || 0,
-          nrate: data.nrate || 0,
-          rate: data.rate || [],
-          pagato: data.pagato || false,
-          _vecchioFormato: true, // flag: esiste solo in memoria
-          uid
-        });
-      } else {
-        // NUOVO FORMATO: solo anagrafica
-        clienti.push(data);
-      }
-    });
-    clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
-    // Merge contratti vecchi con nuovi (evita duplicati)
-    contratti = contratti.filter(c=>!c._vecchioFormato);
-    contratti = [...contratti, ...contrattiDaVecchi];
+    snapClienti = snap.docs.map(d=>({id:d.id,...d.data()}));
+    clientiPronti = true;
     aggiorna();
   });
 
   const qct = query(collection(db,'contratti'), where('uid','==',uid));
   unsubContratti = onSnapshot(qct, snap => {
-    const nuovi = snap.docs.map(d=>({id:d.id,...d.data()}));
-    // Mantieni i contratti da vecchio formato, aggiorna solo i nuovi
-    contratti = contratti.filter(c=>c._vecchioFormato);
-    contratti = [...contratti, ...nuovi];
+    snapContratti = snap.docs.map(d=>({id:d.id,...d.data()}));
+    contrattiPronti = true;
     aggiorna();
   });
 }
