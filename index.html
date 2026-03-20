@@ -9,181 +9,221 @@
   <meta name="apple-mobile-web-app-title" content="Rate Clienti" />
   <meta name="apple-mobile-web-app-start-url" content="https://deddyno83-web.github.io/rate-clienti/" />
   <title>Rate Clienti</title>
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
   <link rel="manifest" href="https://deddyno83-web.github.io/rate-clienti/manifest.json" />
   <link rel="apple-touch-icon" href="icon-192.png" />
   <style>
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#ffffff;--bg2:#f5f5f3;--bg3:#eeecea;
-      --text:#1a1a1a;--text2:#666;--text3:#999;
-      --border:rgba(0,0,0,0.1);--border2:rgba(0,0,0,0.2);
-      --green:#0F6E56;--green-bg:#E1F5EE;--green-mid:#1D9E75;
-      --amber:#854F0B;--amber-bg:#FAEEDA;--amber-mid:#BA7517;
-      --red:#A32D2D;--red-bg:#FCEBEB;
-      --blue:#185FA5;--blue-bg:#E6F1FB;
-      --radius:12px;--radius-sm:8px;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeecea;
+      --text: #1a1a1a; --text2: #666; --text3: #999;
+      --border: rgba(0,0,0,0.1); --border2: rgba(0,0,0,0.2);
+      --green: #0F6E56; --green-bg: #E1F5EE; --green-mid: #1D9E75;
+      --amber: #854F0B; --amber-bg: #FAEEDA; --amber-mid: #BA7517;
+      --red: #A32D2D; --red-bg: #FCEBEB;
+      --blue: #185FA5; --blue-bg: #E6F1FB;
+      --radius: 12px; --radius-sm: 8px;
     }
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg3);color:var(--text);font-size:15px;min-height:100vh}
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg3); color: var(--text); font-size: 15px; min-height: 100vh; }
 
     /* LOGIN */
-    #login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;gap:1.5rem}
-    #login-screen h1{font-size:24px;font-weight:600}
-    #login-screen p{color:var(--text2);font-size:14px;text-align:center}
-    .btn-google{display:flex;align-items:center;gap:12px;padding:12px 24px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--bg);font-size:15px;font-weight:500;cursor:pointer;width:100%;max-width:320px;justify-content:center}
-    .btn-google:hover{background:var(--bg2)}
+    #login-screen { display:flex; flex-direction:column; align-items:center;
+      justify-content:center; min-height:100vh; padding:2rem; gap:1.5rem; }
+    #login-screen h1 { font-size:24px; font-weight:600; }
+    #login-screen p { color:var(--text2); font-size:14px; text-align:center; }
+    .btn-google { display:flex; align-items:center; gap:12px; padding:12px 24px;
+      border-radius:var(--radius); border:1px solid var(--border2); background:var(--bg);
+      font-size:15px; font-weight:500; cursor:pointer; width:100%; max-width:320px; justify-content:center; }
+    .btn-google:hover { background:var(--bg2); }
 
     /* LAYOUT */
-    #app{display:none;max-width:500px;margin:0 auto;padding-bottom:80px}
-    .topbar{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-    .topbar h1{font-size:17px;font-weight:600}
-    .icon-btn{background:none;border:none;cursor:pointer;padding:6px;border-radius:var(--radius-sm);color:var(--text2);font-size:18px}
+    #app { display:none; max-width:500px; margin:0 auto; padding-bottom:80px; }
+    .topbar { position:sticky; top:0; z-index:100; background:var(--bg);
+      border-bottom:1px solid var(--border); padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; }
+    .topbar h1 { font-size:17px; font-weight:600; }
+    .icon-btn { background:none; border:none; cursor:pointer; padding:6px;
+      border-radius:var(--radius-sm); color:var(--text2); font-size:18px; }
+    .icon-btn:hover { background:var(--bg2); }
 
     /* NAV */
-    .nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:var(--bg);border-top:1px solid var(--border);display:flex;max-width:500px;margin:0 auto}
-    .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:11px;font-weight:500}
-    .nav-btn.active{color:var(--blue)}
-    .nav-icon{font-size:22px;line-height:1}
+    .nav { position:fixed; bottom:0; left:0; right:0; z-index:100;
+      background:var(--bg); border-top:1px solid var(--border);
+      display:flex; max-width:500px; margin:0 auto; }
+    .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center;
+      gap:3px; padding:10px 4px; border:none; background:none; cursor:pointer;
+      color:var(--text3); font-size:11px; font-weight:500; }
+    .nav-btn.active { color:var(--blue); }
+    .nav-icon { font-size:22px; line-height:1; }
 
     /* SEZIONI */
-    .section{display:none;padding:16px}
-    .section.active{display:block}
+    .section { display:none; padding:16px; }
+    .section.active { display:block; }
 
     /* CARD */
-    .card{background:var(--bg);border-radius:var(--radius);border:1px solid var(--border);padding:16px;margin-bottom:12px}
+    .card { background:var(--bg); border-radius:var(--radius); border:1px solid var(--border); padding:16px; margin-bottom:12px; }
 
     /* METRICHE */
-    .metrics-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
-    .metrics-2{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
-    .metric{background:var(--bg);border-radius:var(--radius-sm);padding:12px;border:1px solid var(--border)}
-    .metric-label{font-size:11px;color:var(--text2);margin-bottom:4px}
-    .metric-value{font-size:20px;font-weight:600}
-    .metric-value.green{color:var(--green)}
-    .metric-value.amber{color:var(--amber-mid)}
-    .metric-value.red{color:var(--red)}
-    .metric-value.blue{color:var(--blue)}
+    .metrics-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+    .metrics-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:12px; }
+    .metric { background:var(--bg); border-radius:var(--radius-sm); padding:12px; border:1px solid var(--border); }
+    .metric-label { font-size:11px; color:var(--text2); margin-bottom:4px; }
+    .metric-value { font-size:20px; font-weight:600; }
+    .metric-value.green { color:var(--green); }
+    .metric-value.amber { color:var(--amber-mid); }
+    .metric-value.red { color:var(--red); }
+    .metric-value.blue { color:var(--blue); }
 
     /* NOTIFICHE */
-    .notif{display:flex;gap:10px;padding:12px 14px;border-radius:var(--radius-sm);font-size:13px;margin-bottom:10px;align-items:flex-start}
-    .notif.amber{background:var(--amber-bg);color:var(--amber);border:1px solid #FAC775}
-    .notif.red{background:var(--red-bg);color:var(--red);border:1px solid #F09595}
-    .notif-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
-    .notif.amber .notif-dot{background:var(--amber-mid)}
-    .notif.red .notif-dot{background:var(--red)}
+    .notif { display:flex; gap:10px; padding:12px 14px; border-radius:var(--radius-sm);
+      font-size:13px; margin-bottom:10px; align-items:flex-start; }
+    .notif.amber { background:var(--amber-bg); color:var(--amber); border:1px solid #FAC775; }
+    .notif.red { background:var(--red-bg); color:var(--red); border:1px solid #F09595; }
+    .notif-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:3px; }
+    .notif.amber .notif-dot { background:var(--amber-mid); }
+    .notif.red .notif-dot { background:var(--red); }
 
-    .sec-title{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 8px}
+    /* TITOLI SEZIONE */
+    .sec-title { font-size:11px; font-weight:600; color:var(--text2);
+      text-transform:uppercase; letter-spacing:.05em; margin:16px 0 8px; }
 
     /* GRAFICO */
-    .chart-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px}
-    .chart-label{width:80px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex-shrink:0}
-    .chart-track{flex:1;height:16px;background:var(--bg2);border-radius:4px;overflow:hidden}
-    .chart-fill{height:100%;display:flex;align-items:center;padding-left:6px;font-size:10px;font-weight:600;min-width:2px;border-radius:4px}
-    .chart-fill.green{background:#9FE1CB;color:#085041}
-    .chart-fill.gray{background:#D3D1C7;color:#444}
-    .chart-fill.amber{background:#FAC775;color:#633806}
+    .chart-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; }
+    .chart-label { width:80px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
+    .chart-track { flex:1; height:16px; background:var(--bg2); border-radius:4px; overflow:hidden; }
+    .chart-fill { height:100%; display:flex; align-items:center; padding-left:6px; font-size:10px; font-weight:600; min-width:2px; border-radius:4px; }
+    .chart-fill.green { background:#9FE1CB; color:#085041; }
+    .chart-fill.gray  { background:#D3D1C7; color:#444; }
+    .chart-fill.amber { background:#FAC775; color:#633806; }
 
     /* LISTA CLIENTI */
-    .client-card{background:var(--bg);border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer}
-    .client-card:active{background:var(--bg2)}
-    .client-header{display:flex;align-items:center;gap:10px}
-    .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0}
-    .av-0{background:#B5D4F4;color:#0C447C}
-    .av-1{background:#9FE1CB;color:#085041}
-    .av-2{background:#CECBF6;color:#3C3489}
-    .av-3{background:#F5C4B3;color:#712B13}
-    .av-4{background:#FAC775;color:#633806}
-    .client-name{font-size:15px;font-weight:500}
-    .client-sub{font-size:12px;color:var(--text2);margin-top:2px}
-    .badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600}
-    .badge-green{background:#EAF3DE;color:#3B6D11}
-    .badge-amber{background:var(--amber-bg);color:var(--amber)}
-    .badge-red{background:var(--red-bg);color:var(--red)}
-    .badge-gray{background:#F1EFE8;color:#444}
-    .progress-bar{height:5px;border-radius:3px;background:var(--bg2);overflow:hidden;margin-top:10px}
-    .progress-fill{height:100%;border-radius:3px;background:var(--green-mid)}
-    .progress-fill.amber{background:var(--amber-mid)}
+    .client-card { background:var(--bg); border-radius:var(--radius); border:1px solid var(--border);
+      padding:14px 16px; margin-bottom:10px; cursor:pointer; }
+    .client-card:active { background:var(--bg2); }
+    .client-header { display:flex; align-items:center; gap:10px; }
+    .avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center;
+      justify-content:center; font-weight:600; font-size:14px; flex-shrink:0; }
+    .av-0 { background:#B5D4F4; color:#0C447C; }
+    .av-1 { background:#9FE1CB; color:#085041; }
+    .av-2 { background:#CECBF6; color:#3C3489; }
+    .av-3 { background:#F5C4B3; color:#712B13; }
+    .av-4 { background:#FAC775; color:#633806; }
+    .client-name { font-size:15px; font-weight:500; }
+    .client-sub { font-size:12px; color:var(--text2); margin-top:2px; }
+    .badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:600; }
+    .badge-green { background:#EAF3DE; color:#3B6D11; }
+    .badge-amber { background:var(--amber-bg); color:var(--amber); }
+    .badge-red   { background:var(--red-bg); color:var(--red); }
+    .badge-gray  { background:#F1EFE8; color:#444; }
+    .badge-blue  { background:var(--blue-bg); color:var(--blue); }
+    .progress-bar { height:5px; border-radius:3px; background:var(--bg2); overflow:hidden; margin-top:10px; }
+    .progress-fill { height:100%; border-radius:3px; background:var(--green-mid); }
+    .progress-fill.amber { background:var(--amber-mid); }
 
     /* FORM */
-    .form-group{margin-bottom:14px}
-    .form-group label{display:block;font-size:13px;color:var(--text2);margin-bottom:5px;font-weight:500}
-    .form-group input,.form-group textarea{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);outline:none}
-    .form-group input:focus,.form-group textarea:focus{border-color:var(--blue)}
-    .form-group textarea{resize:vertical;min-height:68px}
-    .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .preview-box{background:var(--bg2);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--text2);margin-top:4px;display:none}
-    .btn-primary{width:100%;padding:13px;background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;margin-top:8px}
-    .btn-primary:disabled{opacity:0.4;cursor:not-allowed}
+    .form-group { margin-bottom:14px; }
+    .form-group label { display:block; font-size:13px; color:var(--text2); margin-bottom:5px; font-weight:500; }
+    .form-group input, .form-group textarea, .form-group select {
+      width:100%; padding:10px 12px; border:1px solid var(--border2);
+      border-radius:var(--radius-sm); font-size:15px; font-family:inherit;
+      background:var(--bg); color:var(--text); outline:none; }
+    .form-group input:focus, .form-group textarea:focus { border-color:var(--blue); }
+    .form-group textarea { resize:vertical; min-height:68px; }
+    .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .preview-box { background:var(--bg2); border-radius:var(--radius-sm); padding:10px 14px;
+      font-size:13px; color:var(--text2); margin-top:4px; display:none; }
+    .btn-primary { width:100%; padding:13px; background:var(--text); color:var(--bg);
+      border:none; border-radius:var(--radius); font-size:15px; font-weight:600;
+      cursor:pointer; margin-top:8px; }
+    .btn-primary:hover { opacity:0.85; }
+    .btn-primary:disabled { opacity:0.4; cursor:not-allowed; }
 
     /* TIPO SELECTOR */
-    .tipo-selector{display:flex;gap:8px;margin-bottom:14px}
-    .tipo-btn{flex:1;padding:11px;border-radius:var(--radius);border:2px solid var(--border2);background:var(--bg);font-size:14px;font-weight:500;cursor:pointer;color:var(--text)}
-    .tipo-btn.active{background:var(--text);color:var(--bg);border-color:var(--text);font-weight:600}
+    .tipo-selector { display:flex; gap:8px; margin-bottom:14px; }
+    .tipo-btn { flex:1; padding:11px; border-radius:var(--radius); border:2px solid var(--border2);
+      background:var(--bg); font-size:14px; font-weight:500; cursor:pointer; color:var(--text); }
+    .tipo-btn.active { background:var(--text); color:var(--bg); border-color:var(--text); font-weight:600; }
 
     /* SCADENZE */
-    .sc-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
-    .sc-row:last-child{border-bottom:none}
-    .sc-info{flex:1}
-    .sc-name{font-size:13px;font-weight:500}
-    .sc-date{font-size:12px;color:var(--text2);margin-top:1px}
-    .btn-pay{padding:5px 12px;font-size:12px;border-radius:6px;border:1px solid #5DCAA5;background:transparent;cursor:pointer;color:var(--green);font-weight:500}
-    .btn-pay:hover{background:var(--green-bg)}
+    .sc-row { display:flex; align-items:center; gap:10px; padding:10px 0;
+      border-bottom:1px solid var(--border); }
+    .sc-row:last-child { border-bottom:none; }
+    .sc-info { flex:1; }
+    .sc-name { font-size:13px; font-weight:500; }
+    .sc-date { font-size:12px; color:var(--text2); margin-top:1px; }
+    .btn-pay { padding:5px 12px; font-size:12px; border-radius:6px; border:1px solid #5DCAA5;
+      background:transparent; cursor:pointer; color:var(--green); font-weight:500; }
+    .btn-pay:hover { background:var(--green-bg); }
 
     /* SEARCH */
-    .search-wrap{position:relative;margin-bottom:14px}
-    .search-wrap input{padding-left:36px;border:1px solid var(--border2);border-radius:var(--radius-sm);width:100%;padding-top:10px;padding-bottom:10px;font-size:15px;background:var(--bg);color:var(--text);outline:none}
-    .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:16px;pointer-events:none}
+    .search-wrap { position:relative; margin-bottom:14px; }
+    .search-wrap input { padding-left:36px; border:1px solid var(--border2);
+      border-radius:var(--radius-sm); width:100%; padding-top:10px; padding-bottom:10px;
+      font-size:15px; background:var(--bg); color:var(--text); outline:none; }
+    .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%);
+      color:var(--text3); font-size:16px; pointer-events:none; }
 
-    /* OVERLAY */
-    .overlay{display:none;position:fixed;inset:0;background:var(--bg3);z-index:200;overflow-y:auto;max-width:500px;margin:0 auto}
-    .overlay-topbar{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;gap:12px}
-    .back-btn{background:none;border:none;font-size:22px;cursor:pointer;color:var(--text2);padding:0;line-height:1;flex-shrink:0}
-    .overlay-body{padding:16px;padding-bottom:40px}
-
-    /* CONTRATTI */
-    .contratto-card{background:var(--bg);border-radius:var(--radius);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;cursor:pointer}
-    .contratto-card:active{background:var(--bg2)}
-    .contratto-header{display:flex;align-items:center;justify-content:space-between;gap:10px}
-    .contratto-title{font-size:14px;font-weight:600}
-    .contratto-sub{font-size:12px;color:var(--text2);margin-top:3px}
-
-    .totale-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;border-bottom:1px solid var(--border)}
-    .totale-row:last-child{border-bottom:none;font-weight:600}
-
-    /* RATE */
-    .rate-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);gap:8px}
-    .rate-row:last-child{border-bottom:none}
-    .rate-num{font-size:12px;color:var(--text2);width:50px;flex-shrink:0}
-    .rate-date{font-size:13px;flex:1}
-    .rate-amount{font-size:14px;font-weight:600;text-align:right;width:72px;flex-shrink:0}
-    .rate-status{width:82px;text-align:right;flex-shrink:0}
+    /* DETTAGLIO */
+    .overlay { display:none; position:fixed; inset:0; background:var(--bg3);
+      z-index:200; overflow-y:auto; max-width:500px; margin:0 auto; }
+    .overlay-topbar { position:sticky; top:0; background:var(--bg);
+      border-bottom:1px solid var(--border); padding:14px 16px;
+      display:flex; align-items:center; gap:12px; }
+    .back-btn { background:none; border:none; font-size:22px; cursor:pointer;
+      color:var(--text2); padding:0; line-height:1; flex-shrink:0; }
+    .overlay-body { padding:16px; padding-bottom:40px; }
+    .totale-row { display:flex; justify-content:space-between; padding:8px 0;
+      font-size:14px; border-bottom:1px solid var(--border); }
+    .totale-row:last-child { border-bottom:none; font-weight:600; }
+    .rate-row { display:flex; align-items:center; padding:10px 0;
+      border-bottom:1px solid var(--border); gap:8px; }
+    .rate-row:last-child { border-bottom:none; }
+    .rate-num { font-size:12px; color:var(--text2); width:50px; flex-shrink:0; }
+    .rate-date { font-size:13px; flex:1; }
+    .rate-amount { font-size:14px; font-weight:600; text-align:right; width:72px; flex-shrink:0; }
+    .rate-status { width:82px; text-align:right; flex-shrink:0; }
+    .action-row { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+    .action-row-2 { display:flex; gap:10px; }
+    .btn-outline { flex:1; padding:11px; border:1px solid var(--border2); border-radius:var(--radius);
+      background:var(--bg); font-size:14px; font-weight:500; cursor:pointer; color:var(--text); }
+    .btn-outline:hover { background:var(--bg2); }
+    .btn-outline.red  { color:var(--red); border-color:#F09595; }
+    .btn-outline.red:hover { background:var(--red-bg); }
+    .btn-outline.blue { color:var(--blue); border-color:#85B7EB; }
+    .btn-outline.blue:hover { background:var(--blue-bg); }
 
     /* EDIT RATE */
-    .edit-rate-row{display:flex;align-items:center;gap:6px;padding:8px 0;border-bottom:1px solid var(--border)}
-    .edit-rate-row:last-child{border-bottom:none}
-    .edit-rate-num{font-size:12px;color:var(--text2);width:40px;flex-shrink:0}
-    .edit-rate-row input[type=date]{flex:1.2;padding:7px 8px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)}
-    .edit-rate-row input[type=number]{width:78px;flex-shrink:0;padding:7px 8px;font-size:13px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg);color:var(--text)}
-    .del-btn{background:none;border:none;color:var(--red);font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0}
-    .pag-check{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--text2);flex-shrink:0}
-    .pag-check input{width:auto}
-    .btn-add-rata{width:100%;padding:9px;margin-top:8px;border:1px dashed var(--border2);border-radius:var(--radius-sm);background:transparent;font-size:13px;color:var(--text2);cursor:pointer}
+    .edit-rate-row { display:flex; align-items:center; gap:6px; padding:8px 0;
+      border-bottom:1px solid var(--border); }
+    .edit-rate-row:last-child { border-bottom:none; }
+    .edit-rate-num { font-size:12px; color:var(--text2); width:40px; flex-shrink:0; }
+    .edit-rate-row input[type=date] { flex:1.3; padding:7px 8px; font-size:13px;
+      border:1px solid var(--border2); border-radius:var(--radius-sm);
+      background:var(--bg); color:var(--text); }
+    .edit-rate-row input[type=number] { width:80px; flex-shrink:0; padding:7px 8px;
+      font-size:13px; border:1px solid var(--border2); border-radius:var(--radius-sm);
+      background:var(--bg); color:var(--text); }
+    .edit-rate-row .del-btn { background:none; border:none; color:var(--red);
+      font-size:18px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+    .pag-check { display:flex; align-items:center; gap:3px; font-size:11px;
+      color:var(--text2); flex-shrink:0; }
+    .pag-check input { width:auto; }
+    .btn-add-rata { width:100%; padding:9px; margin-top:8px; border:1px dashed var(--border2);
+      border-radius:var(--radius-sm); background:transparent; font-size:13px;
+      color:var(--text2); cursor:pointer; }
+    .ricalcola-row { display:flex; gap:8px; align-items:flex-end; margin-bottom:10px; }
+    .ricalcola-row .form-group { flex:1; margin-bottom:0; }
+    .btn-ricalcola { flex:1; padding:10px; border:1px solid var(--border2);
+      border-radius:var(--radius-sm); background:var(--bg2); font-size:13px;
+      font-weight:500; cursor:pointer; white-space:nowrap; }
 
-    /* AZIONI */
-    .action-row{display:flex;flex-direction:column;gap:10px;margin-top:16px}
-    .action-row-2{display:flex;gap:10px}
-    .btn-outline{flex:1;padding:11px;border:1px solid var(--border2);border-radius:var(--radius);background:var(--bg);font-size:14px;font-weight:500;cursor:pointer;color:var(--text)}
-    .btn-outline:hover{background:var(--bg2)}
-    .btn-outline.red{color:var(--red);border-color:#F09595}
-    .btn-outline.red:hover{background:var(--red-bg)}
-    .btn-outline.blue{color:var(--blue);border-color:#85B7EB}
-    .btn-outline.blue:hover{background:var(--blue-bg)}
-    .btn-outline.green{color:var(--green);border-color:#5DCAA5}
-    .btn-outline.green:hover{background:var(--green-bg)}
+    /* EMPTY */
+    .empty { text-align:center; padding:3rem 1rem; color:var(--text2); font-size:14px; }
 
-    .empty{text-align:center;padding:3rem 1rem;color:var(--text2);font-size:14px}
-    .divider{height:1px;background:var(--border);margin:12px 0}
+    /* SOSPESO BADGE */
+    .sospeso-info { background:var(--amber-bg); border:1px solid #FAC775;
+      border-radius:var(--radius-sm); padding:12px 14px; font-size:13px;
+      color:var(--amber); margin-top:4px; }
   </style>
 </head>
 <body>
@@ -239,38 +279,26 @@
     <div class="empty" id="empty-msg" style="display:none">Nessun cliente. Aggiungine uno!</div>
   </div>
 
-  <!-- NUOVO CLIENTE / CONTRATTO -->
+  <!-- NUOVO -->
   <div id="sec-nuovo" class="section">
-    <!-- Step 1: scegli cliente -->
-    <div id="step-cliente">
-      <div class="sec-title" style="margin-top:0">Cliente</div>
-      <div class="card" style="padding:12px 16px;margin-bottom:10px" id="cliente-selezionato" style="display:none"></div>
-      <div class="form-group">
-        <label>Nome cliente</label>
-        <input type="text" id="n-nome" placeholder="Cerca o scrivi nuovo..." oninput="cercaCliente(this.value)" autocomplete="off" />
-        <div id="n-suggerimenti" style="background:var(--bg);border:1px solid var(--border2);border-radius:var(--radius-sm);margin-top:4px;display:none;max-height:160px;overflow-y:auto"></div>
-      </div>
-      <div class="form-group">
-        <label>Note cliente <span style="color:var(--text3)">(opzionale)</span></label>
-        <textarea id="n-note-cliente" placeholder="es. Tel. 333..." style="min-height:48px"></textarea>
-      </div>
-    </div>
-
-    <!-- Step 2: tipo e dati contratto -->
-    <div class="sec-title">Tipo contratto</div>
     <div class="tipo-selector">
       <button class="tipo-btn active" id="btn-tipo-rate" onclick="setTipo('rate')">📅 Piano rate</button>
       <button class="tipo-btn" id="btn-tipo-sospeso" onclick="setTipo('sospeso')">💰 Sospeso</button>
     </div>
     <div class="card">
       <div class="form-group">
-        <label>Descrizione <span style="color:var(--text3)">(es. Cucina, Bagno...)</span></label>
-        <input type="text" id="n-desc" placeholder="es. Cucina su misura" />
+        <label>Nome e cognome</label>
+        <input type="text" id="n-nome" placeholder="es. Mario Rossi" />
+      </div>
+      <div class="form-group">
+        <label>Note</label>
+        <textarea id="n-note" placeholder="es. Cucina su misura..."></textarea>
       </div>
       <div class="form-group">
         <label>Importo totale (€)</label>
         <input type="number" id="n-totale" placeholder="es. 5000" min="0" step="0.01" oninput="calcolaPreview()" />
       </div>
+      <!-- Campi solo piano rate -->
       <div id="campi-rate">
         <div class="form-group">
           <label>Acconto iniziale (€)</label>
@@ -288,59 +316,55 @@
         </div>
         <div class="preview-box" id="rate-preview"></div>
       </div>
+      <!-- Info sospeso -->
       <div id="info-sospeso" style="display:none">
-        <div style="background:var(--amber-bg);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--amber)">
-          ⏳ Nessuna scadenza — resterà aperto finché non lo segni ricevuto.
-        </div>
+        <div class="sospeso-info">⏳ Nessuna scadenza — il pagamento resterà aperto finché non lo segni come ricevuto.</div>
       </div>
-      <button class="btn-primary" id="btn-salva" onclick="aggiungiContratto()">Salva contratto</button>
+      <button class="btn-primary" id="btn-salva" onclick="aggiungiCliente()">Salva cliente</button>
     </div>
   </div>
 
   <nav class="nav">
-    <button class="nav-btn active" onclick="switchSection('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</button>
-    <button class="nav-btn" onclick="switchSection('clienti',this)"><span class="nav-icon">👥</span>Clienti</button>
-    <button class="nav-btn" onclick="switchSection('nuovo',this)"><span class="nav-icon">➕</span>Nuovo</button>
+    <button class="nav-btn active" onclick="switchSection('dashboard',this)">
+      <span class="nav-icon">📊</span>Dashboard
+    </button>
+    <button class="nav-btn" onclick="switchSection('clienti',this)">
+      <span class="nav-icon">👥</span>Clienti
+    </button>
+    <button class="nav-btn" onclick="switchSection('nuovo',this)">
+      <span class="nav-icon">➕</span>Nuovo
+    </button>
   </nav>
 </div>
 
-<!-- OV: DETTAGLIO CLIENTE (lista contratti) -->
-<div class="overlay" id="ov-cliente">
+<!-- DETTAGLIO -->
+<div class="overlay" id="ov-dettaglio">
   <div class="overlay-topbar">
-    <button class="back-btn" onclick="chiudi('ov-cliente')">←</button>
-    <span id="ov-cliente-title" style="font-size:16px;font-weight:600;flex:1"></span>
-    <button onclick="nuovoContrattoPerCliente()" style="background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer">+ Contratto</button>
+    <button class="back-btn" onclick="chiudi('ov-dettaglio')">←</button>
+    <span id="det-title" style="font-size:16px;font-weight:600;flex:1"></span>
+    <button onclick="apriModifica(currentId)" style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:7px 14px;font-size:14px;font-weight:500;cursor:pointer">✏️ Modifica</button>
   </div>
-  <div class="overlay-body" id="ov-cliente-body"></div>
+  <div class="overlay-body" id="det-body"></div>
 </div>
 
-<!-- OV: DETTAGLIO CONTRATTO -->
-<div class="overlay" id="ov-contratto">
-  <div class="overlay-topbar">
-    <button class="back-btn" onclick="tornaCliente()">←</button>
-    <span id="ov-contratto-title" style="font-size:15px;font-weight:600;flex:1"></span>
-    <button onclick="apriModificaContratto()" style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:7px 12px;font-size:13px;font-weight:500;cursor:pointer">✏️ Modifica</button>
-  </div>
-  <div class="overlay-body" id="ov-contratto-body"></div>
-</div>
-
-<!-- OV: MODIFICA CONTRATTO -->
+<!-- MODIFICA -->
 <div class="overlay" id="ov-modifica">
   <div class="overlay-topbar">
     <button class="back-btn" onclick="chiudi('ov-modifica')">←</button>
-    <span style="font-size:16px;font-weight:600;flex:1">Modifica contratto</span>
+    <span style="font-size:16px;font-weight:600;flex:1">Modifica cliente</span>
     <button onclick="salvaModifica()" style="background:var(--text);color:var(--bg);border:none;border-radius:8px;padding:8px 16px;font-size:14px;font-weight:600;cursor:pointer">Salva</button>
   </div>
   <div class="overlay-body">
-    <div class="form-group"><label>Descrizione</label><input type="text" id="e-desc" /></div>
+    <div class="form-group"><label>Nome e cognome</label><input type="text" id="e-nome" /></div>
+    <div class="form-group"><label>Note</label><textarea id="e-note"></textarea></div>
     <div class="form-group"><label>Importo totale (€)</label><input type="number" id="e-totale" min="0" step="0.01" /></div>
     <div id="e-campi-rate">
       <div class="form-group"><label>Acconto iniziale (€)</label><input type="number" id="e-acconto" min="0" step="0.01" /></div>
-      <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:14px">
-        <div class="form-group" style="flex:1;margin-bottom:0"><label>N° rate</label><input type="number" id="e-nrate" min="1" max="120" oninput="syncNrate()" /></div>
-        <button onclick="ricalcolaImporti()" style="flex:1;padding:10px;border:1px solid var(--border2);border-radius:var(--radius-sm);background:var(--bg2);font-size:13px;font-weight:500;cursor:pointer;white-space:nowrap">⟳ Ricalcola importi</button>
+      <div class="sec-title">Rate mensili</div>
+      <div class="ricalcola-row">
+        <div class="form-group"><label>N° rate</label><input type="number" id="e-nrate" min="1" max="120" oninput="syncNrate()" /></div>
+        <button class="btn-ricalcola" onclick="ricalcolaImporti()">⟳ Ricalcola importi</button>
       </div>
-      <div class="sec-title" style="margin-top:0">Rate mensili</div>
       <div class="card" style="padding:8px 16px">
         <div id="e-rate-list"></div>
         <button class="btn-add-rata" onclick="aggiungiRata()">+ Aggiungi rata</button>
@@ -350,21 +374,21 @@
   </div>
 </div>
 
-<!-- OV: STAMPA -->
+<!-- STAMPA -->
 <div class="overlay" id="ov-stampa">
   <div class="overlay-topbar">
     <button class="back-btn" onclick="chiudi('ov-stampa')">← Chiudi</button>
     <span style="font-size:15px;font-weight:600;flex:1">Riepilogo</span>
     <button onclick="window.print()" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">🖨 Stampa</button>
   </div>
-  <div class="overlay-body" id="ov-stampa-body"></div>
+  <div class="overlay-body" id="stampa-body"></div>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, where, getDocs }
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, query, where }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -381,353 +405,179 @@ const auth = getAuth(app);
 const db   = getFirestore(app);
 
 // ── STATO ──────────────────────────────────────────────
-// Struttura dati:
-// cliente: { id, nome, note, colorIdx, uid }
-// contratto: { id, clienteId, tipo('rate'|'sospeso'), desc, totale, acconto, rate:[], pagato, uid }
-
 let clienti    = [];
-let contratti  = [];
 let filtro     = '';
 let tipoNuovo  = 'rate';
-let clienteSelId = null; // cliente preselezionato nel form nuovo
-window.currentClienteId  = null;
-window.currentContrattoId = null;
-let unsubClienti  = null;
-let unsubContratti = null;
+window.currentId = null;
+let unsubscribe = null;
 
 // ── UTILITÀ ────────────────────────────────────────────
 const fmt    = n => '€' + Number(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtS   = n => '€' + Math.round(n).toLocaleString('it-IT');
 const iniz   = n => n.split(' ').map(p=>p[0]||'').slice(0,2).join('').toUpperCase();
 const oggi   = () => new Date().toISOString().slice(0,10);
-const fmtD   = s => { if(!s)return ''; const[y,m,d]=s.split('-'); return `${d}/${m}/${y}`; };
+const fmtD   = s => { if(!s) return ''; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; };
 const diffGg = s => Math.ceil((new Date(s)-new Date(oggi()))/(864e5));
 const addM   = (s,n) => { const d=new Date(s); d.setMonth(d.getMonth()+n); return d.toISOString().slice(0,10); };
 const avCol  = i => ['av-0','av-1','av-2','av-3','av-4'][i%5];
 
-const riscossoC = c => c.tipo==='sospeso'
+const riscosso = c => c.tipo==='sospeso'
   ? (c.pagato ? c.totale : 0)
   : c.acconto + c.rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
-const residuoC = c => Math.max(c.totale - riscossoC(c), 0);
-
-// totali per cliente (somma contratti)
-const totaleCliente  = cid => contratti.filter(c=>c.clienteId===cid).reduce((a,c)=>a+c.totale,0);
-const riscossoCliente = cid => contratti.filter(c=>c.clienteId===cid).reduce((a,c)=>a+riscossoC(c),0);
-const residuoCliente  = cid => contratti.filter(c=>c.clienteId===cid).reduce((a,c)=>a+residuoC(c),0);
+const residuo = c => Math.max(c.totale - riscosso(c), 0);
 
 // ── AUTH ───────────────────────────────────────────────
 window.loginGoogle = async () => {
   try { await signInWithPopup(auth, new GoogleAuthProvider()); }
-  catch(e) { alert('Errore login: '+e.message); }
+  catch(e) { alert('Errore login: ' + e.message); }
 };
 window.logoutUtente = async () => {
-  if(!confirm('Vuoi uscire?')) return;
-  if(unsubClienti)  unsubClienti();
-  if(unsubContratti) unsubContratti();
-  await signOut(auth);
+  if(confirm('Vuoi uscire?')) { if(unsubscribe) unsubscribe(); await signOut(auth); }
 };
 
 onAuthStateChanged(auth, user => {
-  document.getElementById('loading').style.display='none';
+  document.getElementById('loading').style.display = 'none';
   if(user) {
-    document.getElementById('login-screen').style.display='none';
-    document.getElementById('app').style.display='block'; ascoltaDati(user.uid);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    ascoltaClienti(user.uid);
   } else {
-    document.getElementById('login-screen').style.display='flex';
-    document.getElementById('app').style.display='none';
-    if(unsubClienti) unsubClienti();
-    if(unsubContratti) unsubContratti();
-    clienti=[]; contratti=[];
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+    if(unsubscribe) { unsubscribe(); unsubscribe=null; }
+    clienti = [];
   }
 });
 
 // ── FIRESTORE ──────────────────────────────────────────
-
-function ascoltaDati(uid) {
-  let snapClienti   = [];
-  let snapContratti = [];
-  let pronti = 0; // conta quanti listener hanno risposto (aspettiamo 2)
-
-  const ricostruisci = () => {
-    pronti++;
-    // Aspetta che entrambi i listener abbiano risposto almeno una volta
-    if(pronti < 2) return;
-
-    clienti   = [];
-    contratti = [...snapContratti]; // contratti nuovi formato da Firebase
-
-    snapClienti.forEach(data => {
-      if(Array.isArray(data.rate)) {
-        // ── VECCHIO FORMATO: cliente con campo "rate" dentro ──
-        clienti.push({
-          id: data.id,
-          nome: data.nome || 'Cliente',
-          note: data.note || '',
-          colorIdx: data.colorIdx || 0,
-          uid
-        });
-        // Crea contratto virtuale solo se non esiste già un contratto
-        // con questo clienteId nella raccolta nuova
-        const giaMigrato = snapContratti.some(c => c.clienteId === data.id);
-        if(!giaMigrato) {
-          contratti.push({
-            id: data.id + '_v',
-            clienteId: data.id,
-            tipo: data.tipo || 'rate',
-            desc: data.desc || (data.note ? data.note.slice(0,40) : 'Contratto'),
-            totale: data.totale || 0,
-            acconto: data.acconto || 0,
-            nrate: data.nrate || 0,
-            rate: data.rate || [],
-            pagato: data.pagato || false,
-            _vecchioFormato: true,
-            uid
-          });
-        }
-      } else {
-        // ── NUOVO FORMATO: solo anagrafica ──
-        clienti.push(data);
-      }
-    });
-
-    clienti.sort((a,b) => a.nome.localeCompare(b.nome));
+function ascoltaClienti(uid) {
+  const q = query(collection(db,'clienti'), where('uid','==',uid));
+  unsubscribe = onSnapshot(q, snap => {
+    clienti = snap.docs.map(d=>({id:d.id,...d.data()}));
+    clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
     renderTutto();
-    if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
-    if(window.currentContrattoId) {
-      const ct = contratti.find(x => x.id === window.currentContrattoId);
-      if(ct) renderDettaglioContratto(ct);
+    // Aggiorna dettaglio aperto
+    if(window.currentId) {
+      const c = clienti.find(x=>x.id===window.currentId);
+      if(c) renderDettaglio(c);
     }
-  };
-
-  // Ogni volta che arriva un aggiornamento, ricostuiamo tutto da zero
-  const qc = query(collection(db,'clienti'), where('uid','==',uid));
-  unsubClienti = onSnapshot(qc, snap => {
-    snapClienti = snap.docs.map(d => ({id:d.id, ...d.data()}));
-    // Reset pronti per forzare attesa dell'altro listener se non è ancora arrivato
-    if(pronti < 2) ricostruisci();
-    else { pronti = 2; ricostruisci(); }
-  });
-
-  const qct = query(collection(db,'contratti'), where('uid','==',uid));
-  unsubContratti = onSnapshot(qct, snap => {
-    snapContratti = snap.docs.map(d => ({id:d.id, ...d.data()}));
-    if(pronti < 2) ricostruisci();
-    else { pronti = 2; ricostruisci(); }
   });
 }
-
 
 async function salvaCliente(c) {
-  const uid=auth.currentUser?.uid; if(!uid) return;
-  await setDoc(doc(db,'clienti',c.id),{...c,uid});
+  const uid = auth.currentUser?.uid;
+  if(!uid) return;
+  await setDoc(doc(db,'clienti',c.id), {...c, uid});
 }
-async function salvaContratto(c) {
-  const uid=auth.currentUser?.uid; if(!uid) return;
-  if(c._vecchioFormato) {
-    // Converti vecchio cliente su Firebase al nuovo formato
-    // 1. Aggiorna il documento cliente rimuovendo i campi rate
-    const cl = clienti.find(x=>x.id===c.clienteId);
-    if(cl) await setDoc(doc(db,'clienti',cl.id), {id:cl.id, nome:cl.nome, note:cl.note||'', colorIdx:cl.colorIdx||0, uid});
-    // 2. Salva il contratto nella nuova raccolta con nuovo id
-    const newId = c.clienteId + '_migrato_' + Date.now();
-    const newC = {...c, id:newId, _vecchioFormato:false};
-    delete newC._vecchioFormato;
-    await setDoc(doc(db,'contratti',newId), {...newC, uid});
-    window.currentContrattoId = newId;
-    return;
-  }
-  const toSave = {...c};
-  delete toSave._vecchioFormato;
-  await setDoc(doc(db,'contratti',c.id),{...toSave,uid});
-}
+
 window.eliminaCliente = async id => {
-  if(!confirm('Eliminare il cliente e TUTTI i suoi contratti?')) return;
+  if(!confirm('Eliminare questo cliente?')) return;
   await deleteDoc(doc(db,'clienti',id));
-  const cc=contratti.filter(c=>c.clienteId===id);
-  for(const c of cc) await deleteDoc(doc(db,'contratti',c.id));
-  chiudi('ov-cliente');
-  window.currentClienteId=null;
-};
-window.eliminaContratto = async id => {
-  if(!confirm('Eliminare questo contratto?')) return;
-  await deleteDoc(doc(db,'contratti',id));
-  chiudi('ov-contratto');
-  window.currentContrattoId=null;
+  chiudi('ov-dettaglio');
+  window.currentId = null;
 };
 
 // ── NAVIGAZIONE ────────────────────────────────────────
-window.switchSection = (name,btn) => {
+window.switchSection = (name, btn) => {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('sec-'+name).classList.add('active');
   btn.classList.add('active');
-  const titles={dashboard:'Dashboard',clienti:'Clienti',nuovo:'Nuovo contratto'};
-  document.getElementById('topbar-title').textContent=titles[name]||name;
-  if(name==='nuovo') resetFormNuovo();
+  const titles = {dashboard:'Dashboard', clienti:'Clienti', nuovo:'Nuovo cliente'};
+  document.getElementById('topbar-title').textContent = titles[name]||name;
 };
+
 window.chiudi = id => {
-  document.getElementById(id).style.display='none';
-  document.documentElement.style.overflow='';
+  document.getElementById(id).style.display = 'none';
+  document.documentElement.style.overflow = '';
 };
-const apriOv = id => {
-  document.getElementById(id).style.display='block';
-  document.documentElement.style.overflow='hidden';
-  document.getElementById(id).scrollTop=0;
+const apriOverlay = id => {
+  document.getElementById(id).style.display = 'block';
+  document.documentElement.style.overflow = 'hidden';
+  document.getElementById(id).scrollTop = 0;
 };
-window.tornaCliente = () => {
-  chiudi('ov-contratto');
-  // riapri cliente se era aperto
-  if(window.currentClienteId) {
-    apriOv('ov-cliente');
-  }
+
+// ── TIPO NUOVO ─────────────────────────────────────────
+window.setTipo = tipo => {
+  tipoNuovo = tipo;
+  document.getElementById('btn-tipo-rate').classList.toggle('active', tipo==='rate');
+  document.getElementById('btn-tipo-sospeso').classList.toggle('active', tipo==='sospeso');
+  document.getElementById('campi-rate').style.display    = tipo==='rate' ? 'block' : 'none';
+  document.getElementById('info-sospeso').style.display  = tipo==='sospeso' ? 'block' : 'none';
 };
 
 // ── FORM NUOVO ─────────────────────────────────────────
-function resetFormNuovo() {
-  clienteSelId=null;
-  document.getElementById('n-nome').value='';
-  document.getElementById('n-note-cliente').value='';
-  document.getElementById('n-desc').value='';
-  document.getElementById('n-totale').value='';
-  document.getElementById('n-acconto').value='';
-  document.getElementById('n-nrate').value='';
-  document.getElementById('n-data').value=oggi();
-  document.getElementById('rate-preview').style.display='none';
-  document.getElementById('n-suggerimenti').style.display='none';
-  document.getElementById('n-note-cliente').closest('.form-group').style.display='block';
-  setTipo('rate');
-}
-
-window.cercaCliente = val => {
-  const sug=document.getElementById('n-suggerimenti');
-  if(!val.trim()) { sug.style.display='none'; clienteSelId=null; return; }
-  const matches=clienti.filter(c=>c.nome.toLowerCase().includes(val.toLowerCase())).slice(0,5);
-  if(!matches.length) { sug.style.display='none'; clienteSelId=null; return; }
-  sug.style.display='block';
-  sug.innerHTML=matches.map(c=>
-    `<div onclick="selezionaCliente('${c.id}')" style="padding:10px 14px;cursor:pointer;font-size:14px;border-bottom:1px solid var(--border)"
-      onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">
-      <strong>${c.nome}</strong>
-      <span style="font-size:12px;color:var(--text2);margin-left:8px">${contratti.filter(x=>x.clienteId===c.id).length} contratti</span>
-    </div>`
-  ).join('');
-};
-
-window.selezionaCliente = id => {
-  const c=clienti.find(x=>x.id===id); if(!c) return;
-  clienteSelId=id;
-  document.getElementById('n-nome').value=c.nome;
-  document.getElementById('n-suggerimenti').style.display='none';
-  // Nascondi note cliente (già esiste)
-  document.getElementById('n-note-cliente').closest('.form-group').style.display='none';
-};
-
-window.setTipo = tipo => {
-  tipoNuovo=tipo;
-  document.getElementById('btn-tipo-rate').classList.toggle('active',tipo==='rate');
-  document.getElementById('btn-tipo-sospeso').classList.toggle('active',tipo==='sospeso');
-  document.getElementById('campi-rate').style.display=tipo==='rate'?'block':'none';
-  document.getElementById('info-sospeso').style.display=tipo==='sospeso'?'block':'none';
-};
-
 window.calcolaPreview = () => {
-  const tot=parseFloat(document.getElementById('n-totale').value)||0;
-  const acc=parseFloat(document.getElementById('n-acconto').value)||0;
-  const nr =parseInt(document.getElementById('n-nrate').value)||0;
-  const el =document.getElementById('rate-preview');
-  if(tot>0&&nr>0){
-    el.style.display='block';
-    el.innerHTML=`Residuo <strong>${fmt(tot-acc)}</strong> → ${nr} rate da <strong>${fmt((tot-acc)/nr)}</strong> cad.`;
-  } else el.style.display='none';
+  const tot = parseFloat(document.getElementById('n-totale').value)||0;
+  const acc = parseFloat(document.getElementById('n-acconto').value)||0;
+  const nr  = parseInt(document.getElementById('n-nrate').value)||0;
+  const el  = document.getElementById('rate-preview');
+  if(tot>0 && nr>0) {
+    el.style.display = 'block';
+    el.innerHTML = `Residuo <strong>${fmt(tot-acc)}</strong> → ${nr} rate da <strong>${fmt((tot-acc)/nr)}</strong> cad.`;
+  } else el.style.display = 'none';
 };
 
-window.nuovoContrattoPerCliente = () => {
-  switchSection('nuovo', document.querySelectorAll('.nav-btn')[2]);
-  chiudi('ov-cliente');
-  // precompila cliente
-  if(window.currentClienteId) {
-    selezionaCliente(window.currentClienteId);
-    document.getElementById('n-nome').value=clienti.find(x=>x.id===window.currentClienteId)?.nome||'';
-  }
-};
-
-window.aggiungiContratto = async () => {
-  const nomeInput=document.getElementById('n-nome').value.trim();
-  const desc    =document.getElementById('n-desc').value.trim();
-  const totale  =parseFloat(document.getElementById('n-totale').value);
-  if(!nomeInput||!totale) { alert('Compila nome cliente e importo.'); return; }
-
-  // crea o usa cliente esistente
-  let cid=clienteSelId;
-  if(!cid) {
-    // cerca per nome esatto
-    const esistente=clienti.find(c=>c.nome.toLowerCase()===nomeInput.toLowerCase());
-    if(esistente) {
-      cid=esistente.id;
-    } else {
-      // nuovo cliente
-      const noteCliente=document.getElementById('n-note-cliente').value.trim();
-      cid=Date.now().toString();
-      await salvaCliente({id:cid, nome:nomeInput, note:noteCliente, colorIdx:clienti.length});
-    }
-  }
-
-  let ct;
-  if(tipoNuovo==='rate') {
-    const acconto=parseFloat(document.getElementById('n-acconto').value)||0;
-    const nrate  =parseInt(document.getElementById('n-nrate').value);
-    const data   =document.getElementById('n-data').value;
+window.aggiungiCliente = async () => {
+  const nome   = document.getElementById('n-nome').value.trim();
+  const note   = document.getElementById('n-note').value.trim();
+  const totale = parseFloat(document.getElementById('n-totale').value);
+  if(!nome || !totale) { alert('Compila almeno nome e importo.'); return; }
+  let c;
+  if(tipoNuovo === 'rate') {
+    const acconto = parseFloat(document.getElementById('n-acconto').value)||0;
+    const nrate   = parseInt(document.getElementById('n-nrate').value);
+    const data    = document.getElementById('n-data').value;
     if(!nrate||!data) { alert('Compila n° rate e prima scadenza.'); return; }
-    const rata=(totale-acconto)/nrate;
-    const rate=Array.from({length:nrate},(_,i)=>({data:addM(data,i),importo:rata,pagata:false}));
-    ct={id:Date.now().toString()+'r', clienteId:cid, tipo:'rate', desc:desc||'Piano rate', totale, acconto, nrate, rate, pagato:false};
+    const rata = (totale-acconto)/nrate;
+    const rate = Array.from({length:nrate},(_,i)=>({data:addM(data,i), importo:rata, pagata:false}));
+    c = {id:Date.now().toString(), tipo:'rate', nome, note, totale, acconto, nrate, rate, colorIdx:clienti.length};
   } else {
-    ct={id:Date.now().toString()+'s', clienteId:cid, tipo:'sospeso', desc:desc||'Pagamento sospeso', totale, acconto:0, nrate:0, rate:[], pagato:false};
+    c = {id:Date.now().toString(), tipo:'sospeso', nome, note, totale, acconto:0, nrate:0, rate:[], pagato:false, colorIdx:clienti.length};
   }
-
-  const btn=document.getElementById('btn-salva');
+  const btn = document.getElementById('btn-salva');
   btn.disabled=true; btn.textContent='Salvataggio...';
-  await salvaContratto(ct);
-  btn.disabled=false; btn.textContent='Salva contratto';
-  resetFormNuovo();
-  // vai al cliente
-  window.currentClienteId=cid;
-  apriDettaglioCliente(cid);
+  await salvaCliente(c);
+  btn.disabled=false; btn.textContent='Salva cliente';
+  ['n-nome','n-note','n-totale','n-acconto','n-nrate','n-data'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rate-preview').style.display='none';
+  setTipo('rate');
   switchSection('clienti', document.querySelectorAll('.nav-btn')[1]);
 };
 
-// ── RENDER LISTA CLIENTI ───────────────────────────────
+// ── RENDER LISTA ───────────────────────────────────────
 function renderTutto() { renderClienti(); renderDashboard(); }
 
 window.filterClienti = v => { filtro=v; renderClienti(); };
 
 function renderClienti() {
-  const list =document.getElementById('client-list');
-  const empty=document.getElementById('empty-msg');
-  const fil  =clienti.filter(c=>c.nome.toLowerCase().includes(filtro.toLowerCase()));
+  const list  = document.getElementById('client-list');
+  const empty = document.getElementById('empty-msg');
+  const fil   = clienti.filter(c=>c.nome.toLowerCase().includes(filtro.toLowerCase()));
   if(!fil.length) { list.innerHTML=''; empty.style.display='block'; return; }
   empty.style.display='none';
-  list.innerHTML=fil.map(cl=>{
-    const cc=contratti.filter(c=>c.clienteId===cl.id);
-    const risc=riscossoCliente(cl.id);
-    const tot =totaleCliente(cl.id);
-    const res =residuoCliente(cl.id);
-    const perc=tot>0?Math.min(Math.round(risc/tot*100),100):0;
-    const nScad=cc.filter(c=>c.tipo!=='sospeso').flatMap(c=>c.rate).filter(r=>!r.pagata&&r.data<oggi()).length;
-    const nSosp=cc.filter(c=>c.tipo==='sospeso'&&!c.pagato).length;
-    const nSaldati=cc.filter(c=>riscossoC(c)>=c.totale).length;
-    let badge;
-    if(nScad>0) badge=`<span class="badge badge-red">${nScad} scad.</span>`;
-    else if(nSosp>0) badge=`<span class="badge badge-amber">${nSosp} sosp.</span>`;
-    else if(cc.length>0&&nSaldati===cc.length) badge='<span class="badge badge-green">Saldato</span>';
-    else badge=`<span class="badge badge-gray">${cc.length} contratti</span>`;
-    const fillCls=nScad>0?'amber':'';
-    return `<div class="client-card" onclick="apriDettaglioCliente('${cl.id}')">
+  list.innerHTML = fil.map(c => {
+    const risc = riscosso(c);
+    const perc = Math.min(Math.round(risc/c.totale*100),100);
+    let badge, fillCls='';
+    if(c.tipo==='sospeso') {
+      badge   = c.pagato ? '<span class="badge badge-green">Ricevuto</span>' : '<span class="badge badge-amber">⏳ Sospeso</span>';
+      fillCls = c.pagato ? '' : 'amber';
+    } else {
+      const scad = c.rate.filter(r=>!r.pagata&&r.data<oggi()).length;
+      const pag  = c.rate.filter(r=>r.pagata).length;
+      badge   = perc>=100 ? '<span class="badge badge-green">Saldato</span>'
+              : scad>0    ? `<span class="badge badge-red">${scad} scad.</span>`
+                           : `<span class="badge badge-gray">${pag}/${c.rate.length}</span>`;
+      fillCls = scad>0 ? 'amber' : '';
+    }
+    const sub = c.note ? c.note.slice(0,42)+(c.note.length>42?'…':'') : fmt(c.totale)+' totale';
+    return `<div class="client-card" onclick="apriDettaglio('${c.id}')">
       <div class="client-header">
-        <div class="avatar ${avCol(cl.colorIdx||0)}">${iniz(cl.nome)}</div>
+        <div class="avatar ${avCol(c.colorIdx||0)}">${iniz(c.nome)}</div>
         <div style="flex:1">
-          <div class="client-name">${cl.nome}</div>
-          <div class="client-sub">${cc.length} contratti · residuo ${fmtS(res)}</div>
+          <div class="client-name">${c.nome}</div>
+          <div class="client-sub">${sub}</div>
         </div>
         ${badge}
       </div>
@@ -738,186 +588,127 @@ function renderClienti() {
 
 // ── DASHBOARD ──────────────────────────────────────────
 function renderDashboard() {
-  const og=oggi();
-  let totRisc=0,totRes=0,nScad=0,nArrivo=0;
-  contratti.forEach(c=>{
-    totRisc+=riscossoC(c); totRes+=residuoC(c);
-    if(c.tipo==='sospeso'){if(!c.pagato)nArrivo++;}
-    else c.rate.forEach(r=>{if(!r.pagata){const d=diffGg(r.data);if(d<=0)nScad++;else if(d<=14)nArrivo++;}});
+  const og = oggi();
+  let totRisc=0, totRes=0, nScad=0, nArrivo=0;
+  clienti.forEach(c => {
+    totRisc += riscosso(c); totRes += residuo(c);
+    if(c.tipo==='sospeso') { if(!c.pagato) nArrivo++; }
+    else c.rate.forEach(r=>{ if(!r.pagata){ const d=diffGg(r.data); if(d<=0) nScad++; else if(d<=14) nArrivo++; }});
   });
-  document.getElementById('m-clienti').textContent=clienti.length;
-  document.getElementById('m-risc').textContent   =fmtS(totRisc);
-  document.getElementById('m-res').textContent    =fmtS(totRes);
-  document.getElementById('m-scad').textContent   =nScad;
-  document.getElementById('m-arrivo').textContent =nArrivo;
+  document.getElementById('m-clienti').textContent = clienti.length;
+  document.getElementById('m-risc').textContent    = fmtS(totRisc);
+  document.getElementById('m-res').textContent     = fmtS(totRes);
+  document.getElementById('m-scad').textContent    = nScad;
+  document.getElementById('m-arrivo').textContent  = nArrivo;
 
   let notif='';
   if(nScad>0)   notif+=`<div class="notif red"><div class="notif-dot"></div><div><strong>${nScad} ${nScad===1?'rata scaduta':'rate scadute'}</strong> — controlla i clienti in rosso.</div></div>`;
   if(nArrivo>0) notif+=`<div class="notif amber"><div class="notif-dot"></div><div><strong>${nArrivo} ${nArrivo===1?'pagamento':'pagamenti'}</strong> in sospeso o in scadenza entro 14 giorni.</div></div>`;
-  document.getElementById('dash-notifiche').innerHTML=notif;
+  document.getElementById('dash-notifiche').innerHTML = notif;
 
-  // Grafico per cliente
-  document.getElementById('dash-chart').innerHTML=clienti.length
-    ? clienti.slice(0,6).map(cl=>{
-        const risc=riscossoCliente(cl.id),res=residuoCliente(cl.id),tot=totaleCliente(cl.id);
-        if(!tot) return '';
-        const pw=Math.round(risc/tot*100),rw=Math.round(res/tot*100);
-        const scad=contratti.filter(c=>c.clienteId===cl.id&&c.tipo!=='sospeso').some(c=>c.rate.some(r=>!r.pagata&&r.data<og));
+  // Grafico
+  document.getElementById('dash-chart').innerHTML = clienti.length
+    ? clienti.slice(0,6).map(c=>{
+        const risc=riscosso(c), res=residuo(c);
+        const pw=Math.round(risc/c.totale*100), rw=Math.round(res/c.totale*100);
+        const isSosp=c.tipo==='sospeso';
+        const scad=!isSosp&&c.rate.some(r=>!r.pagata&&r.data<og);
+        const fillCls=isSosp?(c.pagato?'green':'amber'):scad?'amber':'gray';
         return `<div class="chart-row">
-          <div class="chart-label">${cl.nome.split(' ')[0]}</div>
+          <div class="chart-label">${c.nome.split(' ')[0]}</div>
           <div class="chart-track"><div style="display:flex;height:100%">
             <div class="chart-fill green" style="width:${pw}%">${pw>15?fmtS(risc):''}</div>
-            <div class="chart-fill ${scad?'amber':'gray'}" style="width:${rw}%">${rw>12?fmtS(res):''}</div>
+            <div class="chart-fill ${fillCls}" style="width:${rw}%">${rw>12?fmtS(res):''}</div>
           </div></div></div>`;
       }).join('')
     : '<div style="font-size:13px;color:var(--text2)">Nessun cliente ancora.</div>';
 
-  // Prossime scadenze
-  const sospesoRows=contratti.filter(c=>c.tipo==='sospeso'&&!c.pagato).map(c=>{
-    const cl=clienti.find(x=>x.id===c.clienteId);
-    return `<div class="sc-row">
-      <div class="avatar ${avCol(cl?.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(cl?.nome||'?')}</div>
-      <div class="sc-info"><div class="sc-name">${cl?.nome||'?'}</div><div class="sc-date">💰 ${c.desc}</div></div>
+  // Prossime scadenze + sospesi
+  const sospesoRows = clienti.filter(c=>c.tipo==='sospeso'&&!c.pagato).map(c=>
+    `<div class="sc-row">
+      <div class="avatar ${avCol(c.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(c.nome)}</div>
+      <div class="sc-info"><div class="sc-name">${c.nome}</div><div class="sc-date">💰 In sospeso</div></div>
       <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(c.totale)}</div>
-      <button class="btn-pay" onclick="segnaRicevutoDash('${c.id}')">Ricevuto</button>
-    </div>`;
-  }).join('');
+      <button class="btn-pay" onclick="segnaRicevuto('${c.id}')">Ricevuto</button>
+    </div>`
+  ).join('');
 
   const prossime=[];
-  contratti.forEach(c=>{
-    if(c.tipo!=='sospeso'){
-      const cl=clienti.find(x=>x.id===c.clienteId);
-      c.rate.forEach((r,i)=>{ if(!r.pagata) prossime.push({c,cl,r,i,diff:diffGg(r.data)}); });
-    }
-  });
+  clienti.forEach(c=>{ if(c.tipo!=='sospeso') c.rate.forEach((r,i)=>{ if(!r.pagata) prossime.push({c,r,i,diff:diffGg(r.data)}); }); });
   prossime.sort((a,b)=>a.r.data.localeCompare(b.r.data));
-  const rateRows=prossime.slice(0,6).map(p=>{
+  const rateRows = prossime.slice(0,6).map(p=>{
     const d=p.diff;
-    const lbl=d<0?`<span style="color:var(--red)">Scaduta da ${Math.abs(d)} gg</span>`
-             :d===0?`<span style="color:var(--amber-mid)">Oggi</span>`
-             :d<=14?`<span style="color:var(--amber-mid)">Tra ${d} gg</span>`
-             :`Tra ${d} gg`;
+    const lbl = d<0?`<span style="color:var(--red)">Scaduta da ${Math.abs(d)} gg</span>`
+              : d===0?`<span style="color:var(--amber-mid)">Oggi</span>`
+              : d<=14?`<span style="color:var(--amber-mid)">Tra ${d} gg</span>`
+              : `Tra ${d} gg`;
     return `<div class="sc-row">
-      <div class="avatar ${avCol(p.cl?.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(p.cl?.nome||'?')}</div>
-      <div class="sc-info">
-        <div class="sc-name">${p.cl?.nome||'?'}</div>
-        <div class="sc-date">${p.c.desc} · ${fmtD(p.r.data)} · ${lbl}</div>
-      </div>
+      <div class="avatar ${avCol(p.c.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(p.c.nome)}</div>
+      <div class="sc-info"><div class="sc-name">${p.c.nome}</div><div class="sc-date">${fmtD(p.r.data)} · ${lbl}</div></div>
       <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(p.r.importo)}</div>
-      <button class="btn-pay" onclick="pagaRataDash('${p.c.id}',${p.i})">Pagata</button>
+      <button class="btn-pay" onclick="pagaRataScad('${p.c.id}',${p.i})">Pagata</button>
     </div>`;
   }).join('');
 
-  document.getElementById('dash-scadenze').innerHTML=(sospesoRows+rateRows)||
+  document.getElementById('dash-scadenze').innerHTML = (sospesoRows+rateRows) ||
     '<div style="font-size:13px;color:var(--text2);padding:8px 0">Nessun pagamento da riscuotere.</div>';
 }
 
-window.pagaRataDash = async (cid,idx) => {
-  const c=contratti.find(x=>x.id===cid); if(!c) return;
-  c.rate[idx].pagata=true; await salvaContratto(c);
+window.pagaRataScad = async (cid,idx) => {
+  const c=clienti.find(x=>x.id===cid); if(!c) return;
+  c.rate[idx].pagata=true; await salvaCliente(c);
 };
-window.segnaRicevutoDash = async id => {
-  const c=contratti.find(x=>x.id===id); if(!c) return;
+window.segnaRicevuto = async id => {
+  const c=clienti.find(x=>x.id===id); if(!c) return;
   if(!confirm('Segnare come ricevuto?')) return;
-  c.pagato=true; await salvaContratto(c);
+  c.pagato=true; await salvaCliente(c);
 };
 
-// ── DETTAGLIO CLIENTE ──────────────────────────────────
-window.apriDettaglioCliente = id => {
-  window.currentClienteId=id;
-  const cl=clienti.find(x=>x.id===id); if(!cl) return;
-  document.getElementById('ov-cliente-title').textContent=cl.nome;
-  aggiornaOvCliente(id);
-  apriOv('ov-cliente');
+// ── DETTAGLIO ──────────────────────────────────────────
+window.apriDettaglio = id => {
+  window.currentId = id;
+  const c = clienti.find(x=>x.id===id); if(!c) return;
+  document.getElementById('det-title').textContent = c.nome;
+  renderDettaglio(c);
+  apriOverlay('ov-dettaglio');
 };
 
-function aggiornaOvCliente(id) {
-  const cl=clienti.find(x=>x.id===id); if(!cl) return;
-  const cc=contratti.filter(c=>c.clienteId===id);
-  const risc=riscossoCliente(id),tot=totaleCliente(id),res=residuoCliente(id);
-  const perc=tot>0?Math.min(Math.round(risc/tot*100),100):0;
-
-  const sommario=`
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-        <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniz(cl.nome)}</div>
-        <div><div style="font-size:17px;font-weight:600">${cl.nome}</div>
-        ${cl.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${cl.note}</div>`:''}</div>
-      </div>
-      <div class="totale-row"><span style="color:var(--text2)">Totale contratti</span><span style="font-weight:600">${fmt(tot)}</span></div>
-      <div class="totale-row"><span style="color:var(--text2)">Riscosso</span><span style="color:var(--green)">${fmt(risc)}</span></div>
-      <div class="totale-row"><span>Residuo</span><span style="color:${res>0?'var(--amber-mid)':'var(--green)'}">${fmt(res)}</span></div>
-      <div style="margin-top:10px">
-        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Avanzamento totale</span><span>${perc}%</span></div>
-        <div class="progress-bar" style="height:7px"><div class="progress-fill" style="width:${perc}%"></div></div>
-      </div>
-    </div>`;
-
-  const listaContratti=cc.length?cc.map(c=>{
-    const risc=riscossoC(c),res=residuoC(c);
-    const perc=Math.min(Math.round(risc/c.totale*100),100);
-    const og=oggi();
-    let badge;
-    if(c.tipo==='sospeso') badge=c.pagato?'<span class="badge badge-green">Ricevuto</span>':'<span class="badge badge-amber">⏳ Sospeso</span>';
-    else {
-      const scad=c.rate.filter(r=>!r.pagata&&r.data<og).length;
-      const pag=c.rate.filter(r=>r.pagata).length;
-      badge=perc>=100?'<span class="badge badge-green">Saldato</span>':scad>0?`<span class="badge badge-red">${scad} scad.</span>`:`<span class="badge badge-gray">${pag}/${c.rate.length}</span>`;
-    }
-    return `<div class="contratto-card" onclick="apriContratto('${c.id}')">
-      <div class="contratto-header">
-        <div>
-          <div class="contratto-title">${c.desc}</div>
-          <div class="contratto-sub">${c.tipo==='sospeso'?'💰 Sospeso':'📅 Piano rate'} · ${fmt(c.totale)}</div>
-        </div>
-        ${badge}
-      </div>
-      <div class="progress-bar"><div class="progress-fill ${res>0&&c.tipo!=='sospeso'&&c.rate.some(r=>!r.pagata&&r.data<og)?'amber':''}" style="width:${perc}%"></div></div>
-    </div>`;
-  }).join(''):'<div class="empty" style="padding:1rem 0">Nessun contratto. Premi + Contratto per aggiungerne uno.</div>';
-
-  const azioni=`
-    <div class="action-row">
-      <button class="btn-outline red" onclick="eliminaCliente('${cl.id}')">🗑 Elimina cliente e contratti</button>
-    </div>`;
-
-  document.getElementById('ov-cliente-body').innerHTML=sommario+
-    '<div class="sec-title">Contratti</div>'+listaContratti+azioni;
-}
-
-// ── DETTAGLIO CONTRATTO ────────────────────────────────
-window.apriContratto = id => {
-  window.currentContrattoId=id;
-  const c=contratti.find(x=>x.id===id); if(!c) return;
-  const cl=clienti.find(x=>x.id===c.clienteId);
-  document.getElementById('ov-contratto-title').textContent=(cl?.nome||'')+' · '+c.desc;
-  renderDettaglioContratto(c);
-  apriOv('ov-contratto');
-};
-
-function renderDettaglioContratto(c) {
-  const risc=riscossoC(c),res=residuoC(c),perc=Math.min(Math.round(risc/c.totale*100),100);
+function renderDettaglio(c) {
+  const risc=riscosso(c), res=residuo(c);
+  const perc=Math.min(Math.round(risc/c.totale*100),100);
   const og=oggi();
-  const actions=`
+
+  const header = `
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="avatar ${avCol(c.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniz(c.nome)}</div>
+        <div>
+          <div style="font-size:17px;font-weight:600">${c.nome}</div>
+          ${c.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${c.note}</div>`:''}
+          <div style="font-size:12px;color:var(--text2);margin-top:3px">${c.tipo==='sospeso'?'💰 Pagamento in sospeso':'📅 Piano rate'}</div>
+        </div>
+      </div>
+    </div>`;
+
+  const actions = `
     <div class="action-row">
       <div class="action-row-2">
-        <button class="btn-outline" onclick="apriModificaContratto()">✏️ Modifica</button>
+        <button class="btn-outline" onclick="apriModifica('${c.id}')">✏️ Modifica</button>
         <button class="btn-outline blue" onclick="apriStampa('${c.id}')">🖨 Stampa PDF</button>
       </div>
-      <button class="btn-outline red" onclick="eliminaContratto('${c.id}')">🗑 Elimina contratto</button>
+      <button class="btn-outline red" onclick="eliminaCliente('${c.id}')">🗑 Elimina cliente</button>
     </div>`;
 
   if(c.tipo==='sospeso') {
-    document.getElementById('ov-contratto-body').innerHTML=`
+    document.getElementById('det-body').innerHTML = header + `
       <div class="card">
-        <div style="font-size:13px;color:var(--text2);margin-bottom:8px">💰 Pagamento in sospeso</div>
-        <div class="totale-row"><span style="color:var(--text2)">Importo</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
+        <div class="totale-row"><span style="color:var(--text2)">Importo dovuto</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
         <div class="totale-row"><span>Stato</span><span style="color:${c.pagato?'var(--green)':'var(--amber-mid)'}">${c.pagato?'✅ Ricevuto':'⏳ In sospeso'}</span></div>
       </div>
       ${!c.pagato?`<button class="btn-primary" style="margin-bottom:12px" onclick="segnaRicevuto('${c.id}')">✅ Segna come ricevuto</button>`:''}
       ${actions}`;
   } else {
-    const rateHtml=c.rate.map((r,i)=>{
+    const rateHtml = c.rate.map((r,i)=>{
       const scad=!r.pagata&&r.data<og;
       return `<div class="rate-row">
         <span class="rate-num">Rata ${i+1}</span>
@@ -925,17 +716,18 @@ function renderDettaglioContratto(c) {
         <span class="rate-amount">${fmt(r.importo)}</span>
         <span class="rate-status">${r.pagata
           ?'<span class="badge badge-green">Pagata</span>'
-          :`<button class="btn-pay" onclick="pagaRata('${c.id}',${i})">Pagata</button>`}</span>
+          :`<button class="btn-pay" onclick="pagaRataDet('${c.id}',${i})">Pagata</button>`}</span>
       </div>`;
     }).join('');
-    document.getElementById('ov-contratto-body').innerHTML=`
+    document.getElementById('det-body').innerHTML = header + `
       <div class="card">
         <div class="totale-row"><span style="color:var(--text2)">Importo totale</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
         <div class="totale-row"><span style="color:var(--text2)">Acconto versato</span><span style="color:var(--green)">${fmt(c.acconto)}</span></div>
         <div class="totale-row"><span style="color:var(--text2)">Rate incassate</span><span style="color:var(--green)">${fmt(risc-c.acconto)}</span></div>
         <div class="totale-row"><span>Residuo</span><span style="color:${res>0?'var(--amber-mid)':'var(--green)'}">${fmt(res)}</span></div>
         <div style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px"><span>Avanzamento</span><span>${perc}%</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px">
+            <span>Avanzamento</span><span>${perc}%</span></div>
           <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${perc}%"></div></div>
         </div>
       </div>
@@ -945,149 +737,130 @@ function renderDettaglioContratto(c) {
   }
 }
 
-window.pagaRata = async (cid,idx) => {
-  const c=contratti.find(x=>x.id===cid); if(!c) return;
-  c.rate[idx].pagata=true; await salvaContratto(c);
-};
-window.segnaRicevuto = async id => {
-  const c=contratti.find(x=>x.id===id); if(!c) return;
-  if(!confirm('Segnare come ricevuto?')) return;
-  c.pagato=true; await salvaContratto(c);
+window.pagaRataDet = async (cid,idx) => {
+  const c=clienti.find(x=>x.id===cid); if(!c) return;
+  c.rate[idx].pagata=true; await salvaCliente(c);
 };
 
-// ── MODIFICA CONTRATTO ─────────────────────────────────
-window.apriModificaContratto = () => {
-  const c=contratti.find(x=>x.id===window.currentContrattoId); if(!c) return;
-  document.getElementById('e-desc').value   =c.desc||'';
-  document.getElementById('e-totale').value =c.totale;
-  document.getElementById('e-campi-rate').style.display=c.tipo==='sospeso'?'none':'block';
-  if(c.tipo!=='sospeso') {
-    document.getElementById('e-acconto').value=c.acconto;
-    document.getElementById('e-nrate').value  =c.rate.length;
+// ── MODIFICA ───────────────────────────────────────────
+window.apriModifica = id => {
+  window.currentId = id;
+  const c = clienti.find(x=>x.id===id); if(!c) return;
+  document.getElementById('e-nome').value   = c.nome;
+  document.getElementById('e-note').value   = c.note||'';
+  document.getElementById('e-totale').value = c.totale;
+  const isSosp = c.tipo==='sospeso';
+  document.getElementById('e-campi-rate').style.display = isSosp?'none':'block';
+  if(!isSosp) {
+    document.getElementById('e-acconto').value = c.acconto;
+    document.getElementById('e-nrate').value   = c.rate.length;
     renderRateEdit(c.rate);
   }
-  chiudi('ov-contratto');
-  apriOv('ov-modifica');
+  chiudi('ov-dettaglio');
+  apriOverlay('ov-modifica');
 };
 
 function getRateDOM() {
   return Array.from(document.querySelectorAll('#e-rate-list .edit-rate-row')).map(row=>({
-    data:    row.querySelector('.er-data').value||oggi(),
+    data:    row.querySelector('.er-data').value || oggi(),
     importo: parseFloat(row.querySelector('.er-imp').value)||0,
     pagata:  row.querySelector('.er-pag').checked
   }));
 }
 
 function renderRateEdit(rate) {
-  document.getElementById('e-rate-list').innerHTML=rate.map((r,i)=>
+  document.getElementById('e-rate-list').innerHTML = rate.map((r,i)=>
     `<div class="edit-rate-row">
       <span class="edit-rate-num">Rata ${i+1}</span>
-      <input type="date" class="er-data" value="${r.data}" onchange="proponiRicalcolo(${i})" />
-      <input type="number" class="er-imp" value="${r.importo.toFixed(2)}" min="0" step="0.01" onchange="proponiRicalcolo(${i})" />
+      <input type="date" class="er-data" value="${r.data}" />
+      <input type="number" class="er-imp" value="${r.importo.toFixed(2)}" min="0" step="0.01" />
       <label class="pag-check"><input type="checkbox" class="er-pag" ${r.pagata?'checked':''} /> Pag.</label>
-      <button class="del-btn" onclick="this.closest('.edit-rate-row').remove();syncContatore()">×</button>
+      <button class="del-btn" onclick="this.closest('.edit-rate-row').remove();aggiornaContatore()">×</button>
     </div>`
   ).join('');
 }
 
-window.proponiRicalcolo = idx => {
-  const rate=getRateDOM();
-  const unpaid=rate.filter((_,i)=>i!==idx&&!rate[i].pagata);
-  if(!unpaid.length) return;
-  const tot=parseFloat(document.getElementById('e-totale').value)||0;
-  const acc=parseFloat(document.getElementById('e-acconto').value)||0;
-  const sommaPagate=rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
-  const sommaAltre=rate.filter((_,i)=>i!==idx&&!rate[i].pagata).reduce((a,r)=>a+r.importo,0);
-  const rataCorrente=parseFloat(document.querySelectorAll('#e-rate-list .er-imp')[idx]?.value)||0;
-  const residuoDopoQuesta=(tot-acc)-sommaPagate-rataCorrente;
-  if(unpaid.length>0 && confirm(`Vuoi ridistribuire il residuo (${fmt(residuoDopoQuesta)}) sulle ${unpaid.length} rate non pagate?`)) {
-    const nuovaRata=residuoDopoQuesta/unpaid.length;
-    const newRate=rate.map((r,i)=>{
-      if(i===idx) return r;
-      if(!r.pagata) return {...r,importo:nuovaRata};
-      return r;
-    });
-    renderRateEdit(newRate);
-  }
-};
-
-window.syncContatore = () => {
-  document.getElementById('e-nrate').value=document.querySelectorAll('#e-rate-list .edit-rate-row').length;
+window.aggiornaContatore = () => {
+  document.getElementById('e-nrate').value = document.querySelectorAll('#e-rate-list .edit-rate-row').length;
 };
 
 window.syncNrate = () => {
-  const nNuovo=parseInt(document.getElementById('e-nrate').value)||0;
+  const nNuovo = parseInt(document.getElementById('e-nrate').value)||0;
   if(nNuovo<1) return;
-  const rate=getRateDOM();
-  if(nNuovo>rate.length) {
-    for(let i=rate.length;i<nNuovo;i++) {
-      const ultima=rate[i-1];
-      const d=new Date(ultima?ultima.data:oggi());
+  const rate = getRateDOM();
+  const nAttuali = rate.length;
+  if(nNuovo > nAttuali) {
+    for(let i=nAttuali; i<nNuovo; i++) {
+      const ultima = rate[i-1];
+      const d = new Date(ultima?ultima.data:oggi());
       d.setMonth(d.getMonth()+1);
-      rate.push({data:d.toISOString().slice(0,10),importo:ultima?ultima.importo:0,pagata:false});
+      rate.push({data:d.toISOString().slice(0,10), importo:ultima?ultima.importo:0, pagata:false});
     }
   } else rate.splice(nNuovo);
   renderRateEdit(rate);
 };
 
 window.ricalcolaImporti = () => {
-  const tot=parseFloat(document.getElementById('e-totale').value)||0;
-  const acc=parseFloat(document.getElementById('e-acconto').value)||0;
-  const rate=getRateDOM();
+  const tot = parseFloat(document.getElementById('e-totale').value)||0;
+  const acc = parseFloat(document.getElementById('e-acconto').value)||0;
+  const rate = getRateDOM();
   if(!rate.length||tot<=0) return;
-  const rata=(tot-acc)/rate.length;
+  const rata = (tot-acc)/rate.length;
   renderRateEdit(rate.map(r=>({...r,importo:rata})));
 };
 
 window.aggiungiRata = () => {
-  const rate=getRateDOM();
-  const ultima=rate[rate.length-1];
-  const d=new Date(ultima?ultima.data:oggi());
+  const rate = getRateDOM();
+  const ultima = rate[rate.length-1];
+  const d = new Date(ultima?ultima.data:oggi());
   d.setMonth(d.getMonth()+1);
-  rate.push({data:d.toISOString().slice(0,10),importo:ultima?ultima.importo:0,pagata:false});
+  rate.push({data:d.toISOString().slice(0,10), importo:ultima?ultima.importo:0, pagata:false});
   renderRateEdit(rate);
-  syncContatore();
+  aggiornaContatore();
 };
 
 window.salvaModifica = async () => {
-  const c=contratti.find(x=>x.id===window.currentContrattoId); if(!c) return;
-  const desc=document.getElementById('e-desc').value.trim();
-  c.desc  =desc||c.desc;
-  c.totale=parseFloat(document.getElementById('e-totale').value)||c.totale;
+  const id = window.currentId;
+  const c  = clienti.find(x=>x.id===id); if(!c) return;
+  const nome = document.getElementById('e-nome').value.trim();
+  if(!nome) { alert('Il nome non può essere vuoto.'); return; }
+  c.nome   = nome;
+  c.note   = document.getElementById('e-note').value.trim();
+  c.totale = parseFloat(document.getElementById('e-totale').value)||c.totale;
   if(c.tipo!=='sospeso') {
-    const rate=getRateDOM();
+    const rate = getRateDOM();
     if(!rate.length) { alert('Devi avere almeno una rata.'); return; }
-    c.acconto=parseFloat(document.getElementById('e-acconto').value)||0;
-    c.nrate  =rate.length;
-    c.rate   =rate;
+    c.acconto = parseFloat(document.getElementById('e-acconto').value)||0;
+    c.nrate   = rate.length;
+    c.rate    = rate;
   }
-  await salvaContratto(c);
+  await salvaCliente(c);
   chiudi('ov-modifica');
-  apriContratto(c.id);
+  apriDettaglio(id);
 };
 
 // ── STAMPA ─────────────────────────────────────────────
 window.apriStampa = id => {
-  const c=contratti.find(x=>x.id===id); if(!c) return;
-  const cl=clienti.find(x=>x.id===c.clienteId);
-  const risc=riscossoC(c),res=residuoC(c),perc=Math.min(Math.round(risc/c.totale*100),100);
+  const c = clienti.find(x=>x.id===id); if(!c) return;
+  const risc=riscosso(c), res=residuo(c), perc=Math.min(Math.round(risc/c.totale*100),100);
   const og=oggi();
   let corpo='';
   if(c.tipo==='sospeso') {
     corpo=`<div style="background:#FAEEDA;border-radius:8px;padding:14px;margin-bottom:12px">
       <div style="font-size:13px;color:#854F0B;font-weight:600">Pagamento in sospeso</div>
-      <div style="font-size:22px;font-weight:700;margin-top:4px">${fmt(c.totale)}</div>
+      <div style="font-size:22px;font-weight:700;color:#1a1a1a;margin-top:4px">${fmt(c.totale)}</div>
       <div style="font-size:13px;color:#854F0B;margin-top:4px">Stato: ${c.pagato?'✅ Ricevuto':'⏳ In sospeso'}</div>
     </div>`;
   } else {
     const righe=c.rate.map((r,i)=>{
       const scad=!r.pagata&&r.data<og;
       const color=r.pagata?'#999':scad?'#a00':'#1a1a1a';
+      const stato=r.pagata?'Pagata':scad?'SCADUTA':'In attesa';
       return `<tr style="color:${color}">
         <td style="padding:7px 10px;border:1px solid #e0e0e0">Rata ${i+1}</td>
         <td style="padding:7px 10px;border:1px solid #e0e0e0">${fmtD(r.data)}</td>
         <td style="padding:7px 10px;border:1px solid #e0e0e0;text-align:right">${fmt(r.importo)}</td>
-        <td style="padding:7px 10px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${r.pagata?'Pagata':scad?'SCADUTA':'In attesa'}</td>
+        <td style="padding:7px 10px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${stato}</td>
       </tr>`;
     }).join('');
     corpo=`
@@ -1100,6 +873,7 @@ window.apriStampa = id => {
       <div style="height:8px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:4px">
         <div style="height:100%;background:#1D9E75;width:${perc}%;border-radius:4px"></div></div>
       <div style="font-size:11px;color:#777;margin-bottom:14px">Avanzamento: ${perc}%</div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#555;margin-bottom:6px">Piano rate mensili</div>
       <div style="overflow-x:auto">
         <table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead><tr style="background:#f0f0f0">
@@ -1112,20 +886,21 @@ window.apriStampa = id => {
         </table>
       </div>`;
   }
-  document.getElementById('ov-stampa-body').innerHTML=`
+  document.getElementById('stampa-body').innerHTML=`
     <div style="border-bottom:2px solid #333;padding-bottom:12px;margin-bottom:16px">
-      <div style="font-size:20px;font-weight:700">${cl?.nome||''}</div>
-      <div style="font-size:15px;color:#555;margin-top:2px">${c.desc}</div>
-      <div style="font-size:12px;color:#666;margin-top:4px">Riepilogo pagamenti · ${fmtD(og)}</div>
+      <div style="font-size:22px;font-weight:700">${c.nome}</div>
+      ${c.note?`<div style="font-size:13px;color:#555;font-style:italic;margin-top:3px">${c.note}</div>`:''}
+      <div style="font-size:12px;color:#666;margin-top:4px">Riepilogo pagamenti &middot; ${fmtD(og)}</div>
     </div>
     ${corpo}
     <div style="margin-top:20px;padding-top:8px;border-top:1px solid #ddd;font-size:11px;color:#999;text-align:center">
-      Documento generato automaticamente · ${fmtD(og)}</div>`;
-  chiudi('ov-contratto');
-  apriOv('ov-stampa');
+      Documento generato automaticamente &middot; ${fmtD(og)}</div>`;
+  chiudi('ov-dettaglio');
+  apriOverlay('ov-stampa');
 };
 
-document.getElementById('n-data').value=oggi();
+// data default
+document.getElementById('n-data').value = oggi();
 </script>
 </body>
 </html>
