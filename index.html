@@ -444,67 +444,78 @@ onAuthStateChanged(auth, user => {
 // ── FIRESTORE ──────────────────────────────────────────
 
 function ascoltaDati(uid) {
-  // Teniamo separati i due insiemi e li mergiamo sempre insieme
   let snapClienti   = [];
   let snapContratti = [];
-  let clientiPronti    = false;
-  let contrattiPronti  = false;
+  let pronti = 0; // conta quanti listener hanno risposto (aspettiamo 2)
 
-  const aggiorna = () => {
-    if(!clientiPronti || !contrattiPronti) return;
+  const ricostruisci = () => {
+    pronti++;
+    // Aspetta che entrambi i listener abbiano risposto almeno una volta
+    if(pronti < 2) return;
+
     clienti   = [];
-    contratti = [...snapContratti];
+    contratti = [...snapContratti]; // contratti nuovi formato da Firebase
 
     snapClienti.forEach(data => {
-      if(data.rate !== undefined) {
-        // VECCHIO FORMATO — cliente con rate incorporate
-        clienti.push({id:data.id, nome:data.nome||'Cliente', note:data.note||'', colorIdx:data.colorIdx||0, uid});
-        // aggiungi contratto virtuale solo se non esiste gia uno migrato per questo cliente
-        const giaMigrato = contratti.some(c=>c.clienteId===data.id);
+      if(Array.isArray(data.rate)) {
+        // ── VECCHIO FORMATO: cliente con campo "rate" dentro ──
+        clienti.push({
+          id: data.id,
+          nome: data.nome || 'Cliente',
+          note: data.note || '',
+          colorIdx: data.colorIdx || 0,
+          uid
+        });
+        // Crea contratto virtuale solo se non esiste già un contratto
+        // con questo clienteId nella raccolta nuova
+        const giaMigrato = snapContratti.some(c => c.clienteId === data.id);
         if(!giaMigrato) {
           contratti.push({
-            id: data.id+'_v',
+            id: data.id + '_v',
             clienteId: data.id,
-            tipo: data.tipo||'rate',
-            desc: data.desc||(data.note?data.note.slice(0,30):'Contratto'),
-            totale: data.totale||0,
-            acconto: data.acconto||0,
-            nrate: data.nrate||0,
-            rate: data.rate||[],
-            pagato: data.pagato||false,
+            tipo: data.tipo || 'rate',
+            desc: data.desc || (data.note ? data.note.slice(0,40) : 'Contratto'),
+            totale: data.totale || 0,
+            acconto: data.acconto || 0,
+            nrate: data.nrate || 0,
+            rate: data.rate || [],
+            pagato: data.pagato || false,
             _vecchioFormato: true,
             uid
           });
         }
       } else {
-        // NUOVO FORMATO — solo anagrafica
+        // ── NUOVO FORMATO: solo anagrafica ──
         clienti.push(data);
       }
     });
 
-    clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
+    clienti.sort((a,b) => a.nome.localeCompare(b.nome));
     renderTutto();
     if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
     if(window.currentContrattoId) {
-      const ct=contratti.find(x=>x.id===window.currentContrattoId);
+      const ct = contratti.find(x => x.id === window.currentContrattoId);
       if(ct) renderDettaglioContratto(ct);
     }
   };
 
+  // Ogni volta che arriva un aggiornamento, ricostuiamo tutto da zero
   const qc = query(collection(db,'clienti'), where('uid','==',uid));
   unsubClienti = onSnapshot(qc, snap => {
-    snapClienti = snap.docs.map(d=>({id:d.id,...d.data()}));
-    clientiPronti = true;
-    aggiorna();
+    snapClienti = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    // Reset pronti per forzare attesa dell'altro listener se non è ancora arrivato
+    if(pronti < 2) ricostruisci();
+    else { pronti = 2; ricostruisci(); }
   });
 
   const qct = query(collection(db,'contratti'), where('uid','==',uid));
   unsubContratti = onSnapshot(qct, snap => {
-    snapContratti = snap.docs.map(d=>({id:d.id,...d.data()}));
-    contrattiPronti = true;
-    aggiorna();
+    snapContratti = snap.docs.map(d => ({id:d.id, ...d.data()}));
+    if(pronti < 2) ricostruisci();
+    else { pronti = 2; ricostruisci(); }
   });
 }
+
 
 async function salvaCliente(c) {
   const uid=auth.currentUser?.uid; if(!uid) return;
