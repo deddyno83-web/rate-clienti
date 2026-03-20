@@ -25,8 +25,6 @@
     }
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: var(--bg3); color: var(--text); font-size: 15px; min-height: 100vh; }
-
-    /* LOGIN */
     #login-screen { display:flex; flex-direction:column; align-items:center;
       justify-content:center; min-height:100vh; padding:2rem; gap:1.5rem; }
     #login-screen h1 { font-size:24px; font-weight:600; }
@@ -35,8 +33,6 @@
       border-radius:var(--radius); border:1px solid var(--border2); background:var(--bg);
       font-size:15px; font-weight:500; cursor:pointer; width:100%; max-width:320px; justify-content:center; }
     .btn-google:hover { background:var(--bg2); }
-
-    /* LAYOUT */
     #app { display:none; max-width:500px; margin:0 auto; padding-bottom:80px; }
     .topbar { position:sticky; top:0; z-index:100; background:var(--bg);
       border-bottom:1px solid var(--border); padding:14px 16px;
@@ -44,9 +40,6 @@
     .topbar h1 { font-size:17px; font-weight:600; }
     .icon-btn { background:none; border:none; cursor:pointer; padding:6px;
       border-radius:var(--radius-sm); color:var(--text2); font-size:18px; }
-    .icon-btn:hover { background:var(--bg2); }
-
-    /* NAV */
     .nav { position:fixed; bottom:0; left:0; right:0; z-index:100;
       background:var(--bg); border-top:1px solid var(--border);
       display:flex; max-width:500px; margin:0 auto; }
@@ -55,15 +48,9 @@
       color:var(--text3); font-size:11px; font-weight:500; }
     .nav-btn.active { color:var(--blue); }
     .nav-icon { font-size:22px; line-height:1; }
-
-    /* SEZIONI */
     .section { display:none; padding:16px; }
     .section.active { display:block; }
-
-    /* CARD */
     .card { background:var(--bg); border-radius:var(--radius); border:1px solid var(--border); padding:16px; margin-bottom:12px; }
-
-    /* METRICHE */
     .metrics-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
     .metrics-2 { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:12px; }
     .metric { background:var(--bg); border-radius:var(--radius-sm); padding:12px; border:1px solid var(--border); }
@@ -73,8 +60,6 @@
     .metric-value.amber { color:var(--amber-mid); }
     .metric-value.red { color:var(--red); }
     .metric-value.blue { color:var(--blue); }
-
-    /* NOTIFICHE */
     .notif { display:flex; gap:10px; padding:12px 14px; border-radius:var(--radius-sm);
       font-size:13px; margin-bottom:10px; align-items:flex-start; }
     .notif.amber { background:var(--amber-bg); color:var(--amber); border:1px solid #FAC775; }
@@ -82,12 +67,8 @@
     .notif-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:3px; }
     .notif.amber .notif-dot { background:var(--amber-mid); }
     .notif.red .notif-dot { background:var(--red); }
-
-    /* TITOLI SEZIONE */
     .sec-title { font-size:11px; font-weight:600; color:var(--text2);
       text-transform:uppercase; letter-spacing:.05em; margin:16px 0 8px; }
-
-    /* GRAFICO */
     .chart-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; }
     .chart-label { width:80px; color:var(--text2); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex-shrink:0; }
     .chart-track { flex:1; height:16px; background:var(--bg2); border-radius:4px; overflow:hidden; }
@@ -95,35 +76,26 @@
     .chart-fill.green { background:#9FE1CB; color:#085041; }
     .chart-fill.gray  { background:#D3D1C7; color:#444; }
     .chart-fill.amber { background:#FAC775; color:#633806; }
-
-    /* LISTA CLIENTI */
     .client-card { background:var(--bg); border-radius:var(--radius); border:1px solid var(--border);
       padding:14px 16px; margin-bottom:10px; cursor:pointer; }
     .client-card:active { background:var(--bg2); }
     .client-header { display:flex; align-items:center; gap:10px; }
     .avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center;
       justify-content:center; font-weight:600; font-size:14px; flex-shrink:0; }
-    .av-0 { background:#B5D4F4; color:#0C447C; }
-    .av-1 { background:#9FE1CB; color:#085041; }
-    .av-2 { background:#CECBF6; color:#3C3489; }
-    .av-3 { background:#F5C4B3; color:#712B13; }
-    .av-4 { background:#FAC775; color:#633806; }
+    .av-0{background:#B5D4F4;color:#0C447C} .av-1{background:#9FE1CB;color:#085041}
+    .av-2{background:#CECBF6;color:#3C3489} .av-3{background:#F5C4B3;color:#712B13}
+    .av-4{background:#FAC775;color:#633806}
     .client-name { font-size:15px; font-weight:500; }
     .client-sub { font-size:12px; color:var(--text2); margin-top:2px; }
     .badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:11px; font-weight:600; }
-    .badge-green { background:#EAF3DE; color:#3B6D11; }
-    .badge-amber { background:var(--amber-bg); color:var(--amber); }
-    .badge-red   { background:var(--red-bg); color:var(--red); }
-    .badge-gray  { background:#F1EFE8; color:#444; }
-    .badge-blue  { background:var(--blue-bg); color:var(--blue); }
+    .badge-green{background:#EAF3DE;color:#3B6D11} .badge-amber{background:var(--amber-bg);color:var(--amber)}
+    .badge-red{background:var(--red-bg);color:var(--red)} .badge-gray{background:#F1EFE8;color:#444}
     .progress-bar { height:5px; border-radius:3px; background:var(--bg2); overflow:hidden; margin-top:10px; }
     .progress-fill { height:100%; border-radius:3px; background:var(--green-mid); }
     .progress-fill.amber { background:var(--amber-mid); }
-
-    /* FORM */
     .form-group { margin-bottom:14px; }
     .form-group label { display:block; font-size:13px; color:var(--text2); margin-bottom:5px; font-weight:500; }
-    .form-group input, .form-group textarea, .form-group select {
+    .form-group input, .form-group textarea {
       width:100%; padding:10px 12px; border:1px solid var(--border2);
       border-radius:var(--radius-sm); font-size:15px; font-family:inherit;
       background:var(--bg); color:var(--text); outline:none; }
@@ -137,16 +109,11 @@
       cursor:pointer; margin-top:8px; }
     .btn-primary:hover { opacity:0.85; }
     .btn-primary:disabled { opacity:0.4; cursor:not-allowed; }
-
-    /* TIPO SELECTOR */
     .tipo-selector { display:flex; gap:8px; margin-bottom:14px; }
     .tipo-btn { flex:1; padding:11px; border-radius:var(--radius); border:2px solid var(--border2);
       background:var(--bg); font-size:14px; font-weight:500; cursor:pointer; color:var(--text); }
     .tipo-btn.active { background:var(--text); color:var(--bg); border-color:var(--text); font-weight:600; }
-
-    /* SCADENZE */
-    .sc-row { display:flex; align-items:center; gap:10px; padding:10px 0;
-      border-bottom:1px solid var(--border); }
+    .sc-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); }
     .sc-row:last-child { border-bottom:none; }
     .sc-info { flex:1; }
     .sc-name { font-size:13px; font-weight:500; }
@@ -154,16 +121,12 @@
     .btn-pay { padding:5px 12px; font-size:12px; border-radius:6px; border:1px solid #5DCAA5;
       background:transparent; cursor:pointer; color:var(--green); font-weight:500; }
     .btn-pay:hover { background:var(--green-bg); }
-
-    /* SEARCH */
     .search-wrap { position:relative; margin-bottom:14px; }
     .search-wrap input { padding-left:36px; border:1px solid var(--border2);
       border-radius:var(--radius-sm); width:100%; padding-top:10px; padding-bottom:10px;
       font-size:15px; background:var(--bg); color:var(--text); outline:none; }
     .search-icon { position:absolute; left:12px; top:50%; transform:translateY(-50%);
       color:var(--text3); font-size:16px; pointer-events:none; }
-
-    /* DETTAGLIO */
     .overlay { display:none; position:fixed; inset:0; background:var(--bg3);
       z-index:200; overflow-y:auto; max-width:500px; margin:0 auto; }
     .overlay-topbar { position:sticky; top:0; background:var(--bg);
@@ -175,8 +138,7 @@
     .totale-row { display:flex; justify-content:space-between; padding:8px 0;
       font-size:14px; border-bottom:1px solid var(--border); }
     .totale-row:last-child { border-bottom:none; font-weight:600; }
-    .rate-row { display:flex; align-items:center; padding:10px 0;
-      border-bottom:1px solid var(--border); gap:8px; }
+    .rate-row { display:flex; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); gap:8px; }
     .rate-row:last-child { border-bottom:none; }
     .rate-num { font-size:12px; color:var(--text2); width:50px; flex-shrink:0; }
     .rate-date { font-size:13px; flex:1; }
@@ -191,39 +153,25 @@
     .btn-outline.red:hover { background:var(--red-bg); }
     .btn-outline.blue { color:var(--blue); border-color:#85B7EB; }
     .btn-outline.blue:hover { background:var(--blue-bg); }
-
-    /* EDIT RATE */
-    .edit-rate-row { display:flex; align-items:center; gap:6px; padding:8px 0;
-      border-bottom:1px solid var(--border); }
+    .edit-rate-row { display:flex; align-items:center; gap:6px; padding:8px 0; border-bottom:1px solid var(--border); }
     .edit-rate-row:last-child { border-bottom:none; }
     .edit-rate-num { font-size:12px; color:var(--text2); width:40px; flex-shrink:0; }
     .edit-rate-row input[type=date] { flex:1.3; padding:7px 8px; font-size:13px;
-      border:1px solid var(--border2); border-radius:var(--radius-sm);
-      background:var(--bg); color:var(--text); }
+      border:1px solid var(--border2); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); }
     .edit-rate-row input[type=number] { width:80px; flex-shrink:0; padding:7px 8px;
-      font-size:13px; border:1px solid var(--border2); border-radius:var(--radius-sm);
-      background:var(--bg); color:var(--text); }
-    .edit-rate-row .del-btn { background:none; border:none; color:var(--red);
-      font-size:18px; cursor:pointer; padding:0 4px; flex-shrink:0; }
-    .pag-check { display:flex; align-items:center; gap:3px; font-size:11px;
-      color:var(--text2); flex-shrink:0; }
+      font-size:13px; border:1px solid var(--border2); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); }
+    .edit-rate-row .del-btn { background:none; border:none; color:var(--red); font-size:18px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+    .pag-check { display:flex; align-items:center; gap:3px; font-size:11px; color:var(--text2); flex-shrink:0; }
     .pag-check input { width:auto; }
     .btn-add-rata { width:100%; padding:9px; margin-top:8px; border:1px dashed var(--border2);
-      border-radius:var(--radius-sm); background:transparent; font-size:13px;
-      color:var(--text2); cursor:pointer; }
+      border-radius:var(--radius-sm); background:transparent; font-size:13px; color:var(--text2); cursor:pointer; }
     .ricalcola-row { display:flex; gap:8px; align-items:flex-end; margin-bottom:10px; }
     .ricalcola-row .form-group { flex:1; margin-bottom:0; }
     .btn-ricalcola { flex:1; padding:10px; border:1px solid var(--border2);
-      border-radius:var(--radius-sm); background:var(--bg2); font-size:13px;
-      font-weight:500; cursor:pointer; white-space:nowrap; }
-
-    /* EMPTY */
+      border-radius:var(--radius-sm); background:var(--bg2); font-size:13px; font-weight:500; cursor:pointer; white-space:nowrap; }
     .empty { text-align:center; padding:3rem 1rem; color:var(--text2); font-size:14px; }
-
-    /* SOSPESO BADGE */
     .sospeso-info { background:var(--amber-bg); border:1px solid #FAC775;
-      border-radius:var(--radius-sm); padding:12px 14px; font-size:13px;
-      color:var(--amber); margin-top:4px; }
+      border-radius:var(--radius-sm); padding:12px 14px; font-size:13px; color:var(--amber); margin-top:4px; }
   </style>
 </head>
 <body>
@@ -251,7 +199,6 @@
     <button class="icon-btn" onclick="logoutUtente()" title="Esci">⎋</button>
   </div>
 
-  <!-- DASHBOARD -->
   <div id="sec-dashboard" class="section active">
     <div id="dash-notifiche"></div>
     <div class="metrics-3">
@@ -269,7 +216,6 @@
     <div class="card" style="padding:8px 16px" id="dash-scadenze"></div>
   </div>
 
-  <!-- CLIENTI -->
   <div id="sec-clienti" class="section">
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
@@ -279,44 +225,23 @@
     <div class="empty" id="empty-msg" style="display:none">Nessun cliente. Aggiungine uno!</div>
   </div>
 
-  <!-- NUOVO -->
   <div id="sec-nuovo" class="section">
     <div class="tipo-selector">
       <button class="tipo-btn active" id="btn-tipo-rate" onclick="setTipo('rate')">📅 Piano rate</button>
       <button class="tipo-btn" id="btn-tipo-sospeso" onclick="setTipo('sospeso')">💰 Sospeso</button>
     </div>
     <div class="card">
-      <div class="form-group">
-        <label>Nome e cognome</label>
-        <input type="text" id="n-nome" placeholder="es. Mario Rossi" />
-      </div>
-      <div class="form-group">
-        <label>Note</label>
-        <textarea id="n-note" placeholder="es. Cucina su misura..."></textarea>
-      </div>
-      <div class="form-group">
-        <label>Importo totale (€)</label>
-        <input type="number" id="n-totale" placeholder="es. 5000" min="0" step="0.01" oninput="calcolaPreview()" />
-      </div>
-      <!-- Campi solo piano rate -->
+      <div class="form-group"><label>Nome e cognome</label><input type="text" id="n-nome" placeholder="es. Mario Rossi" /></div>
+      <div class="form-group"><label>Note</label><textarea id="n-note" placeholder="es. Cucina su misura..."></textarea></div>
+      <div class="form-group"><label>Importo totale (€)</label><input type="number" id="n-totale" placeholder="es. 5000" min="0" step="0.01" oninput="calcolaPreview()" /></div>
       <div id="campi-rate">
-        <div class="form-group">
-          <label>Acconto iniziale (€)</label>
-          <input type="number" id="n-acconto" placeholder="es. 1000" min="0" step="0.01" oninput="calcolaPreview()" />
-        </div>
+        <div class="form-group"><label>Acconto iniziale (€)</label><input type="number" id="n-acconto" placeholder="es. 1000" min="0" step="0.01" oninput="calcolaPreview()" /></div>
         <div class="row2">
-          <div class="form-group">
-            <label>N° rate mensili</label>
-            <input type="number" id="n-nrate" placeholder="es. 6" min="1" max="120" oninput="calcolaPreview()" />
-          </div>
-          <div class="form-group">
-            <label>Prima scadenza</label>
-            <input type="date" id="n-data" />
-          </div>
+          <div class="form-group"><label>N° rate mensili</label><input type="number" id="n-nrate" placeholder="es. 6" min="1" max="120" oninput="calcolaPreview()" /></div>
+          <div class="form-group"><label>Prima scadenza</label><input type="date" id="n-data" /></div>
         </div>
         <div class="preview-box" id="rate-preview"></div>
       </div>
-      <!-- Info sospeso -->
       <div id="info-sospeso" style="display:none">
         <div class="sospeso-info">⏳ Nessuna scadenza — il pagamento resterà aperto finché non lo segni come ricevuto.</div>
       </div>
@@ -325,19 +250,12 @@
   </div>
 
   <nav class="nav">
-    <button class="nav-btn active" onclick="switchSection('dashboard',this)">
-      <span class="nav-icon">📊</span>Dashboard
-    </button>
-    <button class="nav-btn" onclick="switchSection('clienti',this)">
-      <span class="nav-icon">👥</span>Clienti
-    </button>
-    <button class="nav-btn" onclick="switchSection('nuovo',this)">
-      <span class="nav-icon">➕</span>Nuovo
-    </button>
+    <button class="nav-btn active" onclick="switchSection('dashboard',this)"><span class="nav-icon">📊</span>Dashboard</button>
+    <button class="nav-btn" onclick="switchSection('clienti',this)"><span class="nav-icon">👥</span>Clienti</button>
+    <button class="nav-btn" onclick="switchSection('nuovo',this)"><span class="nav-icon">➕</span>Nuovo</button>
   </nav>
 </div>
 
-<!-- DETTAGLIO -->
 <div class="overlay" id="ov-dettaglio">
   <div class="overlay-topbar">
     <button class="back-btn" onclick="chiudi('ov-dettaglio')">←</button>
@@ -347,7 +265,6 @@
   <div class="overlay-body" id="det-body"></div>
 </div>
 
-<!-- MODIFICA -->
 <div class="overlay" id="ov-modifica">
   <div class="overlay-topbar">
     <button class="back-btn" onclick="chiudi('ov-modifica')">←</button>
@@ -374,7 +291,6 @@
   </div>
 </div>
 
-<!-- STAMPA -->
 <div class="overlay" id="ov-stampa">
   <div class="overlay-topbar">
     <button class="back-btn" onclick="chiudi('ov-stampa')">← Chiudi</button>
@@ -404,14 +320,12 @@ const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db   = getFirestore(app);
 
-// ── STATO ──────────────────────────────────────────────
-let clienti    = [];
-let filtro     = '';
-let tipoNuovo  = 'rate';
+let clienti   = [];
+let filtro    = '';
+let tipoNuovo = 'rate';
 window.currentId = null;
-let unsubscribe = null;
+let unsubscribe  = null;
 
-// ── UTILITÀ ────────────────────────────────────────────
 const fmt    = n => '€' + Number(n).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmtS   = n => '€' + Math.round(n).toLocaleString('it-IT');
 const iniz   = n => n.split(' ').map(p=>p[0]||'').slice(0,2).join('').toUpperCase();
@@ -421,12 +335,25 @@ const diffGg = s => Math.ceil((new Date(s)-new Date(oggi()))/(864e5));
 const addM   = (s,n) => { const d=new Date(s); d.setMonth(d.getMonth()+n); return d.toISOString().slice(0,10); };
 const avCol  = i => ['av-0','av-1','av-2','av-3','av-4'][i%5];
 
+// ── CHIAVE FIX: normalizza i dati vecchi che non hanno campo "tipo" ──
+function normalizza(raw) {
+  const c = {...raw};
+  // Vecchi clienti non hanno "tipo" — se hanno "rate" sono piani rate
+  if(!c.tipo) c.tipo = Array.isArray(c.rate) && c.rate.length > 0 ? 'rate' : 'rate';
+  // Vecchi clienti non hanno "rate" come array → inizializza
+  if(!Array.isArray(c.rate)) c.rate = [];
+  // Vecchi clienti non hanno "pagato"
+  if(c.pagato === undefined) c.pagato = false;
+  // Vecchi clienti non hanno "acconto"
+  if(c.acconto === undefined) c.acconto = 0;
+  return c;
+}
+
 const riscosso = c => c.tipo==='sospeso'
   ? (c.pagato ? c.totale : 0)
   : c.acconto + c.rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
 const residuo = c => Math.max(c.totale - riscosso(c), 0);
 
-// ── AUTH ───────────────────────────────────────────────
 window.loginGoogle = async () => {
   try { await signInWithPopup(auth, new GoogleAuthProvider()); }
   catch(e) { alert('Errore login: ' + e.message); }
@@ -449,14 +376,13 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// ── FIRESTORE ──────────────────────────────────────────
 function ascoltaClienti(uid) {
   const q = query(collection(db,'clienti'), where('uid','==',uid));
   unsubscribe = onSnapshot(q, snap => {
-    clienti = snap.docs.map(d=>({id:d.id,...d.data()}));
-    clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
+    // normalizza() sistemaa i vecchi dati che mancano di "tipo", "rate", ecc.
+    clienti = snap.docs.map(d => normalizza({id:d.id,...d.data()}));
+    clienti.sort((a,b) => a.nome.localeCompare(b.nome));
     renderTutto();
-    // Aggiorna dettaglio aperto
     if(window.currentId) {
       const c = clienti.find(x=>x.id===window.currentId);
       if(c) renderDettaglio(c);
@@ -477,7 +403,6 @@ window.eliminaCliente = async id => {
   window.currentId = null;
 };
 
-// ── NAVIGAZIONE ────────────────────────────────────────
 window.switchSection = (name, btn) => {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
@@ -497,16 +422,14 @@ const apriOverlay = id => {
   document.getElementById(id).scrollTop = 0;
 };
 
-// ── TIPO NUOVO ─────────────────────────────────────────
 window.setTipo = tipo => {
   tipoNuovo = tipo;
   document.getElementById('btn-tipo-rate').classList.toggle('active', tipo==='rate');
   document.getElementById('btn-tipo-sospeso').classList.toggle('active', tipo==='sospeso');
-  document.getElementById('campi-rate').style.display    = tipo==='rate' ? 'block' : 'none';
-  document.getElementById('info-sospeso').style.display  = tipo==='sospeso' ? 'block' : 'none';
+  document.getElementById('campi-rate').style.display   = tipo==='rate' ? 'block' : 'none';
+  document.getElementById('info-sospeso').style.display = tipo==='sospeso' ? 'block' : 'none';
 };
 
-// ── FORM NUOVO ─────────────────────────────────────────
 window.calcolaPreview = () => {
   const tot = parseFloat(document.getElementById('n-totale').value)||0;
   const acc = parseFloat(document.getElementById('n-acconto').value)||0;
@@ -531,7 +454,7 @@ window.aggiungiCliente = async () => {
     if(!nrate||!data) { alert('Compila n° rate e prima scadenza.'); return; }
     const rata = (totale-acconto)/nrate;
     const rate = Array.from({length:nrate},(_,i)=>({data:addM(data,i), importo:rata, pagata:false}));
-    c = {id:Date.now().toString(), tipo:'rate', nome, note, totale, acconto, nrate, rate, colorIdx:clienti.length};
+    c = {id:Date.now().toString(), tipo:'rate', nome, note, totale, acconto, nrate, rate, pagato:false, colorIdx:clienti.length};
   } else {
     c = {id:Date.now().toString(), tipo:'sospeso', nome, note, totale, acconto:0, nrate:0, rate:[], pagato:false, colorIdx:clienti.length};
   }
@@ -545,7 +468,6 @@ window.aggiungiCliente = async () => {
   switchSection('clienti', document.querySelectorAll('.nav-btn')[1]);
 };
 
-// ── RENDER LISTA ───────────────────────────────────────
 function renderTutto() { renderClienti(); renderDashboard(); }
 
 window.filterClienti = v => { filtro=v; renderClienti(); };
@@ -586,7 +508,6 @@ function renderClienti() {
   }).join('');
 }
 
-// ── DASHBOARD ──────────────────────────────────────────
 function renderDashboard() {
   const og = oggi();
   let totRisc=0, totRes=0, nScad=0, nArrivo=0;
@@ -606,7 +527,6 @@ function renderDashboard() {
   if(nArrivo>0) notif+=`<div class="notif amber"><div class="notif-dot"></div><div><strong>${nArrivo} ${nArrivo===1?'pagamento':'pagamenti'}</strong> in sospeso o in scadenza entro 14 giorni.</div></div>`;
   document.getElementById('dash-notifiche').innerHTML = notif;
 
-  // Grafico
   document.getElementById('dash-chart').innerHTML = clienti.length
     ? clienti.slice(0,6).map(c=>{
         const risc=riscosso(c), res=residuo(c);
@@ -623,7 +543,6 @@ function renderDashboard() {
       }).join('')
     : '<div style="font-size:13px;color:var(--text2)">Nessun cliente ancora.</div>';
 
-  // Prossime scadenze + sospesi
   const sospesoRows = clienti.filter(c=>c.tipo==='sospeso'&&!c.pagato).map(c=>
     `<div class="sc-row">
       <div class="avatar ${avCol(c.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(c.nome)}</div>
@@ -664,7 +583,6 @@ window.segnaRicevuto = async id => {
   c.pagato=true; await salvaCliente(c);
 };
 
-// ── DETTAGLIO ──────────────────────────────────────────
 window.apriDettaglio = id => {
   window.currentId = id;
   const c = clienti.find(x=>x.id===id); if(!c) return;
@@ -677,7 +595,6 @@ function renderDettaglio(c) {
   const risc=riscosso(c), res=residuo(c);
   const perc=Math.min(Math.round(risc/c.totale*100),100);
   const og=oggi();
-
   const header = `
     <div class="card">
       <div style="display:flex;align-items:center;gap:12px">
@@ -689,7 +606,6 @@ function renderDettaglio(c) {
         </div>
       </div>
     </div>`;
-
   const actions = `
     <div class="action-row">
       <div class="action-row-2">
@@ -698,7 +614,6 @@ function renderDettaglio(c) {
       </div>
       <button class="btn-outline red" onclick="eliminaCliente('${c.id}')">🗑 Elimina cliente</button>
     </div>`;
-
   if(c.tipo==='sospeso') {
     document.getElementById('det-body').innerHTML = header + `
       <div class="card">
@@ -742,7 +657,6 @@ window.pagaRataDet = async (cid,idx) => {
   c.rate[idx].pagata=true; await salvaCliente(c);
 };
 
-// ── MODIFICA ───────────────────────────────────────────
 window.apriModifica = id => {
   window.currentId = id;
   const c = clienti.find(x=>x.id===id); if(!c) return;
@@ -788,9 +702,8 @@ window.syncNrate = () => {
   const nNuovo = parseInt(document.getElementById('e-nrate').value)||0;
   if(nNuovo<1) return;
   const rate = getRateDOM();
-  const nAttuali = rate.length;
-  if(nNuovo > nAttuali) {
-    for(let i=nAttuali; i<nNuovo; i++) {
+  if(nNuovo > rate.length) {
+    for(let i=rate.length; i<nNuovo; i++) {
       const ultima = rate[i-1];
       const d = new Date(ultima?ultima.data:oggi());
       d.setMonth(d.getMonth()+1);
@@ -801,8 +714,8 @@ window.syncNrate = () => {
 };
 
 window.ricalcolaImporti = () => {
-  const tot = parseFloat(document.getElementById('e-totale').value)||0;
-  const acc = parseFloat(document.getElementById('e-acconto').value)||0;
+  const tot  = parseFloat(document.getElementById('e-totale').value)||0;
+  const acc  = parseFloat(document.getElementById('e-acconto').value)||0;
   const rate = getRateDOM();
   if(!rate.length||tot<=0) return;
   const rata = (tot-acc)/rate.length;
@@ -810,7 +723,7 @@ window.ricalcolaImporti = () => {
 };
 
 window.aggiungiRata = () => {
-  const rate = getRateDOM();
+  const rate   = getRateDOM();
   const ultima = rate[rate.length-1];
   const d = new Date(ultima?ultima.data:oggi());
   d.setMonth(d.getMonth()+1);
@@ -839,7 +752,6 @@ window.salvaModifica = async () => {
   apriDettaglio(id);
 };
 
-// ── STAMPA ─────────────────────────────────────────────
 window.apriStampa = id => {
   const c = clienti.find(x=>x.id===id); if(!c) return;
   const risc=riscosso(c), res=residuo(c), perc=Math.min(Math.round(risc/c.totale*100),100);
@@ -854,13 +766,11 @@ window.apriStampa = id => {
   } else {
     const righe=c.rate.map((r,i)=>{
       const scad=!r.pagata&&r.data<og;
-      const color=r.pagata?'#999':scad?'#a00':'#1a1a1a';
-      const stato=r.pagata?'Pagata':scad?'SCADUTA':'In attesa';
-      return `<tr style="color:${color}">
+      return `<tr style="color:${r.pagata?'#999':scad?'#a00':'#1a1a1a'}">
         <td style="padding:7px 10px;border:1px solid #e0e0e0">Rata ${i+1}</td>
         <td style="padding:7px 10px;border:1px solid #e0e0e0">${fmtD(r.data)}</td>
         <td style="padding:7px 10px;border:1px solid #e0e0e0;text-align:right">${fmt(r.importo)}</td>
-        <td style="padding:7px 10px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${stato}</td>
+        <td style="padding:7px 10px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${r.pagata?'Pagata':scad?'SCADUTA':'In attesa'}</td>
       </tr>`;
     }).join('');
     corpo=`
@@ -873,7 +783,6 @@ window.apriStampa = id => {
       <div style="height:8px;background:#eee;border-radius:4px;overflow:hidden;margin-bottom:4px">
         <div style="height:100%;background:#1D9E75;width:${perc}%;border-radius:4px"></div></div>
       <div style="font-size:11px;color:#777;margin-bottom:14px">Avanzamento: ${perc}%</div>
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#555;margin-bottom:6px">Piano rate mensili</div>
       <div style="overflow-x:auto">
         <table style="width:100%;border-collapse:collapse;font-size:13px">
           <thead><tr style="background:#f0f0f0">
@@ -899,7 +808,6 @@ window.apriStampa = id => {
   apriOverlay('ov-stampa');
 };
 
-// data default
 document.getElementById('n-data').value = oggi();
 </script>
 </body>
