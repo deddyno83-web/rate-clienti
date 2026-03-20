@@ -2,7 +2,7 @@
   "name": "Rate Clienti",
   "short_name": "Rate",
   "description": "Gestione pagamenti a rate dei clienti",
-  "start_url": "/",
+  "start_url": "/rate-clienti/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
