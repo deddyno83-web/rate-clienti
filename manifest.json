@@ -2,13 +2,14 @@
   "name": "Rate Clienti",
   "short_name": "Rate",
   "description": "Gestione pagamenti a rate dei clienti",
-  "start_url": "/rate-clienti/",
+  "start_url": "https://deddyno83-web.github.io/rate-clienti/",
+  "scope": "https://deddyno83-web.github.io/rate-clienti/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "theme_color": "#185FA5",
   "orientation": "portrait",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "https://deddyno83-web.github.io/rate-clienti/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "https://deddyno83-web.github.io/rate-clienti/icon-512.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
