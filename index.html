@@ -687,7 +687,10 @@ function renderClienti() {
     else if(tuttiSaldati) badge='<span class="badge badge-green">Saldato</span>';
     else badge=`<span class="badge badge-gray">${cc.length} piani</span>`;
     const fillCls=nScad>0?'amber':'';
-    const sub=tot>0?`${cc.length} contratti · residuo ${fmtS(res)}`:cl.note?cl.note.slice(0,42):'Nessun contratto';
+    const nAttivi=cc.filter(c=>resC(c)>0).length;
+    const nCompl=cc.filter(c=>resC(c)===0).length;
+    const subPiani=nAttivi>0?`${nAttivi} attivi${nCompl>0?' · '+nCompl+' completati':''}`:nCompl>0?`${nCompl} completati`:'Nessun piano';
+    const sub=tot>0?`${subPiani} · residuo ${fmtS(res)}`:cl.note?cl.note.slice(0,42):'Nessun piano di pagamento';
     return `<div class="client-card" onclick="apriDettaglioCliente('${cl.id}')">
       <div class="client-header">
         <div class="avatar ${avCol(cl.colorIdx||0)}">${iniz(cl.nome)}</div>
@@ -813,7 +816,11 @@ function aggiornaOvCliente(cid) {
   </div>`;
 
   const og=oggi();
-  const listaContratti=cc.length?`<div class="card" style="padding:8px 16px">`+cc.map(c=>{
+  // Separa piani attivi da completati
+  const pianiAttivi     = cc.filter(c => resC(c) > 0);
+  const pianiCompletati = cc.filter(c => resC(c) === 0);
+
+  function renderPianoItem(c) {
     const risc=riscC(c),res=resC(c),perc=Math.min(Math.round(risc/c.totale*100),100);
     const scad=c.tipo!=='sospeso'&&c.rate.filter(r=>!r.pagata&&r.data<og).length;
     const pag =c.tipo!=='sospeso'&&c.rate.filter(r=>r.pagata).length;
@@ -827,11 +834,29 @@ function aggiornaOvCliente(cid) {
       </div>
       <div class="piano-bar"><div class="piano-bar-fill ${scad>0?'amber':''}" style="width:${perc}%"></div></div>
     </div>`;
-  }).join('')+`</div>`
-  :'<div class="empty" style="padding:1rem 0">Nessun piano di pagamento.<br>Usa + Piano per aggiungerne uno.</div>';
+  }
+
+  const listaAttivi = pianiAttivi.length
+    ? `<div class="card" style="padding:8px 16px">`+pianiAttivi.map(renderPianoItem).join('')+`</div>`
+    : '<div class="empty" style="padding:1rem 0">Nessun piano attivo.<br>Usa + Piano per aggiungerne uno.</div>';
+
+  const listaCompletati = pianiCompletati.length
+    ? `<div class="card" style="padding:8px 16px;opacity:.75">`+pianiCompletati.map(renderPianoItem).join('')+`</div>`
+    : '';
+
+  const storicoSection = pianiCompletati.length
+    ? `<div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Storico completati</span>
+        <span style="font-size:12px;background:var(--green-bg);color:var(--green);padding:2px 8px;border-radius:10px;font-weight:600">${pianiCompletati.length}</span>
+      </div>${listaCompletati}`
+    : '';
 
   document.getElementById('ov-cl-body').innerHTML=sommario+
-    '<div class="sec-title">Piani di pagamento</div>'+listaContratti+
+    `<div class="sec-title" style="display:flex;align-items:center;justify-content:space-between">
+      <span>Piani attivi</span>
+      ${pianiAttivi.length?`<span style="font-size:12px;background:var(--blue-bg);color:var(--blue-mid);padding:2px 8px;border-radius:10px;font-weight:600">${pianiAttivi.length}</span>`:''}
+    </div>`+listaAttivi+
+    storicoSection+
     `<div class="action-row"><button class="btn-outline red" onclick="eliminaCliente('${cl.id}')">🗑 Elimina cliente e tutti i piani</button></div>`;
 }
 
