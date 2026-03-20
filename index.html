@@ -272,7 +272,7 @@
     </div>
     <div class="metrics-2">
       <div class="metric"><div class="metric-label">Rate scadute</div><div class="metric-value red" id="m-scad">0</div></div>
-      <div class="metric"><div class="metric-label">In arrivo (14 gg)</div><div class="metric-value amber" id="m-arrivo">0</div></div>
+      <div class="metric"><div class="metric-label">In arrivo / sospesi</div><div class="metric-value amber" id="m-arrivo">0</div></div>
     </div>
     <div class="sec-title">Avanzamento clienti</div>
     <div class="card" style="padding:14px 16px"><div id="dash-chart"></div></div>
@@ -290,6 +290,11 @@
   </div>
 
   <div id="sec-nuovo" class="section">
+    <!-- Selettore tipo -->
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button id="tipo-rate-btn" onclick="setTipo('rate')" style="flex:1;padding:11px;border-radius:var(--radius);border:2px solid var(--text);background:var(--text);color:var(--bg);font-size:14px;font-weight:600;cursor:pointer">📅 Piano rate</button>
+      <button id="tipo-sospeso-btn" onclick="setTipo('sospeso')" style="flex:1;padding:11px;border-radius:var(--radius);border:2px solid var(--border2);background:var(--bg);color:var(--text);font-size:14px;font-weight:500;cursor:pointer">💰 Sospeso</button>
+    </div>
     <div class="card">
       <div class="form-group">
         <label>Nome e cognome</label>
@@ -297,30 +302,40 @@
       </div>
       <div class="form-group">
         <label>Note</label>
-        <textarea id="n-note" placeholder="es. Cucina su misura, pagamento mensile..."></textarea>
+        <textarea id="n-note" placeholder="es. Cucina su misura..."></textarea>
       </div>
       <div class="form-group">
         <label>Importo totale (€)</label>
         <input type="number" id="n-totale" placeholder="es. 5000" min="0" step="0.01" oninput="calcolaPreview()" />
       </div>
-      <div class="form-group">
-        <label>Acconto iniziale (€)</label>
-        <input type="number" id="n-acconto" placeholder="es. 1000" min="0" step="0.01" oninput="calcolaPreview()" />
-      </div>
-      <div class="row2">
+      <!-- Solo per piano rate -->
+      <div id="form-rate-fields">
         <div class="form-group">
-          <label>N° rate mensili</label>
-          <input type="number" id="n-nrate" placeholder="es. 6" min="1" max="60" oninput="calcolaPreview()" />
+          <label>Acconto iniziale (€)</label>
+          <input type="number" id="n-acconto" placeholder="es. 1000" min="0" step="0.01" oninput="calcolaPreview()" />
         </div>
-        <div class="form-group">
-          <label>Prima scadenza</label>
-          <input type="date" id="n-data" />
+        <div class="row2">
+          <div class="form-group">
+            <label>N° rate mensili</label>
+            <input type="number" id="n-nrate" placeholder="es. 6" min="1" max="120" oninput="calcolaPreview()" />
+          </div>
+          <div class="form-group">
+            <label>Prima scadenza</label>
+            <input type="date" id="n-data" />
+          </div>
+        </div>
+        <div class="preview-box" id="rate-preview"></div>
+      </div>
+      <!-- Solo per sospeso -->
+      <div id="form-sospeso-fields" style="display:none">
+        <div style="background:var(--bg2);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--text2);margin-top:4px">
+          Nessuna scadenza — il pagamento resta in sospeso finché non lo segni come ricevuto.
         </div>
       </div>
-      <div class="preview-box" id="rate-preview"></div>
       <button class="btn-primary" id="btn-salva" onclick="aggiungiCliente()">Salva cliente</button>
     </div>
   </div>
+
 
   <nav class="nav">
     <button class="nav-btn active" onclick="switchSection('dashboard',this)">
@@ -424,7 +439,7 @@
   const fmtData = s => { if(!s) return ''; const [y,m,d]=s.split('-'); return `${d}/${m}/${y}`; };
   const diffGg = s => Math.ceil((new Date(s)-new Date(oggi()))/(864e5));
   const addMesi = (s,n) => { const d=new Date(s); d.setMonth(d.getMonth()+n); return d.toISOString().slice(0,10); };
-  const riscosso = c => c.acconto + c.rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
+  const riscosso = c => c.tipo==='sospeso' ? (c.pagato ? c.totale : 0) : c.acconto + c.rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
   const residuo = c => Math.max(c.totale - riscosso(c), 0);
   const avColor = i => ['av-0','av-1','av-2','av-3','av-4'][i % 5];
 
@@ -474,6 +489,25 @@
   };
 
   // ---- FORM NUOVO ----
+  let _tipoNuovo = 'rate';
+
+  window.setTipo = tipo => {
+    _tipoNuovo = tipo;
+    const isRate = tipo === 'rate';
+    document.getElementById('form-rate-fields').style.display = isRate ? 'block' : 'none';
+    document.getElementById('form-sospeso-fields').style.display = isRate ? 'none' : 'block';
+    const btnRate = document.getElementById('tipo-rate-btn');
+    const btnSosp = document.getElementById('tipo-sospeso-btn');
+    btnRate.style.background = isRate ? 'var(--text)' : 'var(--bg)';
+    btnRate.style.color = isRate ? 'var(--bg)' : 'var(--text)';
+    btnRate.style.borderColor = isRate ? 'var(--text)' : 'var(--border2)';
+    btnRate.style.fontWeight = isRate ? '600' : '500';
+    btnSosp.style.background = !isRate ? 'var(--text)' : 'var(--bg)';
+    btnSosp.style.color = !isRate ? 'var(--bg)' : 'var(--text)';
+    btnSosp.style.borderColor = !isRate ? 'var(--text)' : 'var(--border2)';
+    btnSosp.style.fontWeight = !isRate ? '600' : '500';
+  };
+
   window.calcolaPreview = () => {
     const tot = parseFloat(document.getElementById('n-totale').value)||0;
     const acc = parseFloat(document.getElementById('n-acconto').value)||0;
@@ -489,21 +523,30 @@
     const nome   = document.getElementById('n-nome').value.trim();
     const note   = document.getElementById('n-note').value.trim();
     const totale = parseFloat(document.getElementById('n-totale').value);
-    const acconto= parseFloat(document.getElementById('n-acconto').value)||0;
-    const nrate  = parseInt(document.getElementById('n-nrate').value);
-    const data   = document.getElementById('n-data').value;
-    if(!nome||!totale||!nrate||!data) { alert('Compila: nome, importo totale, n° rate e prima scadenza.'); return; }
-    const rata = (totale-acconto)/nrate;
-    const rate = Array.from({length:nrate},(_,i) => ({data:addMesi(data,i), importo:rata, pagata:false}));
-    const c = { id: Date.now().toString(), nome, note, totale, acconto, nrate, rate, colorIdx: clienti.length };
+    if(!nome || !totale) { alert('Compila almeno nome e importo.'); return; }
+    let c;
+    if(_tipoNuovo === 'rate') {
+      const acconto = parseFloat(document.getElementById('n-acconto').value)||0;
+      const nrate   = parseInt(document.getElementById('n-nrate').value);
+      const data    = document.getElementById('n-data').value;
+      if(!nrate || !data) { alert('Compila n° rate e prima scadenza.'); return; }
+      const rata = (totale-acconto)/nrate;
+      const rate = Array.from({length:nrate},(_,i) => ({data:addMesi(data,i), importo:rata, pagata:false}));
+      c = { id:Date.now().toString(), nome, note, totale, acconto, nrate, rate, tipo:'rate', colorIdx:clienti.length };
+    } else {
+      // Pagamento in sospeso: nessuna rata, nessuna scadenza
+      c = { id:Date.now().toString(), nome, note, totale, acconto:0, nrate:0, rate:[], tipo:'sospeso', pagato:false, colorIdx:clienti.length };
+    }
     const btn = document.getElementById('btn-salva');
     btn.disabled = true; btn.textContent = 'Salvataggio...';
     await salvaCliente(c);
     btn.disabled = false; btn.textContent = 'Salva cliente';
     ['n-nome','n-note','n-totale','n-acconto','n-nrate','n-data'].forEach(id => document.getElementById(id).value='');
     document.getElementById('rate-preview').style.display='none';
+    setTipo('rate');
     switchSection('clienti', document.querySelectorAll('.nav-btn')[1]);
   };
+
 
   // ---- RENDER ----
   function renderTutto() { renderClienti(); renderDashboard(); }
@@ -517,20 +560,28 @@
     if(!fil.length) { list.innerHTML=''; empty.style.display='block'; return; }
     empty.style.display='none';
     list.innerHTML = fil.map(c => {
+    list.innerHTML = fil.map(c => {
       const risc = riscosso(c);
       const perc = Math.min(Math.round(risc/c.totale*100),100);
-      const scad = c.rate.filter(r=>!r.pagata&&r.data<oggi()).length;
-      const pag  = c.rate.filter(r=>r.pagata).length;
-      const badge = perc>=100 ? '<span class="badge badge-green">Saldato</span>'
-                  : scad>0    ? `<span class="badge badge-red">${scad} scad.</span>`
-                               : `<span class="badge badge-gray">${pag}/${c.rate.length}</span>`;
-      const fillCls = scad>0 ? 'amber' : '';
+      let badge, fillCls = '';
+      if(c.tipo === 'sospeso') {
+        badge = c.pagato ? '<span class="badge badge-green">Ricevuto</span>' : '<span class="badge badge-amber">In sospeso</span>';
+        fillCls = c.pagato ? '' : 'amber';
+      } else {
+        const scad = c.rate.filter(r=>!r.pagata&&r.data<oggi()).length;
+        const pag  = c.rate.filter(r=>r.pagata).length;
+        badge = perc>=100 ? '<span class="badge badge-green">Saldato</span>'
+              : scad>0    ? `<span class="badge badge-red">${scad} scad.</span>`
+                           : `<span class="badge badge-gray">${pag}/${c.rate.length}</span>`;
+        fillCls = scad>0 ? 'amber' : '';
+      }
+      const tipoLabel = c.tipo==='sospeso' ? ' · 💰 sospeso' : '';
       return `<div class="client-card" onclick="apriDettaglio('${c.id}')">
         <div class="client-header">
           <div class="avatar ${avColor(c.colorIdx||0)}">${iniziali(c.nome)}</div>
           <div style="flex:1">
             <div class="client-name">${c.nome}</div>
-            <div class="client-sub">${c.note ? c.note.slice(0,42)+(c.note.length>42?'…':'') : fmt(c.totale)+' totale'}</div>
+            <div class="client-sub">${c.note ? c.note.slice(0,42)+(c.note.length>42?'…':'') : fmt(c.totale)+' totale'}${tipoLabel}</div>
           </div>
           ${badge}
         </div>
@@ -544,7 +595,8 @@
     let totRisc=0, totRes=0, nScad=0, nArrivo=0;
     clienti.forEach(c => {
       totRisc += riscosso(c); totRes += residuo(c);
-      c.rate.forEach(r => { if(!r.pagata){ const d=diffGg(r.data); if(d<=0)nScad++; else if(d<=14)nArrivo++; }});
+      if(c.tipo==='sospeso' && !c.pagato) nArrivo++;
+      if(c.tipo!=='sospeso') c.rate.forEach(r => { if(!r.pagata){ const d=diffGg(r.data); if(d<=0)nScad++; else if(d<=14)nArrivo++; }});
     });
     document.getElementById('m-clienti').textContent = clienti.length;
     document.getElementById('m-risc').textContent    = fmtS(totRisc);
@@ -561,20 +613,33 @@
       ? clienti.slice(0,6).map(c => {
           const risc=riscosso(c), res=residuo(c);
           const pw=Math.round(risc/c.totale*100), rw=Math.round(res/c.totale*100);
-          const scad=c.rate.some(r=>!r.pagata&&r.data<og);
+          const isSosp = c.tipo==='sospeso';
+          const scad = !isSosp && c.rate.some(r=>!r.pagata&&r.data<og);
+          const fillCls = isSosp ? (c.pagato?'green':'amber') : (scad?'amber':'gray');
+          const label = isSosp ? (c.pagato?'✅':'⏳') : '';
           return `<div class="chart-row">
             <div class="chart-label">${c.nome.split(' ')[0]}</div>
             <div class="chart-track"><div style="display:flex;height:100%">
               <div class="chart-fill green" style="width:${pw}%">${pw>15?fmtS(risc):''}</div>
-              <div class="chart-fill ${scad?'amber':'gray'}" style="width:${rw}%">${rw>12?fmtS(res):''}</div>
+              <div class="chart-fill ${fillCls}" style="width:${rw}%">${rw>12?fmtS(res):label}</div>
             </div></div></div>`;
         }).join('')
       : '<div style="font-size:13px;color:var(--text2)">Nessun cliente ancora.</div>';
 
+
     const prossime=[];
-    clienti.forEach(c=>c.rate.forEach((r,i)=>{ if(!r.pagata) prossime.push({c,r,i,diff:diffGg(r.data)}); }));
+    clienti.forEach(c=>{ if(c.tipo==='sospeso') return; c.rate.forEach((r,i)=>{ if(!r.pagata) prossime.push({c,r,i,diff:diffGg(r.data)}); }); });
     prossime.sort((a,b)=>a.r.data.localeCompare(b.r.data));
-    document.getElementById('dash-scadenze').innerHTML = prossime.slice(0,5).map(p=>{
+    // Sospesi in attesa
+    const sospesoRows = clienti.filter(c=>c.tipo==='sospeso'&&!c.pagato).map(c=>
+      `<div class="sc-row">
+        <div class="avatar ${avColor(c.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniziali(c.nome)}</div>
+        <div class="sc-info"><div class="sc-name">${c.nome}</div><div class="sc-date">💰 Pagamento in sospeso</div></div>
+        <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(c.totale)}</div>
+        <button class="btn-pay" onclick="segnaRicevuto('${c.id}')">Ricevuto</button>
+      </div>`
+    ).join('');
+    const rateRows = prossime.slice(0,5).map(p=>{
       const d=p.diff;
       const lbl = d<0  ? `<span style="color:var(--red)">Scaduta da ${Math.abs(d)} gg</span>`
                 : d===0? `<span style="color:var(--amber-mid)">Oggi</span>`
@@ -586,7 +651,10 @@
         <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(p.r.importo)}</div>
         <button class="btn-pay" onclick="pagaRataScad('${p.c.id}',${p.i})">Pagata</button>
       </div>`;
-    }).join('') || '<div style="font-size:13px;color:var(--text2);padding:8px 0">Nessuna rata da riscuotere.</div>';
+    }).join('');
+    const tutteRighe = sospesoRows + rateRows;
+    document.getElementById('dash-scadenze').innerHTML = tutteRighe ||
+      '<div style="font-size:13px;color:var(--text2);padding:8px 0">Nessuna rata da riscuotere.</div>';
   }
 
   window.pagaRataScad = async (cid, idx) => {
@@ -604,48 +672,82 @@
     const risc = riscosso(c), res = residuo(c);
     const perc = Math.min(Math.round(risc/c.totale*100),100);
     const og = oggi();
-    const rateHtml = c.rate.map((r,i)=>{
-      const scad = !r.pagata && r.data<og;
-      return `<div class="rate-row">
-        <span class="rate-num">Rata ${i+1}</span>
-        <span class="rate-date">${fmtData(r.data)}${scad?' <span style="color:var(--red);font-size:9px">●</span>':''}</span>
-        <span class="rate-amount">${fmt(r.importo)}</span>
-        <span class="rate-status">${r.pagata
-          ? '<span class="badge badge-green">Pagata</span>'
-          : `<button class="btn-pay" onclick="pagaRataDettaglio('${c.id}',${i})">Pagata</button>`}</span>
-      </div>`;
-    }).join('');
-    document.getElementById('detail-body').innerHTML=`
-      <div class="card">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-          <div class="avatar ${avColor(c.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniziali(c.nome)}</div>
-          <div><div style="font-size:17px;font-weight:600">${c.nome}</div>
-          ${c.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${c.note}</div>`:''}</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="totale-row"><span style="color:var(--text2)">Importo totale</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
-        <div class="totale-row"><span style="color:var(--text2)">Acconto versato</span><span style="color:var(--green)">${fmt(c.acconto)}</span></div>
-        <div class="totale-row"><span style="color:var(--text2)">Rate incassate</span><span style="color:var(--green)">${fmt(risc-c.acconto)}</span></div>
-        <div class="totale-row"><span>Residuo</span><span style="color:${res>0?'var(--amber-mid)':'var(--green)'}">${fmt(res)}</span></div>
-        <div style="margin-top:12px">
-          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px">
-            <span>Avanzamento pagamenti</span><span>${perc}%</span></div>
-          <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${perc}%"></div></div>
-        </div>
-      </div>
-      <div class="sec-title">Piano rate mensili</div>
-      <div class="card" style="padding:8px 16px">${rateHtml}</div>
+    const actionBtns = `
       <div class="action-row" style="flex-direction:column;gap:10px">
         <div style="display:flex;gap:10px">
-          <button class="btn-outline" style="flex:1" onclick="apriModifica('${c.id}')">✏️ Modifica cliente</button>
+          <button class="btn-outline" style="flex:1" onclick="apriModifica('${c.id}')">✏️ Modifica</button>
           <button class="btn-outline blue" style="flex:1" onclick="stampaPDF('${c.id}')">🖨 Stampa PDF</button>
         </div>
         <button class="btn-outline red" style="width:100%" onclick="eliminaClienteDB('${c.id}')">🗑 Elimina cliente</button>
       </div>`;
+
+    if(c.tipo === 'sospeso') {
+      // Vista pagamento in sospeso
+      document.getElementById('detail-body').innerHTML=`
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div class="avatar ${avColor(c.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniziali(c.nome)}</div>
+            <div><div style="font-size:17px;font-weight:600">${c.nome}</div>
+            ${c.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${c.note}</div>`:''}
+            <div style="font-size:12px;color:var(--text2);margin-top:3px">💰 Pagamento in sospeso</div></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="totale-row"><span style="color:var(--text2)">Importo dovuto</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
+          <div class="totale-row"><span>Stato</span>
+            <span style="color:${c.pagato?'var(--green)':'var(--amber-mid)'}">${c.pagato?'✅ Ricevuto':'⏳ In sospeso'}</span>
+          </div>
+        </div>
+        ${!c.pagato ? `<button class="btn-primary" style="margin-bottom:12px" onclick="segnaRicevuto('${c.id}')">✅ Segna come ricevuto</button>` : ''}
+        ${actionBtns}`;
+    } else {
+      // Vista piano rate
+      const rateHtml = c.rate.map((r,i)=>{
+        const scad = !r.pagata && r.data<og;
+        return `<div class="rate-row">
+          <span class="rate-num">Rata ${i+1}</span>
+          <span class="rate-date">${fmtData(r.data)}${scad?' <span style="color:var(--red);font-size:9px">●</span>':''}</span>
+          <span class="rate-amount">${fmt(r.importo)}</span>
+          <span class="rate-status">${r.pagata
+            ? '<span class="badge badge-green">Pagata</span>'
+            : `<button class="btn-pay" onclick="pagaRataDettaglio('${c.id}',${i})">Pagata</button>`}</span>
+        </div>`;
+      }).join('');
+      document.getElementById('detail-body').innerHTML=`
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div class="avatar ${avColor(c.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniziali(c.nome)}</div>
+            <div><div style="font-size:17px;font-weight:600">${c.nome}</div>
+            ${c.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${c.note}</div>`:''}</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="totale-row"><span style="color:var(--text2)">Importo totale</span><span style="font-weight:600">${fmt(c.totale)}</span></div>
+          <div class="totale-row"><span style="color:var(--text2)">Acconto versato</span><span style="color:var(--green)">${fmt(c.acconto)}</span></div>
+          <div class="totale-row"><span style="color:var(--text2)">Rate incassate</span><span style="color:var(--green)">${fmt(risc-c.acconto)}</span></div>
+          <div class="totale-row"><span>Residuo</span><span style="color:${res>0?'var(--amber-mid)':'var(--green)'}">${fmt(res)}</span></div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:5px">
+              <span>Avanzamento</span><span>${perc}%</span></div>
+            <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${perc}%"></div></div>
+          </div>
+        </div>
+        <div class="sec-title">Piano rate mensili</div>
+        <div class="card" style="padding:8px 16px">${rateHtml}</div>
+        ${actionBtns}`;
+    }
     document.getElementById('detail-view').style.display='block';
     document.documentElement.style.overflow='hidden';
   };
+
+  window.segnaRicevuto = async id => {
+    const c = clienti.find(x=>x.id===id); if(!c) return;
+    if(!confirm('Segnare questo pagamento come ricevuto?')) return;
+    c.pagato = true;
+    await salvaCliente(c);
+    apriDettaglio(id);
+  };
+
 
   window.chiudiDettaglio = () => {
     document.getElementById('detail-view').style.display='none';
@@ -786,9 +888,18 @@
     document.getElementById('e-nome').value = c.nome;
     document.getElementById('e-note').value = c.note||'';
     document.getElementById('e-totale').value = c.totale;
-    document.getElementById('e-acconto').value = c.acconto;
-    document.getElementById('e-nrate').value = c.rate.length;
-    renderRateEdit(c.rate);
+    // Mostra/nascondi sezione rate in base al tipo
+    const isSosp = c.tipo === 'sospeso';
+    document.getElementById('e-acconto').value = isSosp ? 0 : c.acconto;
+    document.getElementById('e-nrate').value = isSosp ? 0 : c.rate.length;
+    document.querySelector('[for="e-acconto"]')?.parentElement && (document.getElementById('e-acconto').closest('.form-group').style.display = isSosp ? 'none' : 'block');
+    document.querySelector('#e-nrate')?.closest('.form-group') && (document.getElementById('e-nrate').closest('.form-group').style.display = isSosp ? 'none' : 'block');
+    const rateSection = document.querySelector('.edit-section-title');
+    if(rateSection) rateSection.style.display = isSosp ? 'none' : 'block';
+    const rateCard = document.getElementById('e-rate-list')?.closest('.card');
+    if(rateCard) rateCard.style.display = isSosp ? 'none' : 'block';
+    if(!isSosp) renderRateEdit(c.rate);
+    else document.getElementById('e-rate-list').innerHTML = '';
     document.getElementById('edit-overlay').style.display='block';
     document.documentElement.style.overflow='hidden';
   };
@@ -803,14 +914,19 @@
     const c = clienti.find(x=>x.id===_editId); if(!c) return;
     const nome = document.getElementById('e-nome').value.trim();
     if(!nome) { alert('Il nome non può essere vuoto.'); return; }
-    const rate = leggiRateDOM();
-    if(!rate.length) { alert('Devi avere almeno una rata.'); return; }
-    c.nome    = nome;
-    c.note    = document.getElementById('e-note').value.trim();
-    c.totale  = parseFloat(document.getElementById('e-totale').value)||c.totale;
-    c.acconto = parseFloat(document.getElementById('e-acconto').value)||0;
-    c.nrate   = rate.length;
-    c.rate    = rate;
+    c.nome   = nome;
+    c.note   = document.getElementById('e-note').value.trim();
+    c.totale = parseFloat(document.getElementById('e-totale').value)||c.totale;
+    if(c.tipo === 'sospeso') {
+      // Sospeso: salva solo nome, note, totale
+      c.acconto = 0;
+    } else {
+      const rate = leggiRateDOM();
+      if(!rate.length) { alert('Devi avere almeno una rata.'); return; }
+      c.acconto = parseFloat(document.getElementById('e-acconto').value)||0;
+      c.nrate   = rate.length;
+      c.rate    = rate;
+    }
     const savedId = _editId;
     await salvaCliente(c);
     chiudiModifica();
