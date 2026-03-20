@@ -441,75 +441,66 @@ onAuthStateChanged(auth, user => {
 
 // ── FIRESTORE ──────────────────────────────────────────
 
-// ── MIGRAZIONE DATI VECCHI ─────────────────────────────
-async function migraVecchiDati(uid) {
-  // Legge i vecchi clienti (struttura pre-multicontratto)
-  const qOld = query(collection(db,'clienti'), where('uid','==',uid));
-  const snap = await getDocs(qOld);
-  let migrati = 0;
-  for(const docSnap of snap.docs) {
-    const old = docSnap.data();
-    // Se ha già clienteId => già migrato, salta
-    // I vecchi hanno campo 'rate' direttamente dentro
-    // I nuovi clienti NON hanno 'rate' (stanno nei contratti)
-    if(old.rate !== undefined) {
-      // È un vecchio cliente con rate incorporate — migra
-      // 1. Salva il cliente pulito (senza rate)
-      const nuovoCliente = {
-        id: old.id || docSnap.id,
-        nome: old.nome || 'Cliente',
-        note: old.note || '',
-        colorIdx: old.colorIdx || 0,
-        uid
-      };
-      await setDoc(doc(db,'clienti', nuovoCliente.id), nuovoCliente);
-
-      // 2. Crea un contratto con i dati delle rate
-      const ctId = nuovoCliente.id + '_migrato';
-      const ct = {
-        id: ctId,
-        clienteId: nuovoCliente.id,
-        tipo: old.tipo || 'rate',
-        desc: old.desc || (old.note ? old.note.slice(0,30) : 'Contratto'),
-        totale: old.totale || 0,
-        acconto: old.acconto || 0,
-        nrate: old.nrate || 0,
-        rate: old.rate || [],
-        pagato: old.pagato || false,
-        uid
-      };
-      await setDoc(doc(db,'contratti', ctId), ct);
-      migrati++;
+function ascoltaDati(uid) {
+  const aggiorna = () => {
+    renderTutto();
+    if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
+    if(window.currentContrattoId) {
+      const ct=contratti.find(x=>x.id===window.currentContrattoId);
+      if(ct) renderDettaglioContratto(ct);
     }
-  }
-  if(migrati > 0) {
-    console.log('Migrati ' + migrati + ' clienti al nuovo formato.');
-  }
-}
+  };
 
-async function ascoltaDati(uid) {
-  // Prima migra eventuali dati vecchi
-  await migraVecchiDati(uid);
   const qc = query(collection(db,'clienti'), where('uid','==',uid));
   unsubClienti = onSnapshot(qc, snap => {
-    clienti = snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Supporta sia vecchio formato (con rate dentro) che nuovo (solo anagrafica)
+    clienti = [];
+    const contrattiDaVecchi = [];
+    snap.docs.forEach(d => {
+      const data = {id:d.id, ...d.data()};
+      if(data.rate !== undefined) {
+        // VECCHIO FORMATO: cliente con rate incorporate
+        // Crea un cliente pulito
+        clienti.push({
+          id: data.id,
+          nome: data.nome || 'Cliente',
+          note: data.note || '',
+          colorIdx: data.colorIdx || 0,
+          uid
+        });
+        // Crea un contratto virtuale (solo in memoria, non su Firebase)
+        contrattiDaVecchi.push({
+          id: data.id + '_v',
+          clienteId: data.id,
+          tipo: data.tipo || 'rate',
+          desc: data.desc || data.note?.slice(0,30) || 'Contratto',
+          totale: data.totale || 0,
+          acconto: data.acconto || 0,
+          nrate: data.nrate || 0,
+          rate: data.rate || [],
+          pagato: data.pagato || false,
+          _vecchioFormato: true, // flag: esiste solo in memoria
+          uid
+        });
+      } else {
+        // NUOVO FORMATO: solo anagrafica
+        clienti.push(data);
+      }
+    });
     clienti.sort((a,b)=>a.nome.localeCompare(b.nome));
-    renderTutto();
-    if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
-    if(window.currentContrattoId) {
-      const ct=contratti.find(x=>x.id===window.currentContrattoId);
-      if(ct) renderDettaglioContratto(ct);
-    }
+    // Merge contratti vecchi con nuovi (evita duplicati)
+    contratti = contratti.filter(c=>!c._vecchioFormato);
+    contratti = [...contratti, ...contrattiDaVecchi];
+    aggiorna();
   });
+
   const qct = query(collection(db,'contratti'), where('uid','==',uid));
   unsubContratti = onSnapshot(qct, snap => {
-    contratti = snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderTutto();
-    if(window.currentClienteId) aggiornaOvCliente(window.currentClienteId);
-    if(window.currentContrattoId) {
-      const ct=contratti.find(x=>x.id===window.currentContrattoId);
-      if(ct) renderDettaglioContratto(ct);
-    }
+    const nuovi = snap.docs.map(d=>({id:d.id,...d.data()}));
+    // Mantieni i contratti da vecchio formato, aggiorna solo i nuovi
+    contratti = contratti.filter(c=>c._vecchioFormato);
+    contratti = [...contratti, ...nuovi];
+    aggiorna();
   });
 }
 
@@ -519,7 +510,22 @@ async function salvaCliente(c) {
 }
 async function salvaContratto(c) {
   const uid=auth.currentUser?.uid; if(!uid) return;
-  await setDoc(doc(db,'contratti',c.id),{...c,uid});
+  if(c._vecchioFormato) {
+    // Converti vecchio cliente su Firebase al nuovo formato
+    // 1. Aggiorna il documento cliente rimuovendo i campi rate
+    const cl = clienti.find(x=>x.id===c.clienteId);
+    if(cl) await setDoc(doc(db,'clienti',cl.id), {id:cl.id, nome:cl.nome, note:cl.note||'', colorIdx:cl.colorIdx||0, uid});
+    // 2. Salva il contratto nella nuova raccolta con nuovo id
+    const newId = c.clienteId + '_migrato_' + Date.now();
+    const newC = {...c, id:newId, _vecchioFormato:false};
+    delete newC._vecchioFormato;
+    await setDoc(doc(db,'contratti',newId), {...newC, uid});
+    window.currentContrattoId = newId;
+    return;
+  }
+  const toSave = {...c};
+  delete toSave._vecchioFormato;
+  await setDoc(doc(db,'contratti',c.id),{...toSave,uid});
 }
 window.eliminaCliente = async id => {
   if(!confirm('Eliminare il cliente e TUTTI i suoi contratti?')) return;
