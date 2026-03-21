@@ -187,6 +187,12 @@
   .stat-box .lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--text3);margin-bottom:3px}
   .stat-box .val{font-size:16px;font-weight:600;letter-spacing:-.3px}
   .val.green{color:var(--green-mid)}.val.amber{color:var(--amber-mid)}.val.red{color:var(--red-mid)}
+
+  /* WHATSAPP */
+  .btn-wa{width:100%;padding:13px;background:#25D366;color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;margin-bottom:9px;transition:all .15s;box-shadow:0 2px 8px rgba(37,211,102,.3);letter-spacing:-.1px}
+  .btn-wa:hover{background:#20bd5a;transform:translateY(-1px)}.btn-wa:active{transform:translateY(0)}
+  .btn-wa-gray{background:var(--bg2);color:var(--text2);box-shadow:none;border:1.5px solid var(--border2)}
+  .btn-wa-gray:hover{background:var(--bg3);transform:translateY(-1px)}
 </style>
 </head>
 <body>
@@ -799,21 +805,29 @@ function aggiornaOvCliente(cid) {
   const tot=totCliente(cid),risc=riscCliente(cid),res=resCliente(cid);
   const perc=tot>0?Math.min(Math.round(risc/tot*100),100):0;
 
+  const tel = cl.telefono||'';
   const sommario=`<div class="card">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
       <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:48px;height:48px;font-size:17px">${iniz(cl.nome)}</div>
-      <div><div style="font-size:17px;font-weight:600">${cl.nome}</div>
-      ${cl.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${cl.note}</div>`:''}</div>
+      <div style="flex:1">
+        <div style="font-size:17px;font-weight:600;letter-spacing:-.2px">${cl.nome}</div>
+        ${cl.note?`<div style="font-size:13px;color:var(--text2);margin-top:2px">${cl.note}</div>`:''}
+        ${tel?`<div style="font-size:13px;color:var(--text2);margin-top:3px">📞 ${tel}</div>`:''}
+      </div>
+      <button onclick="modificaTelefono('${cl.id}')" style="background:var(--bg);border:1.5px solid var(--border2);border-radius:9px;padding:7px 11px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text2);flex-shrink:0">${tel?'✏️':'➕ Tel'}</button>
     </div>
     ${tot>0?`
-    <div class="totale-row"><span style="color:var(--text2)">Totale piani</span><span style="font-weight:600">${fmt(tot)}</span></div>
-    <div class="totale-row"><span style="color:var(--text2)">Riscosso</span><span style="color:var(--green)">${fmt(risc)}</span></div>
-    <div class="totale-row"><span>Residuo</span><span style="color:${res>0?'var(--amber-mid)':'var(--green)'}">${fmt(res)}</span></div>
-    <div style="margin-top:10px">
-      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:4px"><span>Avanzamento totale</span><span>${perc}%</span></div>
-      <div class="progress-bar" style="height:7px"><div class="progress-fill" style="width:${perc}%"></div></div>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="lbl">Totale</div><div class="val">${fmtS(tot)}</div></div>
+      <div class="stat-box"><div class="lbl">Riscosso</div><div class="val green">${fmtS(risc)}</div></div>
+      <div class="stat-box"><div class="lbl">Residuo</div><div class="val ${res>0?'amber':''}">${fmtS(res)}</div></div>
+    </div>
+    <div style="margin-top:12px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.04em"><span>Avanzamento totale</span><span>${perc}%</span></div>
+      <div class="progress-bar" style="height:5px"><div class="progress-fill" style="width:${perc}%"></div></div>
     </div>`:''}
   </div>`;
+
 
   const og=oggi();
   // Separa piani attivi da completati
@@ -857,7 +871,11 @@ function aggiornaOvCliente(cid) {
       ${pianiAttivi.length?`<span style="font-size:12px;background:var(--blue-bg);color:var(--blue-mid);padding:2px 8px;border-radius:10px;font-weight:600">${pianiAttivi.length}</span>`:''}
     </div>`+listaAttivi+
     storicoSection+
-    `<div class="action-row"><button class="btn-outline red" onclick="eliminaCliente('${cl.id}')">🗑 Elimina cliente e tutti i piani</button></div>`;
+    `<div class="action-row">
+      ${tel?`<button class="btn-wa" onclick="mandaWhatsApp('${cl.id}')">💬 Manda riepilogo su WhatsApp</button>`:
+        `<button class="btn-wa btn-wa-gray" onclick="modificaTelefono('${cl.id}')">➕ Aggiungi numero per WhatsApp</button>`}
+      <button class="btn-outline red" onclick="eliminaCliente('${cl.id}')">🗑 Elimina cliente e tutti i piani</button>
+    </div>`;
 }
 
 // ── DETTAGLIO CONTRATTO ────────────────────────────────
@@ -1107,6 +1125,59 @@ window.apriStampa = compoundId => {
 };
 
 document.getElementById('n-data').value=oggi();
+
+  // ── TELEFONO & WHATSAPP ────────────────────────────
+  window.modificaTelefono = async id => {
+    const cl = clienti.find(x=>x.id===id); if(!cl) return;
+    const attuale = cl.telefono||'';
+    const nuovo = prompt('Numero di telefono (con prefisso es. +39 333 1234567):', attuale);
+    if(nuovo === null) return; // annullato
+    cl.telefono = nuovo.trim();
+    await salvaClienteDB(cl);
+    aggiornaOvCliente(id);
+  };
+
+  window.mandaWhatsApp = id => {
+    const cl = clienti.find(x=>x.id===id); if(!cl) return;
+    if(!cl.telefono) { alert('Nessun numero salvato per questo cliente.'); return; }
+
+    const og = oggi();
+    const cc = contrattiDiCliente(id).filter(c => resC(c) > 0);
+    if(!cc.length) { alert('Nessun piano attivo da inviare.'); return; }
+
+    let msg = `Buongiorno ${cl.nome},\n`;
+    msg += `ecco il riepilogo dei suoi piani di pagamento:\n\n`;
+
+    cc.forEach(c => {
+      msg += `📋 *${c.desc}*\n`;
+      if(c.tipo === 'sospeso') {
+        msg += `   Importo: ${fmt(c.totale)} — In sospeso\n`;
+      } else {
+        const ratePendenti = c.rate.filter(r => !r.pagata);
+        msg += `   Totale: ${fmt(c.totale)}`;
+        if(c.acconto > 0) msg += ` · Acconto: ${fmt(c.acconto)}`;
+        msg += `\n`;
+        msg += `   Residuo: *${fmt(resC(c))}*\n`;
+        if(ratePendenti.length > 0) {
+          msg += `   Rate da pagare:\n`;
+          ratePendenti.slice(0, 6).forEach((r, i) => {
+            const scad = r.data < og;
+            msg += `   ${scad ? '⚠️' : '•'} ${fmtD(r.data)} — ${fmt(r.importo)}${scad ? ' (scaduta)' : ''}\n`;
+          });
+          if(ratePendenti.length > 6) msg += `   ... e altre ${ratePendenti.length - 6} rate\n`;
+        }
+      }
+      msg += `\n`;
+    });
+
+    msg += `Grazie per la sua fiducia!`;
+
+    // Pulisci il numero: rimuovi spazi e caratteri non numerici tranne +
+    const tel = cl.telefono.replace(/[\s\-().]/g, '');
+    const url = `https://wa.me/${tel.startsWith('+') ? tel.slice(1) : tel}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+  };
+
 </script>
 </body>
 </html>
