@@ -686,7 +686,21 @@ function resetNuovo() {
 
     // Salva
     const nomeFile = cl.nome.replace(/\s+/g,'_')+'_piano_pagamento_'+og+'.pdf';
-    doc.save(nomeFile);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if(isIOS) {
+      const pdfData = doc.output('datauristring');
+      const w = window.open('', '_blank');
+      if(w) {
+        w.document.write('<html><head><title>'+nomeFile+'</title></head><body style="margin:0">'+
+          '<p style="font-family:sans-serif;font-size:13px;padding:12px;color:#555">'+
+          'Tieni premuto sul PDF e scegli <strong>Condividi</strong> o <strong>Aggiungi ai file</strong>.</p>'+
+          '<iframe src="'+pdfData+'" width="100%" height="90%" style="border:none"></iframe>'+
+          '</body></html>');
+        w.document.close();
+      }
+    } else {
+      doc.save(nomeFile);
+    }
   }
 
   // ── STAMPA TUTTI I PIANI ATTIVI DEL CLIENTE ────────
@@ -1369,7 +1383,21 @@ document.getElementById('n-data').value=oggi();
 
     // Salva
     const nomeFile = cl.nome.replace(/\s+/g,'_')+'_piano_pagamento_'+og+'.pdf';
-    doc.save(nomeFile);
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if(isIOS) {
+      const pdfData = doc.output('datauristring');
+      const w = window.open('', '_blank');
+      if(w) {
+        w.document.write('<html><head><title>'+nomeFile+'</title></head><body style="margin:0">'+
+          '<p style="font-family:sans-serif;font-size:13px;padding:12px;color:#555">'+
+          'Tieni premuto sul PDF e scegli <strong>Condividi</strong> o <strong>Aggiungi ai file</strong>.</p>'+
+          '<iframe src="'+pdfData+'" width="100%" height="90%" style="border:none"></iframe>'+
+          '</body></html>');
+        w.document.close();
+      }
+    } else {
+      doc.save(nomeFile);
+    }
   }
 
   // ── STAMPA TUTTI I PIANI ATTIVI DEL CLIENTE ────────
