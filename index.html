@@ -573,6 +573,77 @@ function resetNuovo() {
   document.getElementById('n-suggerimenti').style.display='none';
   document.getElementById('rate-preview').style.display='none';
   document.getElementById('n-data').value=oggi();
+
+  // ── STAMPA TUTTI I PIANI ATTIVI DEL CLIENTE ────────
+  window.stampaTuttiPiani = id => {
+    const cl = clienti.find(x=>x.id===id); if(!cl) return;
+    const og = oggi();
+    const cc = contrattiDiCliente(id).filter(c => resC(c) > 0);
+    if(!cc.length) { alert('Nessun piano attivo da stampare.'); return; }
+
+    const totTot  = cc.reduce((a,c)=>a+c.totale,0);
+    const totRisc = cc.reduce((a,c)=>a+riscC(c),0);
+    const totRes  = cc.reduce((a,c)=>a+resC(c),0);
+    const percTot = Math.min(Math.round(totRisc/totTot*100),100);
+
+    const pianiHtml = cc.map(c => {
+      const risc=riscC(c), res=resC(c), perc=Math.min(Math.round(risc/c.totale*100),100);
+      if(c.tipo==='sospeso') {
+        return `<div style="margin-bottom:20px;padding:14px;background:#fef3e2;border-radius:8px;border:1px solid #fde8b4">
+          <div style="font-size:14pt;font-weight:700;margin-bottom:6px">${c.desc}</div>
+          <div style="font-size:11pt;color:#7a4700">💰 Pagamento in sospeso · <strong>${fmt(c.totale)}</strong></div>
+        </div>`;
+      }
+      const righe = c.rate.map((r,i) => {
+        const scad = !r.pagata && r.data < og;
+        return `<tr style="color:${r.pagata?'#999':scad?'#a00':'#1a1a1a'}">
+          <td style="padding:6px 8px;border:1px solid #e0e0e0">Rata ${i+1}</td>
+          <td style="padding:6px 8px;border:1px solid #e0e0e0">${fmtD(r.data)}</td>
+          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:right;font-weight:600">${fmt(r.importo)}</td>
+          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${r.pagata?'✓ Pagata':scad?'⚠ SCADUTA':'In attesa'}</td>
+        </tr>`;
+      }).join('');
+      return `<div style="margin-bottom:24px">
+        <div style="font-size:14pt;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e0e0e0">${c.desc}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Totale</div><div style="font-size:13pt;font-weight:700">${fmt(c.totale)}</div></div>
+          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Riscosso</div><div style="font-size:13pt;font-weight:700;color:#0a6e4a">${fmt(risc)}</div></div>
+          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Residuo</div><div style="font-size:13pt;font-weight:700;color:#7a4700">${fmt(res)}</div></div>
+        </div>
+        <div style="height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-bottom:10px">
+          <div style="height:100%;background:#14a86e;width:${perc}%;border-radius:3px"></div></div>
+        <table style="width:100%;border-collapse:collapse;font-size:10pt">
+          <thead><tr style="background:#f0f0f0">
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">N.</th>
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">Scadenza</th>
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:right">Importo</th>
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:center">Stato</th>
+          </tr></thead>
+          <tbody>${righe}</tbody>
+        </table>
+      </div>`;
+    }).join('');
+
+    document.getElementById('ov-stampa-body').innerHTML = `
+      <div style="border-bottom:2px solid #18181a;padding-bottom:14px;margin-bottom:18px">
+        <div style="font-size:22px;font-weight:700;letter-spacing:-.3px">${cl.nome}</div>
+        ${cl.note?`<div style="font-size:13px;color:#666;margin-top:3px">${cl.note}</div>`:''}
+        ${cl.telefono?`<div style="font-size:13px;color:#666;margin-top:2px">📞 ${cl.telefono}</div>`:''}
+        <div style="font-size:12px;color:#888;margin-top:6px">Riepilogo piani attivi · ${fmtD(og)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;padding:14px;background:#f5f5f3;border-radius:10px">
+        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Totale</div><div style="font-size:16pt;font-weight:700">${fmt(totTot)}</div></div>
+        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Riscosso</div><div style="font-size:16pt;font-weight:700;color:#0a6e4a">${fmt(totRisc)}</div></div>
+        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Residuo</div><div style="font-size:16pt;font-weight:700;color:#7a4700">${fmt(totRes)}</div></div>
+      </div>
+      ${pianiHtml}
+      <div style="margin-top:24px;padding-top:10px;border-top:1px solid #ddd;font-size:11px;color:#aaa;text-align:center">
+        Documento generato automaticamente · ${fmtD(og)}</div>`;
+
+    chiudi('ov-cliente');
+    apriOv('ov-stampa');
+  };
+
   setTipo('rate');
 }
 
@@ -872,8 +943,11 @@ function aggiornaOvCliente(cid) {
     </div>`+listaAttivi+
     storicoSection+
     `<div class="action-row">
-      ${tel?`<button class="btn-wa" onclick="mandaWhatsApp('${cl.id}')">💬 Manda riepilogo su WhatsApp</button>`:
-        `<button class="btn-wa btn-wa-gray" onclick="modificaTelefono('${cl.id}')">➕ Aggiungi numero per WhatsApp</button>`}
+      <div class="action-row-2">
+        ${tel?`<button class="btn-wa" style="margin-bottom:0;flex:1" onclick="mandaWhatsApp('${cl.id}')">💬 WhatsApp</button>`:
+          `<button class="btn-wa btn-wa-gray" style="margin-bottom:0;flex:1" onclick="modificaTelefono('${cl.id}')">➕ Aggiungi Tel</button>`}
+        <button class="btn-outline blue" style="flex:1" onclick="stampaTuttiPiani('${cl.id}')">🖨 Stampa PDF</button>
+      </div>
       <button class="btn-outline red" onclick="eliminaCliente('${cl.id}')">🗑 Elimina cliente e tutti i piani</button>
     </div>`;
 }
@@ -1126,6 +1200,77 @@ window.apriStampa = compoundId => {
 
 document.getElementById('n-data').value=oggi();
 
+  // ── STAMPA TUTTI I PIANI ATTIVI DEL CLIENTE ────────
+  window.stampaTuttiPiani = id => {
+    const cl = clienti.find(x=>x.id===id); if(!cl) return;
+    const og = oggi();
+    const cc = contrattiDiCliente(id).filter(c => resC(c) > 0);
+    if(!cc.length) { alert('Nessun piano attivo da stampare.'); return; }
+
+    const totTot  = cc.reduce((a,c)=>a+c.totale,0);
+    const totRisc = cc.reduce((a,c)=>a+riscC(c),0);
+    const totRes  = cc.reduce((a,c)=>a+resC(c),0);
+    const percTot = Math.min(Math.round(totRisc/totTot*100),100);
+
+    const pianiHtml = cc.map(c => {
+      const risc=riscC(c), res=resC(c), perc=Math.min(Math.round(risc/c.totale*100),100);
+      if(c.tipo==='sospeso') {
+        return `<div style="margin-bottom:20px;padding:14px;background:#fef3e2;border-radius:8px;border:1px solid #fde8b4">
+          <div style="font-size:14pt;font-weight:700;margin-bottom:6px">${c.desc}</div>
+          <div style="font-size:11pt;color:#7a4700">💰 Pagamento in sospeso · <strong>${fmt(c.totale)}</strong></div>
+        </div>`;
+      }
+      const righe = c.rate.map((r,i) => {
+        const scad = !r.pagata && r.data < og;
+        return `<tr style="color:${r.pagata?'#999':scad?'#a00':'#1a1a1a'}">
+          <td style="padding:6px 8px;border:1px solid #e0e0e0">Rata ${i+1}</td>
+          <td style="padding:6px 8px;border:1px solid #e0e0e0">${fmtD(r.data)}</td>
+          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:right;font-weight:600">${fmt(r.importo)}</td>
+          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${r.pagata?'✓ Pagata':scad?'⚠ SCADUTA':'In attesa'}</td>
+        </tr>`;
+      }).join('');
+      return `<div style="margin-bottom:24px">
+        <div style="font-size:14pt;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e0e0e0">${c.desc}</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Totale</div><div style="font-size:13pt;font-weight:700">${fmt(c.totale)}</div></div>
+          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Riscosso</div><div style="font-size:13pt;font-weight:700;color:#0a6e4a">${fmt(risc)}</div></div>
+          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Residuo</div><div style="font-size:13pt;font-weight:700;color:#7a4700">${fmt(res)}</div></div>
+        </div>
+        <div style="height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-bottom:10px">
+          <div style="height:100%;background:#14a86e;width:${perc}%;border-radius:3px"></div></div>
+        <table style="width:100%;border-collapse:collapse;font-size:10pt">
+          <thead><tr style="background:#f0f0f0">
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">N.</th>
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">Scadenza</th>
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:right">Importo</th>
+            <th style="padding:6px 8px;border:1px solid #ccc;text-align:center">Stato</th>
+          </tr></thead>
+          <tbody>${righe}</tbody>
+        </table>
+      </div>`;
+    }).join('');
+
+    document.getElementById('ov-stampa-body').innerHTML = `
+      <div style="border-bottom:2px solid #18181a;padding-bottom:14px;margin-bottom:18px">
+        <div style="font-size:22px;font-weight:700;letter-spacing:-.3px">${cl.nome}</div>
+        ${cl.note?`<div style="font-size:13px;color:#666;margin-top:3px">${cl.note}</div>`:''}
+        ${cl.telefono?`<div style="font-size:13px;color:#666;margin-top:2px">📞 ${cl.telefono}</div>`:''}
+        <div style="font-size:12px;color:#888;margin-top:6px">Riepilogo piani attivi · ${fmtD(og)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;padding:14px;background:#f5f5f3;border-radius:10px">
+        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Totale</div><div style="font-size:16pt;font-weight:700">${fmt(totTot)}</div></div>
+        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Riscosso</div><div style="font-size:16pt;font-weight:700;color:#0a6e4a">${fmt(totRisc)}</div></div>
+        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Residuo</div><div style="font-size:16pt;font-weight:700;color:#7a4700">${fmt(totRes)}</div></div>
+      </div>
+      ${pianiHtml}
+      <div style="margin-top:24px;padding-top:10px;border-top:1px solid #ddd;font-size:11px;color:#aaa;text-align:center">
+        Documento generato automaticamente · ${fmtD(og)}</div>`;
+
+    chiudi('ov-cliente');
+    apriOv('ov-stampa');
+  };
+
+
   // ── TELEFONO & WHATSAPP ────────────────────────────
   window.modificaTelefono = async id => {
     const cl = clienti.find(x=>x.id===id); if(!cl) return;
@@ -1175,7 +1320,8 @@ document.getElementById('n-data').value=oggi();
     // Pulisci il numero: rimuovi spazi e caratteri non numerici tranne +
     const tel = cl.telefono.replace(/[\s\-().]/g, '');
     const url = `https://wa.me/${tel.startsWith('+') ? tel.slice(1) : tel}?text=${encodeURIComponent(msg)}`;
-    window.open(url, '_blank');
+    // Usa location.href per evitare pagina bianca su mobile
+    window.location.href = url;
   };
 
 </script>
