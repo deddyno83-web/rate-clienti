@@ -194,6 +194,8 @@
   .btn-wa-gray{background:var(--bg2);color:var(--text2);box-shadow:none;border:1.5px solid var(--border2)}
   .btn-wa-gray:hover{background:var(--bg3);transform:translateY(-1px)}
 </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
 
@@ -574,6 +576,119 @@ function resetNuovo() {
   document.getElementById('rate-preview').style.display='none';
   document.getElementById('n-data').value=oggi();
 
+  // ── GENERA PDF CON jsPDF ──────────────────────────
+  function generaPDF(cl, cc) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const og = oggi();
+    const W = 210, margin = 14;
+    let y = margin;
+
+    // Header cliente
+    doc.setFillColor(24, 24, 26);
+    doc.roundedRect(margin, y, W - margin*2, 22, 3, 3, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(14); doc.setFont('helvetica','bold');
+    doc.text(cl.nome, margin+6, y+8);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    if(cl.telefono) doc.text('Tel: '+cl.telefono, margin+6, y+14);
+    doc.text('Riepilogo piani attivi  |  '+fmtD(og), W-margin-6, y+14, {align:'right'});
+    y += 28;
+
+    // Totali generali se più piani
+    if(cc.length > 1) {
+      const totTot=cc.reduce((a,c)=>a+c.totale,0);
+      const totRisc=cc.reduce((a,c)=>a+riscC(c),0);
+      const totRes=cc.reduce((a,c)=>a+resC(c),0);
+      doc.setFillColor(240,239,233);
+      doc.roundedRect(margin, y, W-margin*2, 16, 2, 2, 'F');
+      doc.setTextColor(100,100,100); doc.setFontSize(8); doc.setFont('helvetica','bold');
+      doc.text('TOTALE COMPLESSIVO', margin+4, y+5);
+      doc.setTextColor(24,24,26); doc.setFontSize(10);
+      doc.text('Tot: '+fmt(totTot)+'  Risc: '+fmt(totRisc)+'  Residuo: '+fmt(totRes), margin+4, y+12);
+      y += 22;
+    }
+
+    // Ogni piano
+    cc.forEach((c, ci) => {
+      const risc=riscC(c), res=resC(c), perc=Math.min(Math.round(risc/c.totale*100),100);
+
+      // Titolo piano
+      doc.setFillColor(245,245,243);
+      doc.roundedRect(margin, y, W-margin*2, 9, 2, 2, 'F');
+      doc.setTextColor(24,24,26); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text(c.desc, margin+4, y+6.5);
+      const tipoBadge = c.tipo==='sospeso' ? '💰 Sospeso' : '📅 Piano rate';
+      doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(120,120,120);
+      doc.text(tipoBadge, W-margin-4, y+6.5, {align:'right'});
+      y += 13;
+
+      if(c.tipo==='sospeso') {
+        doc.setTextColor(122,71,0); doc.setFontSize(10); doc.setFont('helvetica','bold');
+        doc.text('Importo in sospeso: '+fmt(c.totale), margin+4, y+4);
+        y += 12;
+      } else {
+        // Sommario numerico
+        doc.setTextColor(24,24,26); doc.setFontSize(9); doc.setFont('helvetica','normal');
+        doc.text('Totale: '+fmt(c.totale)+'    Acconto: '+fmt(c.acconto)+'    Riscosso: '+fmt(risc)+'    Residuo: '+fmt(res), margin+4, y);
+        y += 5;
+        // Barra avanzamento
+        doc.setFillColor(230,230,225); doc.roundedRect(margin, y, W-margin*2, 3, 1, 1, 'F');
+        doc.setFillColor(20,168,110); doc.roundedRect(margin, y, (W-margin*2)*perc/100, 3, 1, 1, 'F');
+        doc.setTextColor(120,120,120); doc.setFontSize(7);
+        doc.text(perc+'%', W-margin-2, y+2.5, {align:'right'});
+        y += 8;
+
+        // Tabella rate
+        const tableRows = c.rate.map((r,i) => {
+          const scad = !r.pagata && r.data < og;
+          return [
+            'Rata '+(i+1),
+            fmtD(r.data),
+            fmt(r.importo),
+            r.pagata ? 'Pagata' : scad ? 'SCADUTA' : 'In attesa'
+          ];
+        });
+        doc.autoTable({
+          startY: y,
+          head: [['N.','Scadenza','Importo','Stato']],
+          body: tableRows,
+          margin: {left:margin, right:margin},
+          headStyles: {fillColor:[24,24,26], textColor:255, fontSize:8, fontStyle:'bold'},
+          bodyStyles: {fontSize:8, textColor:[40,40,40]},
+          columnStyles: {2:{halign:'right'}, 3:{halign:'center'}},
+          didParseCell: data => {
+            if(data.section==='body') {
+              const stato = data.row.raw[3];
+              if(stato==='SCADUTA') { data.cell.styles.textColor=[160,0,0]; data.cell.styles.fontStyle='bold'; }
+              else if(stato==='Pagata') { data.cell.styles.textColor=[150,150,150]; }
+            }
+          },
+          alternateRowStyles: {fillColor:[250,250,248]},
+          theme: 'grid'
+        });
+        y = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Separatore tra piani
+      if(ci < cc.length-1) {
+        doc.setDrawColor(220,220,215); doc.setLineWidth(0.3);
+        doc.line(margin, y-4, W-margin, y-4);
+      }
+
+      // Nuova pagina se necessario
+      if(y > 260 && ci < cc.length-1) { doc.addPage(); y = margin; }
+    });
+
+    // Footer
+    doc.setTextColor(180,180,180); doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text('Documento generato automaticamente  |  '+fmtD(og), W/2, 290, {align:'center'});
+
+    // Salva
+    const nomeFile = cl.nome.replace(/\s+/g,'_')+'_piano_pagamento_'+og+'.pdf';
+    doc.save(nomeFile);
+  }
+
   // ── STAMPA TUTTI I PIANI ATTIVI DEL CLIENTE ────────
   window.stampaTuttiPiani = id => {
     const cl = clienti.find(x=>x.id===id); if(!cl) return;
@@ -581,67 +696,7 @@ function resetNuovo() {
     const cc = contrattiDiCliente(id).filter(c => resC(c) > 0);
     if(!cc.length) { alert('Nessun piano attivo da stampare.'); return; }
 
-    const totTot  = cc.reduce((a,c)=>a+c.totale,0);
-    const totRisc = cc.reduce((a,c)=>a+riscC(c),0);
-    const totRes  = cc.reduce((a,c)=>a+resC(c),0);
-    const percTot = Math.min(Math.round(totRisc/totTot*100),100);
-
-    const pianiHtml = cc.map(c => {
-      const risc=riscC(c), res=resC(c), perc=Math.min(Math.round(risc/c.totale*100),100);
-      if(c.tipo==='sospeso') {
-        return `<div style="margin-bottom:20px;padding:14px;background:#fef3e2;border-radius:8px;border:1px solid #fde8b4">
-          <div style="font-size:14pt;font-weight:700;margin-bottom:6px">${c.desc}</div>
-          <div style="font-size:11pt;color:#7a4700">💰 Pagamento in sospeso · <strong>${fmt(c.totale)}</strong></div>
-        </div>`;
-      }
-      const righe = c.rate.map((r,i) => {
-        const scad = !r.pagata && r.data < og;
-        return `<tr style="color:${r.pagata?'#999':scad?'#a00':'#1a1a1a'}">
-          <td style="padding:6px 8px;border:1px solid #e0e0e0">Rata ${i+1}</td>
-          <td style="padding:6px 8px;border:1px solid #e0e0e0">${fmtD(r.data)}</td>
-          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:right;font-weight:600">${fmt(r.importo)}</td>
-          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${r.pagata?'✓ Pagata':scad?'⚠ SCADUTA':'In attesa'}</td>
-        </tr>`;
-      }).join('');
-      return `<div style="margin-bottom:24px">
-        <div style="font-size:14pt;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e0e0e0">${c.desc}</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
-          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Totale</div><div style="font-size:13pt;font-weight:700">${fmt(c.totale)}</div></div>
-          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Riscosso</div><div style="font-size:13pt;font-weight:700;color:#0a6e4a">${fmt(risc)}</div></div>
-          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Residuo</div><div style="font-size:13pt;font-weight:700;color:#7a4700">${fmt(res)}</div></div>
-        </div>
-        <div style="height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-bottom:10px">
-          <div style="height:100%;background:#14a86e;width:${perc}%;border-radius:3px"></div></div>
-        <table style="width:100%;border-collapse:collapse;font-size:10pt">
-          <thead><tr style="background:#f0f0f0">
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">N.</th>
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">Scadenza</th>
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:right">Importo</th>
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:center">Stato</th>
-          </tr></thead>
-          <tbody>${righe}</tbody>
-        </table>
-      </div>`;
-    }).join('');
-
-    document.getElementById('ov-stampa-body').innerHTML = `
-      <div style="border-bottom:2px solid #18181a;padding-bottom:14px;margin-bottom:18px">
-        <div style="font-size:22px;font-weight:700;letter-spacing:-.3px">${cl.nome}</div>
-        ${cl.note?`<div style="font-size:13px;color:#666;margin-top:3px">${cl.note}</div>`:''}
-        ${cl.telefono?`<div style="font-size:13px;color:#666;margin-top:2px">📞 ${cl.telefono}</div>`:''}
-        <div style="font-size:12px;color:#888;margin-top:6px">Riepilogo piani attivi · ${fmtD(og)}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;padding:14px;background:#f5f5f3;border-radius:10px">
-        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Totale</div><div style="font-size:16pt;font-weight:700">${fmt(totTot)}</div></div>
-        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Riscosso</div><div style="font-size:16pt;font-weight:700;color:#0a6e4a">${fmt(totRisc)}</div></div>
-        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Residuo</div><div style="font-size:16pt;font-weight:700;color:#7a4700">${fmt(totRes)}</div></div>
-      </div>
-      ${pianiHtml}
-      <div style="margin-top:24px;padding-top:10px;border-top:1px solid #ddd;font-size:11px;color:#aaa;text-align:center">
-        Documento generato automaticamente · ${fmtD(og)}</div>`;
-
-    chiudi('ov-cliente');
-    apriOv('ov-stampa');
+    generaPDF(cl, cc);
   };
 
   setTipo('rate');
@@ -1146,6 +1201,10 @@ window.salvaModifica = async () => {
 
 // ── STAMPA ─────────────────────────────────────────────
 window.apriStampa = compoundId => {
+    const ct0=trovaContratto(compoundId); if(!ct0) return;
+    const [cid0]=compoundId.split('::');
+    const cl0=clienti.find(x=>x.id===cid0);
+    if(cl0) { generaPDF(cl0,[ct0]); return; }
   const ct=trovaContratto(compoundId); if(!ct) return;
   const [cid]=compoundId.split('::');
   const cl=clienti.find(x=>x.id===cid);
@@ -1200,6 +1259,119 @@ window.apriStampa = compoundId => {
 
 document.getElementById('n-data').value=oggi();
 
+  // ── GENERA PDF CON jsPDF ──────────────────────────
+  function generaPDF(cl, cc) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const og = oggi();
+    const W = 210, margin = 14;
+    let y = margin;
+
+    // Header cliente
+    doc.setFillColor(24, 24, 26);
+    doc.roundedRect(margin, y, W - margin*2, 22, 3, 3, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(14); doc.setFont('helvetica','bold');
+    doc.text(cl.nome, margin+6, y+8);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    if(cl.telefono) doc.text('Tel: '+cl.telefono, margin+6, y+14);
+    doc.text('Riepilogo piani attivi  |  '+fmtD(og), W-margin-6, y+14, {align:'right'});
+    y += 28;
+
+    // Totali generali se più piani
+    if(cc.length > 1) {
+      const totTot=cc.reduce((a,c)=>a+c.totale,0);
+      const totRisc=cc.reduce((a,c)=>a+riscC(c),0);
+      const totRes=cc.reduce((a,c)=>a+resC(c),0);
+      doc.setFillColor(240,239,233);
+      doc.roundedRect(margin, y, W-margin*2, 16, 2, 2, 'F');
+      doc.setTextColor(100,100,100); doc.setFontSize(8); doc.setFont('helvetica','bold');
+      doc.text('TOTALE COMPLESSIVO', margin+4, y+5);
+      doc.setTextColor(24,24,26); doc.setFontSize(10);
+      doc.text('Tot: '+fmt(totTot)+'  Risc: '+fmt(totRisc)+'  Residuo: '+fmt(totRes), margin+4, y+12);
+      y += 22;
+    }
+
+    // Ogni piano
+    cc.forEach((c, ci) => {
+      const risc=riscC(c), res=resC(c), perc=Math.min(Math.round(risc/c.totale*100),100);
+
+      // Titolo piano
+      doc.setFillColor(245,245,243);
+      doc.roundedRect(margin, y, W-margin*2, 9, 2, 2, 'F');
+      doc.setTextColor(24,24,26); doc.setFontSize(11); doc.setFont('helvetica','bold');
+      doc.text(c.desc, margin+4, y+6.5);
+      const tipoBadge = c.tipo==='sospeso' ? '💰 Sospeso' : '📅 Piano rate';
+      doc.setFontSize(8); doc.setFont('helvetica','normal'); doc.setTextColor(120,120,120);
+      doc.text(tipoBadge, W-margin-4, y+6.5, {align:'right'});
+      y += 13;
+
+      if(c.tipo==='sospeso') {
+        doc.setTextColor(122,71,0); doc.setFontSize(10); doc.setFont('helvetica','bold');
+        doc.text('Importo in sospeso: '+fmt(c.totale), margin+4, y+4);
+        y += 12;
+      } else {
+        // Sommario numerico
+        doc.setTextColor(24,24,26); doc.setFontSize(9); doc.setFont('helvetica','normal');
+        doc.text('Totale: '+fmt(c.totale)+'    Acconto: '+fmt(c.acconto)+'    Riscosso: '+fmt(risc)+'    Residuo: '+fmt(res), margin+4, y);
+        y += 5;
+        // Barra avanzamento
+        doc.setFillColor(230,230,225); doc.roundedRect(margin, y, W-margin*2, 3, 1, 1, 'F');
+        doc.setFillColor(20,168,110); doc.roundedRect(margin, y, (W-margin*2)*perc/100, 3, 1, 1, 'F');
+        doc.setTextColor(120,120,120); doc.setFontSize(7);
+        doc.text(perc+'%', W-margin-2, y+2.5, {align:'right'});
+        y += 8;
+
+        // Tabella rate
+        const tableRows = c.rate.map((r,i) => {
+          const scad = !r.pagata && r.data < og;
+          return [
+            'Rata '+(i+1),
+            fmtD(r.data),
+            fmt(r.importo),
+            r.pagata ? 'Pagata' : scad ? 'SCADUTA' : 'In attesa'
+          ];
+        });
+        doc.autoTable({
+          startY: y,
+          head: [['N.','Scadenza','Importo','Stato']],
+          body: tableRows,
+          margin: {left:margin, right:margin},
+          headStyles: {fillColor:[24,24,26], textColor:255, fontSize:8, fontStyle:'bold'},
+          bodyStyles: {fontSize:8, textColor:[40,40,40]},
+          columnStyles: {2:{halign:'right'}, 3:{halign:'center'}},
+          didParseCell: data => {
+            if(data.section==='body') {
+              const stato = data.row.raw[3];
+              if(stato==='SCADUTA') { data.cell.styles.textColor=[160,0,0]; data.cell.styles.fontStyle='bold'; }
+              else if(stato==='Pagata') { data.cell.styles.textColor=[150,150,150]; }
+            }
+          },
+          alternateRowStyles: {fillColor:[250,250,248]},
+          theme: 'grid'
+        });
+        y = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Separatore tra piani
+      if(ci < cc.length-1) {
+        doc.setDrawColor(220,220,215); doc.setLineWidth(0.3);
+        doc.line(margin, y-4, W-margin, y-4);
+      }
+
+      // Nuova pagina se necessario
+      if(y > 260 && ci < cc.length-1) { doc.addPage(); y = margin; }
+    });
+
+    // Footer
+    doc.setTextColor(180,180,180); doc.setFontSize(7); doc.setFont('helvetica','normal');
+    doc.text('Documento generato automaticamente  |  '+fmtD(og), W/2, 290, {align:'center'});
+
+    // Salva
+    const nomeFile = cl.nome.replace(/\s+/g,'_')+'_piano_pagamento_'+og+'.pdf';
+    doc.save(nomeFile);
+  }
+
   // ── STAMPA TUTTI I PIANI ATTIVI DEL CLIENTE ────────
   window.stampaTuttiPiani = id => {
     const cl = clienti.find(x=>x.id===id); if(!cl) return;
@@ -1207,67 +1379,7 @@ document.getElementById('n-data').value=oggi();
     const cc = contrattiDiCliente(id).filter(c => resC(c) > 0);
     if(!cc.length) { alert('Nessun piano attivo da stampare.'); return; }
 
-    const totTot  = cc.reduce((a,c)=>a+c.totale,0);
-    const totRisc = cc.reduce((a,c)=>a+riscC(c),0);
-    const totRes  = cc.reduce((a,c)=>a+resC(c),0);
-    const percTot = Math.min(Math.round(totRisc/totTot*100),100);
-
-    const pianiHtml = cc.map(c => {
-      const risc=riscC(c), res=resC(c), perc=Math.min(Math.round(risc/c.totale*100),100);
-      if(c.tipo==='sospeso') {
-        return `<div style="margin-bottom:20px;padding:14px;background:#fef3e2;border-radius:8px;border:1px solid #fde8b4">
-          <div style="font-size:14pt;font-weight:700;margin-bottom:6px">${c.desc}</div>
-          <div style="font-size:11pt;color:#7a4700">💰 Pagamento in sospeso · <strong>${fmt(c.totale)}</strong></div>
-        </div>`;
-      }
-      const righe = c.rate.map((r,i) => {
-        const scad = !r.pagata && r.data < og;
-        return `<tr style="color:${r.pagata?'#999':scad?'#a00':'#1a1a1a'}">
-          <td style="padding:6px 8px;border:1px solid #e0e0e0">Rata ${i+1}</td>
-          <td style="padding:6px 8px;border:1px solid #e0e0e0">${fmtD(r.data)}</td>
-          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:right;font-weight:600">${fmt(r.importo)}</td>
-          <td style="padding:6px 8px;border:1px solid #e0e0e0;text-align:center;font-weight:${scad?700:400}">${r.pagata?'✓ Pagata':scad?'⚠ SCADUTA':'In attesa'}</td>
-        </tr>`;
-      }).join('');
-      return `<div style="margin-bottom:24px">
-        <div style="font-size:14pt;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid #e0e0e0">${c.desc}</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
-          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Totale</div><div style="font-size:13pt;font-weight:700">${fmt(c.totale)}</div></div>
-          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Riscosso</div><div style="font-size:13pt;font-weight:700;color:#0a6e4a">${fmt(risc)}</div></div>
-          <div style="background:#f5f5f3;border-radius:6px;padding:8px"><div style="font-size:9pt;color:#777;margin-bottom:2px">Residuo</div><div style="font-size:13pt;font-weight:700;color:#7a4700">${fmt(res)}</div></div>
-        </div>
-        <div style="height:6px;background:#eee;border-radius:3px;overflow:hidden;margin-bottom:10px">
-          <div style="height:100%;background:#14a86e;width:${perc}%;border-radius:3px"></div></div>
-        <table style="width:100%;border-collapse:collapse;font-size:10pt">
-          <thead><tr style="background:#f0f0f0">
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">N.</th>
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:left">Scadenza</th>
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:right">Importo</th>
-            <th style="padding:6px 8px;border:1px solid #ccc;text-align:center">Stato</th>
-          </tr></thead>
-          <tbody>${righe}</tbody>
-        </table>
-      </div>`;
-    }).join('');
-
-    document.getElementById('ov-stampa-body').innerHTML = `
-      <div style="border-bottom:2px solid #18181a;padding-bottom:14px;margin-bottom:18px">
-        <div style="font-size:22px;font-weight:700;letter-spacing:-.3px">${cl.nome}</div>
-        ${cl.note?`<div style="font-size:13px;color:#666;margin-top:3px">${cl.note}</div>`:''}
-        ${cl.telefono?`<div style="font-size:13px;color:#666;margin-top:2px">📞 ${cl.telefono}</div>`:''}
-        <div style="font-size:12px;color:#888;margin-top:6px">Riepilogo piani attivi · ${fmtD(og)}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;padding:14px;background:#f5f5f3;border-radius:10px">
-        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Totale</div><div style="font-size:16pt;font-weight:700">${fmt(totTot)}</div></div>
-        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Riscosso</div><div style="font-size:16pt;font-weight:700;color:#0a6e4a">${fmt(totRisc)}</div></div>
-        <div><div style="font-size:9pt;color:#777;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em">Residuo</div><div style="font-size:16pt;font-weight:700;color:#7a4700">${fmt(totRes)}</div></div>
-      </div>
-      ${pianiHtml}
-      <div style="margin-top:24px;padding-top:10px;border-top:1px solid #ddd;font-size:11px;color:#aaa;text-align:center">
-        Documento generato automaticamente · ${fmtD(og)}</div>`;
-
-    chiudi('ov-cliente');
-    apriOv('ov-stampa');
+    generaPDF(cl, cc);
   };
 
 
