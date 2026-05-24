@@ -412,7 +412,7 @@ function normalizza(raw) {
 
 // Calcola riscosso/residuo di un singolo contratto (o cliente vecchio)
 const riscC = c => c.tipo==='sospeso'
-  ? (c.pagato ? c.totale : 0)
+  ? (c.pagato===true ? c.totale : 0)
   : c.acconto + c.rate.filter(r=>r.pagata).reduce((a,r)=>a+r.importo,0);
 const resC = c => Math.max(c.totale - riscC(c), 0);
 
@@ -853,7 +853,7 @@ function renderDashboard() {
   clienti.forEach(cl=>{
     totRisc+=riscCliente(cl.id); totRes+=resCliente(cl.id);
     contrattiDiCliente(cl.id).forEach(c=>{
-      if(c.tipo==='sospeso'){if(!c.pagato)nArrivo++;}
+      if(c.tipo==='sospeso'){if(c.pagato!==true&&resC(c)>0)nArrivo++;}
       else c.rate.forEach(r=>{if(!r.pagata){const d=diffGg(r.data);if(d<=0)nScad++;else if(d<=14)nArrivo++;}});
     });
   });
@@ -886,12 +886,12 @@ function renderDashboard() {
   // Sospesi
   const sospesoRows=[];
   clienti.forEach(cl=>{
-    contrattiDiCliente(cl.id).filter(c=>c.tipo==='sospeso'&&!c.pagato).forEach(c=>{
+    contrattiDiCliente(cl.id).filter(c=>c.tipo==='sospeso'&&c.pagato!==true&&resC(c)>0).forEach(c=>{
       sospesoRows.push(`<div class="sc-row">
         <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(cl.nome)}</div>
         <div class="sc-info"><div class="sc-name">${cl.nome}</div><div class="sc-date">💰 ${c.desc}</div></div>
         <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(c.totale)}</div>
-        <button class="btn-pay" onclick="segnaRicevutoDash('${c._id}')">Ricevuto</button>
+        <button class="btn-pay" onclick="segnaRicevutoDash('${c._id}')">✓ Segna ricevuto</button>
       </div>`);
     });
   });
@@ -970,15 +970,15 @@ function aggiornaOvCliente(cid) {
 
   const og=oggi();
   // Separa piani attivi da completati
-  const pianiAttivi     = cc.filter(c => resC(c) > 0);
-  const pianiCompletati = cc.filter(c => resC(c) === 0);
+  const pianiAttivi     = cc.filter(c => resC(c) > 0 && !(c.tipo==='sospeso' && c.pagato===true));
+  const pianiCompletati = cc.filter(c => resC(c) === 0 || (c.tipo==='sospeso' && c.pagato===true));
 
   function renderPianoItem(c) {
     const risc=riscC(c),res=resC(c),perc=Math.min(Math.round(risc/c.totale*100),100);
     const scad=c.tipo!=='sospeso'&&c.rate.filter(r=>!r.pagata&&r.data<og).length;
     const pag =c.tipo!=='sospeso'&&c.rate.filter(r=>r.pagata).length;
     let badge;
-    if(c.tipo==='sospeso') badge=c.pagato?'<span class="badge badge-green">Ricevuto</span>':'<span class="badge badge-amber">⏳ Sospeso</span>';
+    if(c.tipo==='sospeso') badge=c.pagato===true?'<span class="badge badge-green">Ricevuto</span>':'<span class="badge badge-amber">⏳ Sospeso</span>';
     else badge=perc>=100?'<span class="badge badge-green">Saldato</span>':scad>0?`<span class="badge badge-red">${scad} scad.</span>`:`<span class="badge badge-gray">${pag}/${c.rate.length}</span>`;
     return `<div class="piano-item" onclick="apriContratto('${c._id}')">
       <div class="piano-header">
@@ -1046,9 +1046,9 @@ function renderDettaglioContratto(ct) {
     document.getElementById('ov-ct-body').innerHTML=`
       <div class="card">
         <div class="totale-row"><span style="color:var(--text2)">Importo</span><span style="font-weight:600">${fmt(ct.totale)}</span></div>
-        <div class="totale-row"><span>Stato</span><span style="color:${ct.pagato?'var(--green)':'var(--amber-mid)'}">${ct.pagato?'✅ Ricevuto':'⏳ In sospeso'}</span></div>
+        <div class="totale-row"><span>Stato</span><span style="color:${ct.pagato===true?'var(--green)':'var(--amber-mid)'}">${ct.pagato===true?'✅ Ricevuto':'⏳ In sospeso'}</span></div>
       </div>
-      ${!ct.pagato?`<button class="btn-primary" style="margin-bottom:12px" onclick="segnaRicevuto('${ct._id}')">✅ Segna come ricevuto</button>`:''}
+      ${ct.pagato!==true?`<button class="btn-primary" style="margin-bottom:12px" onclick="segnaRicevuto('${ct._id}')">✅ Segna come ricevuto</button>`:''}
       ${actions}`;
   } else {
     const rateHtml=ct.rate.map((r,i)=>{
@@ -1228,7 +1228,7 @@ window.apriStampa = compoundId => {
     corpo=`<div style="background:#FAEEDA;border-radius:8px;padding:14px;margin-bottom:12px">
       <div style="font-size:13px;color:#854F0B;font-weight:600">Pagamento in sospeso</div>
       <div style="font-size:22px;font-weight:700;margin-top:4px">${fmt(ct.totale)}</div>
-      <div style="font-size:13px;color:#854F0B;margin-top:4px">Stato: ${ct.pagato?'✅ Ricevuto':'⏳ In sospeso'}</div>
+      <div style="font-size:13px;color:#854F0B;margin-top:4px">Stato: ${ct.pagato===true?'✅ Ricevuto':'⏳ In sospeso'}</div>
     </div>`;
   } else {
     const righe=ct.rate.map((r,i)=>{
