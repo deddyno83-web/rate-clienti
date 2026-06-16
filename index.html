@@ -943,14 +943,16 @@ function renderClienti() {
     </div>`;
   };
 
-  // Separa clienti con piani da clienti senza
-  const conPiani  = fil.filter(cl=>contrattiDiCliente(cl.id).length>0);
-  const senzaPiani= fil.filter(cl=>contrattiDiCliente(cl.id).length===0);
+  // Un cliente è "attivo" se ha almeno un piano con residuo > 0 (rate da pagare o sospeso da ricevere)
+  // I clienti senza piani, o con tutti i piani saldati, finiscono in fondo
+  const haIncassiAperti = cl => contrattiDiCliente(cl.id).some(c => resC(c) > 0);
+  const conPiani   = fil.filter(haIncassiAperti);
+  const senzaPiani = fil.filter(cl => !haIncassiAperti(cl));
 
   let html='';
   if(conPiani.length) html += conPiani.map(renderClienteCard).join('');
   if(senzaPiani.length) {
-    html += `<div class="divider-section"><span>Senza piani attivi</span><span class="count-pill">${senzaPiani.length}</span></div>`;
+    html += `<div class="divider-section"><span>Saldati / senza pagamenti aperti</span><span class="count-pill">${senzaPiani.length}</span></div>`;
     html += `<div class="senza-piani">` + senzaPiani.map(renderClienteCard).join('') + `</div>`;
   }
   list.innerHTML = html;
