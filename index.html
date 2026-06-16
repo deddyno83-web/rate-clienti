@@ -193,6 +193,66 @@
   .btn-wa:hover{background:#20bd5a;transform:translateY(-1px)}.btn-wa:active{transform:translateY(0)}
   .btn-wa-gray{background:var(--bg2);color:var(--text2);box-shadow:none;border:1.5px solid var(--border2)}
   .btn-wa-gray:hover{background:var(--bg3);transform:translateY(-1px)}
+
+  /* DIVIDER tra clienti attivi e senza piani */
+  .divider-section{display:flex;align-items:center;gap:10px;margin:20px 4px 10px;font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+  .divider-section::before{content:'';flex:1;height:1px;background:var(--border)}
+  .divider-section::after{content:'';flex:1;height:1px;background:var(--border)}
+  .count-pill{background:var(--bg2);color:var(--text2);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;letter-spacing:0}
+  .senza-piani .client-card{opacity:.65}
+  .senza-piani .client-card:hover{opacity:1}
+
+  /* DASHBOARD: nuovo layout pulito */
+  .dash-hero{background:linear-gradient(135deg,var(--text) 0%,#2a2a2e 100%);border-radius:18px;padding:18px 18px 16px;color:#fff;margin-bottom:14px;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+  .dash-hero-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:4px}
+  .dash-hero-value{font-size:32px;font-weight:600;letter-spacing:-.8px;line-height:1}
+  .dash-hero-sub{display:flex;align-items:center;gap:12px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12);font-size:12px}
+  .dash-hero-sub-item{display:flex;align-items:baseline;gap:5px;opacity:.95}
+  .dash-hero-sub-val{font-weight:600;font-size:14px}
+  .dash-hero-sub-lbl{opacity:.6;font-size:11px}
+  .mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px}
+  .mini-stat{background:var(--bgw);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow-sm)}
+  .mini-stat-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+  .mini-stat-icon.red{background:var(--red-bg)}
+  .mini-stat-icon.amber{background:var(--amber-bg)}
+  .mini-stat-text{flex:1;min-width:0}
+  .mini-stat-value{font-size:18px;font-weight:600;line-height:1.1;letter-spacing:-.3px}
+  .mini-stat-value.red{color:var(--red-mid)}
+  .mini-stat-value.amber{color:var(--amber-mid)}
+  .mini-stat-label{font-size:11px;color:var(--text2);margin-top:2px;font-weight:500}
+
+  /* DA INCASSARE: card raggruppata per cliente */
+  .group-card{background:var(--bgw);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:all .12s;box-shadow:var(--shadow-sm)}
+  .group-card:hover{border-color:var(--border2)}
+  .group-card:active{transform:scale(.99);background:var(--bg)}
+  .group-card-head{display:flex;align-items:center;gap:11px}
+  .group-card-info{flex:1;min-width:0}
+  .group-card-name{font-size:14px;font-weight:600;letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .group-card-sub{font-size:12px;color:var(--text2);margin-top:2px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .pill-scad{background:var(--red-bg);color:var(--red-mid);padding:2px 7px;border-radius:8px;font-size:11px;font-weight:600;letter-spacing:0}
+  .pill-sosp{background:var(--amber-bg);color:var(--amber-mid);padding:2px 7px;border-radius:8px;font-size:11px;font-weight:600;letter-spacing:0}
+  .pill-arr{background:var(--bg2);color:var(--text2);padding:2px 7px;border-radius:8px;font-size:11px;font-weight:600;letter-spacing:0}
+  .group-card-amount{font-size:15px;font-weight:600;font-family:'DM Mono',monospace;letter-spacing:-.3px;text-align:right;flex-shrink:0}
+  .group-card-amount-lbl{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+
+  /* DETTAGLIO DA INCASSARE per cliente */
+  .check-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .check-row:last-child{border-bottom:none}
+  .check-row.pagata .check-label{color:var(--text3);text-decoration:line-through}
+  .check-row.pagata .check-amount{color:var(--text3);text-decoration:line-through}
+  .check-circle{width:22px;height:22px;border-radius:50%;border:2px solid var(--border2);background:var(--bgw);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-size:13px;color:#fff}
+  .check-circle:hover{border-color:var(--green-mid)}
+  .check-row.pagata .check-circle{background:var(--green-mid);border-color:var(--green-mid)}
+  .check-info{flex:1;min-width:0}
+  .check-label{font-size:13px;font-weight:600;letter-spacing:-.1px}
+  .check-sub{font-size:11px;color:var(--text2);margin-top:1px}
+  .check-amount{font-size:14px;font-weight:600;font-family:'DM Mono',monospace;flex-shrink:0}
+  .check-tag{display:inline-block;padding:1px 6px;border-radius:6px;font-size:10px;font-weight:600;margin-left:5px;letter-spacing:.02em}
+  .tag-scad{background:var(--red-bg);color:var(--red-mid)}
+  .tag-sosp{background:var(--amber-bg);color:var(--amber-mid)}
+
+  /* CHART card più ariosa */
+  .chart-card-empty{text-align:center;padding:14px;color:var(--text3);font-size:13px}
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -224,19 +284,41 @@
 
   <div id="sec-dashboard" class="section active">
     <div id="dash-notifiche"></div>
-    <div class="metrics-3">
-      <div class="metric"><div class="metric-label">Clienti</div><div class="metric-value blue" id="m-clienti">0</div></div>
-      <div class="metric"><div class="metric-label">Riscosso</div><div class="metric-value green" id="m-risc">€0</div></div>
-      <div class="metric"><div class="metric-label">Residuo</div><div class="metric-value amber" id="m-res">€0</div></div>
+
+    <!-- Hero: residuo totale + sub stats -->
+    <div class="dash-hero">
+      <div class="dash-hero-label">Residuo da incassare</div>
+      <div class="dash-hero-value" id="m-res">€0</div>
+      <div class="dash-hero-sub">
+        <div class="dash-hero-sub-item"><span class="dash-hero-sub-val" id="m-risc">€0</span><span class="dash-hero-sub-lbl">riscosso</span></div>
+        <div class="dash-hero-sub-item"><span class="dash-hero-sub-val" id="m-clienti">0</span><span class="dash-hero-sub-lbl">clienti</span></div>
+      </div>
     </div>
-    <div class="metrics-2">
-      <div class="metric"><div class="metric-label">Rate scadute</div><div class="metric-value red" id="m-scad">0</div></div>
-      <div class="metric"><div class="metric-label">Sospesi / in arrivo</div><div class="metric-value amber" id="m-arrivo">0</div></div>
+
+    <!-- Mini-stats: scadute + in arrivo -->
+    <div class="mini-stats">
+      <div class="mini-stat">
+        <div class="mini-stat-icon red">⚠️</div>
+        <div class="mini-stat-text"><div class="mini-stat-value red" id="m-scad">0</div><div class="mini-stat-label">Rate scadute</div></div>
+      </div>
+      <div class="mini-stat">
+        <div class="mini-stat-icon amber">⏰</div>
+        <div class="mini-stat-text"><div class="mini-stat-value amber" id="m-arrivo">0</div><div class="mini-stat-label">In arrivo / sospesi</div></div>
+      </div>
     </div>
-    <div class="sec-title">Avanzamento</div>
-    <div class="card" style="padding:14px 16px"><div id="dash-chart"></div></div>
-    <div class="sec-title">Da incassare</div>
-    <div class="card" style="padding:8px 16px" id="dash-scadenze"></div>
+
+    <!-- Andamento mese -->
+    <div id="dash-mese-wrap"></div>
+
+    <!-- Avanzamento clienti (visibile solo con 2+ clienti) -->
+    <div id="dash-chart-wrap"></div>
+
+    <!-- Da incassare raggruppato per cliente -->
+    <div class="sec-title" style="display:flex;justify-content:space-between;align-items:center">
+      <span>Da incassare</span>
+      <span id="dash-total-sub" style="font-size:11px;color:var(--text3);font-weight:600;letter-spacing:0;text-transform:none"></span>
+    </div>
+    <div id="dash-scadenze"></div>
   </div>
 
   <div id="sec-clienti" class="section">
@@ -353,6 +435,15 @@
     <button onclick="window.print()" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">🖨 Stampa</button>
   </div>
   <div class="overlay-body" id="ov-stampa-body"></div>
+</div>
+
+<!-- DETTAGLIO INCASSI per cliente (dalla dashboard) -->
+<div class="overlay" id="ov-incassi">
+  <div class="overlay-topbar">
+    <button class="back-btn" onclick="chiudi('ov-incassi')">←</button>
+    <span id="ov-incassi-title" style="font-size:15px;font-weight:600;flex:1">Da incassare</span>
+  </div>
+  <div class="overlay-body" id="ov-incassi-body"></div>
 </div>
 
 <script type="module">
@@ -486,6 +577,7 @@ function ascoltaDati(uid) {
       const ct = trovaContratto(window.curContrattoId);
       if(ct) renderDettaglioContratto(ct);
     }
+    if(window.curIncassiId) renderDettaglioIncassi(window.curIncassiId);
   });
   const qct = query(collection(db,'contratti'), where('uid','==',uid));
   unsubContratti = onSnapshot(qct, snap => {
@@ -496,6 +588,7 @@ function ascoltaDati(uid) {
       const ct = trovaContratto(window.curContrattoId);
       if(ct) renderDettaglioContratto(ct);
     }
+    if(window.curIncassiId) renderDettaglioIncassi(window.curIncassiId);
   });
 }
 
@@ -553,6 +646,7 @@ window.switchSection = (name, btn) => {
 window.chiudi = id => {
   document.getElementById(id).style.display='none';
   document.documentElement.style.overflow='';
+  if(id === 'ov-incassi') window.curIncassiId = null;
 };
 const apriOv = id => {
   document.getElementById(id).style.display='block';
@@ -816,7 +910,9 @@ function renderClienti() {
   const fil  =clienti.filter(c=>c.nome.toLowerCase().includes(filtro.toLowerCase()));
   if(!fil.length){list.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  list.innerHTML=fil.map(cl=>{
+
+  // Costruisce HTML per un singolo cliente
+  const renderClienteCard = cl => {
     const cc  =contrattiDiCliente(cl.id);
     const tot =totCliente(cl.id);
     const risc=riscCliente(cl.id);
@@ -824,13 +920,14 @@ function renderClienti() {
     const perc=tot>0?Math.min(Math.round(risc/tot*100),100):0;
     const og  =oggi();
     const nScad=cc.filter(c=>c.tipo!=='sospeso').flatMap(c=>c.rate).filter(r=>!r.pagata&&r.data<og).length;
-    const nSosp=cc.filter(c=>c.tipo==='sospeso'&&!c.pagato).length;
+    const nSosp=cc.filter(c=>c.tipo==='sospeso'&&c.pagato!==true).length;
     const tuttiSaldati=cc.length>0&&cc.every(c=>resC(c)===0);
     let badge;
     if(nScad>0) badge=`<span class="badge badge-red">${nScad} scad.</span>`;
     else if(nSosp>0) badge=`<span class="badge badge-amber">${nSosp} sosp.</span>`;
     else if(tuttiSaldati) badge='<span class="badge badge-green">Saldato</span>';
-    else badge=`<span class="badge badge-gray">${cc.length} piani</span>`;
+    else if(cc.length>0) badge=`<span class="badge badge-gray">${cc.length} piani</span>`;
+    else badge='<span class="badge badge-gray">Nessun piano</span>';
     const fillCls=nScad>0?'amber':'';
     const nAttivi=cc.filter(c=>resC(c)>0).length;
     const nCompl=cc.filter(c=>resC(c)===0).length;
@@ -844,7 +941,19 @@ function renderClienti() {
       </div>
       ${tot>0?`<div class="progress-bar"><div class="progress-fill ${fillCls}" style="width:${perc}%"></div></div>`:''}
     </div>`;
-  }).join('');
+  };
+
+  // Separa clienti con piani da clienti senza
+  const conPiani  = fil.filter(cl=>contrattiDiCliente(cl.id).length>0);
+  const senzaPiani= fil.filter(cl=>contrattiDiCliente(cl.id).length===0);
+
+  let html='';
+  if(conPiani.length) html += conPiani.map(renderClienteCard).join('');
+  if(senzaPiani.length) {
+    html += `<div class="divider-section"><span>Senza piani attivi</span><span class="count-pill">${senzaPiani.length}</span></div>`;
+    html += `<div class="senza-piani">` + senzaPiani.map(renderClienteCard).join('') + `</div>`;
+  }
+  list.innerHTML = html;
 }
 
 function renderDashboard() {
@@ -864,62 +973,121 @@ function renderDashboard() {
   document.getElementById('m-arrivo').textContent =nArrivo;
 
   let notif='';
-  if(nScad>0)   notif+=`<div class="notif red"><div class="notif-dot"></div><div><strong>${nScad} ${nScad===1?'rata scaduta':'rate scadute'}</strong> — controlla i clienti in rosso.</div></div>`;
+  if(nScad>0)   notif+=`<div class="notif red"><div class="notif-dot"></div><div><strong>${nScad} ${nScad===1?'rata scaduta':'rate scadute'}</strong> — verifica i clienti in rosso.</div></div>`;
   if(nArrivo>0) notif+=`<div class="notif amber"><div class="notif-dot"></div><div><strong>${nArrivo} ${nArrivo===1?'pagamento':'pagamenti'}</strong> in sospeso o in scadenza entro 14 giorni.</div></div>`;
   document.getElementById('dash-notifiche').innerHTML=notif;
 
-  document.getElementById('dash-chart').innerHTML=clienti.length
-    ? clienti.slice(0,6).map(cl=>{
-        const tot=totCliente(cl.id),risc=riscCliente(cl.id),res=resCliente(cl.id);
-        if(!tot) return '';
-        const pw=Math.round(risc/tot*100),rw=Math.round(res/tot*100);
-        const scad=contrattiDiCliente(cl.id).some(c=>c.tipo!=='sospeso'&&c.rate.some(r=>!r.pagata&&r.data<og));
-        return `<div class="chart-row">
-          <div class="chart-label">${cl.nome.split(' ')[0]}</div>
-          <div class="chart-track"><div style="display:flex;height:100%">
-            <div class="chart-fill green" style="width:${pw}%">${pw>15?fmtS(risc):''}</div>
-            <div class="chart-fill ${scad?'amber':'gray'}" style="width:${rw}%">${rw>12?fmtS(res):''}</div>
-          </div></div></div>`;
+  // ── ANDAMENTO DEL MESE ──
+  const meseCorrente = oggi().slice(0,7); // YYYY-MM
+  let incassatoMese = 0, attesoMese = 0;
+  clienti.forEach(cl => {
+    contrattiDiCliente(cl.id).forEach(c => {
+      if(c.tipo === 'sospeso') return;
+      c.rate.forEach(r => {
+        if(r.data.slice(0,7) === meseCorrente) {
+          if(r.pagata) incassatoMese += r.importo;
+          else attesoMese += r.importo;
+        }
+      });
+    });
+  });
+  const totMese = incassatoMese + attesoMese;
+  const percMese = totMese > 0 ? Math.round((incassatoMese/totMese)*100) : 0;
+  const meseNome = new Date().toLocaleDateString('it-IT',{month:'long',year:'numeric'});
+  document.getElementById('dash-mese-wrap').innerHTML = totMese > 0 ? `
+    <div class="card" style="padding:13px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">
+        <div style="font-size:12px;font-weight:600;text-transform:capitalize">${meseNome}</div>
+        <div style="font-size:11px;color:var(--text2);font-weight:500">${percMese}% incassato</div>
+      </div>
+      <div style="height:7px;background:var(--bg2);border-radius:4px;overflow:hidden;margin-bottom:8px">
+        <div style="height:100%;background:var(--green-mid);width:${percMese}%;border-radius:4px;transition:width .5s"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px">
+        <span><span style="color:var(--green-mid);font-weight:600">${fmtS(incassatoMese)}</span> <span style="color:var(--text2)">incassato</span></span>
+        <span><span style="color:var(--amber-mid);font-weight:600">${fmtS(attesoMese)}</span> <span style="color:var(--text2)">atteso</span></span>
+      </div>
+    </div>` : '';
+
+  // ── GRAFICO AVANZAMENTO (solo se almeno 2 clienti con piani) ──
+  const clientiConPiani = clienti.filter(cl => totCliente(cl.id) > 0);
+  if(clientiConPiani.length >= 2) {
+    document.getElementById('dash-chart-wrap').innerHTML = `
+      <div class="sec-title">Avanzamento clienti</div>
+      <div class="card" style="padding:14px 16px">
+        ${clientiConPiani.slice(0,6).map(cl=>{
+          const tot=totCliente(cl.id),risc=riscCliente(cl.id),res=resCliente(cl.id);
+          const pw=Math.round(risc/tot*100),rw=Math.round(res/tot*100);
+          const scad=contrattiDiCliente(cl.id).some(c=>c.tipo!=='sospeso'&&c.rate.some(r=>!r.pagata&&r.data<og));
+          return `<div class="chart-row">
+            <div class="chart-label">${cl.nome.split(' ')[0]}</div>
+            <div class="chart-track"><div style="display:flex;height:100%">
+              <div class="chart-fill green" style="width:${pw}%">${pw>15?fmtS(risc):''}</div>
+              <div class="chart-fill ${scad?'amber':'gray'}" style="width:${rw}%">${rw>12?fmtS(res):''}</div>
+            </div></div></div>`;
+        }).join('')}
+      </div>`;
+  } else {
+    document.getElementById('dash-chart-wrap').innerHTML = '';
+  }
+
+  // ── DA INCASSARE: raggruppato per cliente ──
+  const gruppi = new Map(); // clienteId → {cl, rate:[], sospesi:[], totDovuto, nScad, nArr}
+  clienti.forEach(cl => {
+    const cc = contrattiDiCliente(cl.id);
+    let entry = null;
+    cc.forEach(c => {
+      if(c.tipo === 'sospeso' && c.pagato !== true && resC(c) > 0) {
+        if(!entry) entry = {cl, rate:[], sospesi:[], totDovuto:0, nScad:0, nArr:0};
+        entry.sospesi.push(c);
+        entry.totDovuto += c.totale;
+      } else if(c.tipo !== 'sospeso') {
+        c.rate.forEach((r,i) => {
+          if(!r.pagata) {
+            const d = diffGg(r.data);
+            if(!entry) entry = {cl, rate:[], sospesi:[], totDovuto:0, nScad:0, nArr:0};
+            entry.rate.push({c, r, i, diff:d});
+            entry.totDovuto += r.importo;
+            if(d <= 0) entry.nScad++; else if(d <= 14) entry.nArr++;
+          }
+        });
+      }
+    });
+    if(entry) gruppi.set(cl.id, entry);
+  });
+
+  // Ordina: prima quelli con scadute, poi per residuo decrescente
+  const gruppiOrdinati = [...gruppi.values()].sort((a,b) => {
+    if(a.nScad !== b.nScad) return b.nScad - a.nScad;
+    return b.totDovuto - a.totDovuto;
+  });
+
+  // Sub-totale in cima alla sezione
+  const totGenerale = gruppiOrdinati.reduce((s,g)=>s+g.totDovuto, 0);
+  document.getElementById('dash-total-sub').textContent =
+    gruppiOrdinati.length ? `${gruppiOrdinati.length} ${gruppiOrdinati.length===1?'cliente':'clienti'} · ${fmtS(totGenerale)}` : '';
+
+  document.getElementById('dash-scadenze').innerHTML = gruppiOrdinati.length
+    ? gruppiOrdinati.map(g => {
+        const pills = [];
+        if(g.nScad > 0)         pills.push(`<span class="pill-scad">${g.nScad} scad.</span>`);
+        if(g.sospesi.length > 0) pills.push(`<span class="pill-sosp">${g.sospesi.length} sosp.</span>`);
+        if(g.nArr > 0)          pills.push(`<span class="pill-arr">${g.nArr} in arrivo</span>`);
+        return `<div class="group-card" onclick="apriDettaglioIncassi('${g.cl.id}')">
+          <div class="group-card-head">
+            <div class="avatar ${avCol(g.cl.colorIdx||0)}">${iniz(g.cl.nome)}</div>
+            <div class="group-card-info">
+              <div class="group-card-name">${g.cl.nome}</div>
+              <div class="group-card-sub">${pills.join(' ')}</div>
+            </div>
+            <div>
+              <div class="group-card-amount">${fmt(g.totDovuto)}</div>
+              <div class="group-card-amount-lbl">dovuto</div>
+            </div>
+          </div>
+        </div>`;
       }).join('')
-    : '<div style="font-size:13px;color:var(--text2)">Nessun cliente ancora.</div>';
-
-  // Sospesi
-  const sospesoRows=[];
-  clienti.forEach(cl=>{
-    contrattiDiCliente(cl.id).filter(c=>c.tipo==='sospeso'&&c.pagato!==true&&resC(c)>0).forEach(c=>{
-      sospesoRows.push(`<div class="sc-row">
-        <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(cl.nome)}</div>
-        <div class="sc-info"><div class="sc-name">${cl.nome}</div><div class="sc-date">💰 ${c.desc}</div></div>
-        <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(c.totale)}</div>
-        <button class="btn-pay" onclick="segnaRicevutoDash('${c._id}')">✓ Segna ricevuto</button>
-      </div>`);
-    });
-  });
-
-  // Rate in scadenza
-  const prossime=[];
-  clienti.forEach(cl=>{
-    contrattiDiCliente(cl.id).filter(c=>c.tipo!=='sospeso').forEach(c=>{
-      c.rate.forEach((r,i)=>{if(!r.pagata)prossime.push({cl,c,r,i,diff:diffGg(r.data)});});
-    });
-  });
-  prossime.sort((a,b)=>a.r.data.localeCompare(b.r.data));
-  const rateRows=prossime.slice(0,6).map(p=>{
-    const d=p.diff;
-    const lbl=d<0?`<span style="color:var(--red)">Scaduta da ${Math.abs(d)} gg</span>`
-             :d===0?`<span style="color:var(--amber-mid)">Oggi</span>`
-             :d<=14?`<span style="color:var(--amber-mid)">Tra ${d} gg</span>`
-             :`Tra ${d} gg`;
-    return `<div class="sc-row">
-      <div class="avatar ${avCol(p.cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(p.cl.nome)}</div>
-      <div class="sc-info"><div class="sc-name">${p.cl.nome}</div><div class="sc-date">${p.c.desc} · ${fmtD(p.r.data)} · ${lbl}</div></div>
-      <div style="font-weight:600;font-size:14px;margin-right:8px">${fmt(p.r.importo)}</div>
-      <button class="btn-pay" onclick="pagaRataDash('${p.c._id}',${p.i})">Pagata</button>
-    </div>`;
-  }).join('');
-
-  document.getElementById('dash-scadenze').innerHTML=(sospesoRows.join('')+rateRows)||
-    '<div style="font-size:13px;color:var(--text2);padding:8px 0">Nessun pagamento da riscuotere.</div>';
+    : '<div style="font-size:13px;color:var(--text3);padding:16px;text-align:center;background:var(--bgw);border-radius:12px;border:1px solid var(--border)">🎉 Nessun pagamento da riscuotere.</div>';
 }
 
 window.pagaRataDash = async (compoundId, idx) => {
@@ -1104,6 +1272,136 @@ async function segnaRicevutoByCompoundId(compoundId) {
     await salvaContrattoDB({...ct, clienteId:cid});
   }
 }
+
+// Toggle rata: alterna pagata/non pagata SENZA chiedere conferma
+async function toggleRataPagata(compoundId, idx) {
+  const [cid, ctid] = compoundId.split('::');
+  if(ctid==='__legacy__') {
+    const cl = clienti.find(x=>x.id===cid); if(!cl) return;
+    cl.rate[idx].pagata = !cl.rate[idx].pagata;
+    await salvaClienteDB(cl);
+  } else {
+    const ct = contratti.find(x=>x.id===ctid); if(!ct) return;
+    ct.rate[idx].pagata = !ct.rate[idx].pagata;
+    await salvaContrattoDB({...ct, clienteId:cid});
+  }
+}
+
+// Toggle sospeso: alterna ricevuto/non ricevuto SENZA chiedere conferma
+async function toggleSospeso(compoundId) {
+  const [cid, ctid] = compoundId.split('::');
+  if(ctid==='__legacy__') {
+    const cl = clienti.find(x=>x.id===cid); if(!cl) return;
+    cl.pagato = cl.pagato!==true;
+    await salvaClienteDB(cl);
+  } else {
+    const ct = contratti.find(x=>x.id===ctid); if(!ct) return;
+    ct.pagato = ct.pagato!==true;
+    await salvaContrattoDB({...ct, clienteId:cid});
+  }
+}
+
+// ── DETTAGLIO INCASSI per cliente (dalla dashboard) ─────
+window.apriDettaglioIncassi = (cid) => {
+  window.curIncassiId = cid;
+  renderDettaglioIncassi(cid);
+  apriOv('ov-incassi');
+};
+
+function renderDettaglioIncassi(cid) {
+  const cl = clienti.find(x=>x.id===cid); if(!cl) return;
+  document.getElementById('ov-incassi-title').textContent = cl.nome;
+
+  const og = oggi();
+  const cc = contrattiDiCliente(cid);
+
+  // Costruisco una lista mista (rate non pagate + sospesi non ricevuti)
+  // Mantengo anche pagate/ricevuti SE l'utente li ha appena spuntati, così può togliere il check
+  const items = [];
+  cc.forEach(c => {
+    if(c.tipo === 'sospeso') {
+      // Sospeso: mostralo se non ricevuto
+      if(c.pagato !== true && resC(c) > 0) {
+        items.push({tipo:'sospeso', c, label:c.desc, sub:'Pagamento in sospeso', amount:c.totale, isDone:false, tag:'sospeso'});
+      }
+    } else {
+      // Rate: mostro solo quelle non ancora pagate
+      c.rate.forEach((r, i) => {
+        if(!r.pagata) {
+          const d = diffGg(r.data);
+          const scaduta = d <= 0;
+          const subParts = [c.desc, fmtD(r.data)];
+          if(scaduta) subParts.push(`scaduta da ${Math.abs(d)} gg`);
+          else if(d <= 14) subParts.push(`tra ${d} gg`);
+          items.push({tipo:'rata', c, idx:i, label:`Rata ${i+1}`, sub:subParts.join(' · '), amount:r.importo, isDone:false, tag:scaduta?'scaduta':null});
+        }
+      });
+    }
+  });
+
+  // Ordinamento: scadute prima, poi per data
+  items.sort((a,b) => {
+    if(a.tipo==='rata' && b.tipo==='rata') return a.c.rate[a.idx].data.localeCompare(b.c.rate[b.idx].data);
+    if(a.tipo==='sospeso' && b.tipo==='rata') return -1;
+    if(a.tipo==='rata' && b.tipo==='sospeso') return 1;
+    return 0;
+  });
+
+  // Totale
+  const totDovuto = items.reduce((s,it)=>s+it.amount, 0);
+
+  // HTML
+  const rows = items.map(it => {
+    const compoundId = it.c._id;
+    const onclick = it.tipo === 'sospeso'
+      ? `toggleSospesoUI('${compoundId}',this)`
+      : `toggleRataUI('${compoundId}',${it.idx},this)`;
+    const tagHtml = it.tag === 'scaduta' ? '<span class="check-tag tag-scad">SCADUTA</span>'
+                  : it.tag === 'sospeso' ? '<span class="check-tag tag-sosp">SOSPESO</span>'
+                  : '';
+    return `<div class="check-row" data-compound="${compoundId}" ${it.tipo==='rata'?'data-idx="'+it.idx+'"':''} data-tipo="${it.tipo}">
+      <div class="check-circle" onclick="${onclick}">✓</div>
+      <div class="check-info">
+        <div class="check-label">${it.label}${tagHtml}</div>
+        <div class="check-sub">${it.sub}</div>
+      </div>
+      <div class="check-amount">${fmt(it.amount)}</div>
+    </div>`;
+  }).join('');
+
+  const tel = cl.telefono || '';
+  document.getElementById('ov-incassi-body').innerHTML = `
+    <div class="card" style="display:flex;align-items:center;gap:12px;padding:14px">
+      <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:46px;height:46px;font-size:16px">${iniz(cl.nome)}</div>
+      <div style="flex:1">
+        <div style="font-size:11px;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.06em">Totale da incassare</div>
+        <div style="font-size:24px;font-weight:600;letter-spacing:-.5px">${fmt(totDovuto)}</div>
+      </div>
+    </div>
+    ${tel ? `<button class="btn-wa" onclick="mandaWhatsApp('${cl.id}')" style="margin-bottom:14px">💬 Manda riepilogo su WhatsApp</button>` : ''}
+    <div class="sec-title" style="margin-top:8px">Pagamenti in attesa</div>
+    <div class="card" style="padding:6px 14px">
+      ${rows || '<div style="font-size:13px;color:var(--text3);padding:14px;text-align:center">🎉 Nessun pagamento in attesa!</div>'}
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:14px">Tocca il cerchio a sinistra per segnare come pagato</div>
+  `;
+}
+
+// Toggle UI: aggiorna subito l'aspetto, poi salva su Firebase
+window.toggleRataUI = async (compoundId, idx, circleEl) => {
+  const row = circleEl.closest('.check-row');
+  const wasPagata = row.classList.contains('pagata');
+  row.classList.toggle('pagata');
+  // Salva (Firebase invierà uno snapshot che ricostruisce tutto)
+  await toggleRataPagata(compoundId, idx);
+};
+
+window.toggleSospesoUI = async (compoundId, circleEl) => {
+  const row = circleEl.closest('.check-row');
+  row.classList.toggle('pagata');
+  await toggleSospeso(compoundId);
+};
+
 
 window.pagaRata = async (compoundId, idx) => { await pagaRataByCompoundId(compoundId, idx); };
 window.segnaRicevuto = async compoundId => { await segnaRicevutoByCompoundId(compoundId); };
