@@ -257,6 +257,18 @@
   .group-card-deadline{font-size:11px;margin-top:6px;padding-top:6px;border-top:1px dashed var(--border);color:var(--text2);display:flex;align-items:center;gap:5px}
   .group-card-deadline.red{color:var(--red-mid);font-weight:600}
   .group-card-deadline.amber{color:var(--amber-mid);font-weight:600}
+
+  /* KPI tappable: feedback tocco */
+  .tappable{cursor:pointer;transition:transform .12s,opacity .12s;-webkit-tap-highlight-color:transparent}
+  .tappable:active{transform:scale(.97);opacity:.85}
+
+  /* OVERLAY KPI: lista filtrata o riassunto */
+  .kpi-summary{background:var(--bgw);border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid var(--border)}
+  .kpi-summary-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text2);margin-bottom:4px}
+  .kpi-summary-value{font-size:28px;font-weight:600;letter-spacing:-.6px;line-height:1.1}
+  .kpi-summary-sub{font-size:13px;color:var(--text2);margin-top:6px}
+  .kpi-list{background:var(--bgw);border-radius:14px;border:1px solid var(--border);padding:4px 14px}
+  .kpi-empty{text-align:center;color:var(--text3);padding:24px 16px;font-size:14px}
 </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -289,23 +301,23 @@
   <div id="sec-dashboard" class="section active">
     <div id="dash-notifiche"></div>
 
-    <!-- Hero: residuo totale + sub stats -->
+    <!-- Hero: residuo totale + sub stats (cliccabili) -->
     <div class="dash-hero">
       <div class="dash-hero-label">Residuo da incassare</div>
-      <div class="dash-hero-value" id="m-res">€0</div>
+      <div class="dash-hero-value tappable" id="m-res" onclick="kpiOpen('residuo')">€0</div>
       <div class="dash-hero-sub">
-        <div class="dash-hero-sub-item"><span class="dash-hero-sub-val" id="m-risc">€0</span><span class="dash-hero-sub-lbl">riscosso</span></div>
-        <div class="dash-hero-sub-item"><span class="dash-hero-sub-val" id="m-clienti">0</span><span class="dash-hero-sub-lbl">clienti</span></div>
+        <div class="dash-hero-sub-item tappable" onclick="kpiOpen('riscosso')"><span class="dash-hero-sub-val" id="m-risc">€0</span><span class="dash-hero-sub-lbl">riscosso</span></div>
+        <div class="dash-hero-sub-item tappable" onclick="kpiOpen('clienti')"><span class="dash-hero-sub-val" id="m-clienti">0</span><span class="dash-hero-sub-lbl">clienti</span></div>
       </div>
     </div>
 
-    <!-- Mini-stats: scadute + in arrivo -->
+    <!-- Mini-stats: scadute + in arrivo (cliccabili) -->
     <div class="mini-stats">
-      <div class="mini-stat">
+      <div class="mini-stat tappable" onclick="kpiOpen('scadute')">
         <div class="mini-stat-icon red">⚠️</div>
         <div class="mini-stat-text"><div class="mini-stat-value red" id="m-scad">0</div><div class="mini-stat-label">Rate scadute</div></div>
       </div>
-      <div class="mini-stat">
+      <div class="mini-stat tappable" onclick="kpiOpen('arrivo')">
         <div class="mini-stat-icon amber">⏰</div>
         <div class="mini-stat-text"><div class="mini-stat-value amber" id="m-arrivo">0</div><div class="mini-stat-label">In arrivo / sospesi</div></div>
       </div>
@@ -439,6 +451,15 @@
     <button onclick="window.print()" style="background:#185FA5;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">🖨 Stampa</button>
   </div>
   <div class="overlay-body" id="ov-stampa-body"></div>
+</div>
+
+<!-- OVERLAY KPI: vista filtrata dei KPI cliccati in dashboard -->
+<div class="overlay" id="ov-kpi">
+  <div class="overlay-topbar">
+    <button class="back-btn" onclick="chiudi('ov-kpi')">←</button>
+    <span id="ov-kpi-title" style="font-size:15px;font-weight:600;flex:1"></span>
+  </div>
+  <div class="overlay-body" id="ov-kpi-body"></div>
 </div>
 
 <!-- DETTAGLIO INCASSI per cliente (dalla dashboard) -->
@@ -1322,6 +1343,186 @@ async function toggleSospeso(compoundId) {
     await salvaContrattoDB({...ct, clienteId:cid});
   }
 }
+
+// ── KPI DASHBOARD CLICCABILI ────────────────────────────
+window.kpiOpen = (tipo) => {
+  const og = oggi();
+  const body = document.getElementById('ov-kpi-body');
+  const title = document.getElementById('ov-kpi-title');
+
+  if(tipo === 'clienti') {
+    // Riepilogo totale clienti
+    title.textContent = 'Tutti i clienti';
+    const totClienti = clienti.length;
+    const conPiani = clienti.filter(cl => contrattiDiCliente(cl.id).length > 0).length;
+    const senzaPiani = totClienti - conPiani;
+    const conResiduo = clienti.filter(cl => resCliente(cl.id) > 0).length;
+    const saldati = clienti.filter(cl => totCliente(cl.id) > 0 && resCliente(cl.id) === 0).length;
+    body.innerHTML = `
+      <div class="kpi-summary">
+        <div class="kpi-summary-label">Totale clienti</div>
+        <div class="kpi-summary-value">${totClienti}</div>
+        <div class="kpi-summary-sub">Riepilogo aggregato del portafoglio</div>
+      </div>
+      <div class="kpi-list">
+        <div class="check-row"><div class="check-info"><div class="check-label">Con piani attivi</div><div class="check-sub">Almeno un piano registrato</div></div><div class="check-amount">${conPiani}</div></div>
+        <div class="check-row"><div class="check-info"><div class="check-label">Senza piani</div><div class="check-sub">Solo anagrafica</div></div><div class="check-amount">${senzaPiani}</div></div>
+        <div class="check-row"><div class="check-info"><div class="check-label">Con residuo aperto</div><div class="check-sub">Hanno ancora da pagare</div></div><div class="check-amount">${conResiduo}</div></div>
+        <div class="check-row"><div class="check-info"><div class="check-label">Completamente saldati</div><div class="check-sub">Piani al 100%</div></div><div class="check-amount">${saldati}</div></div>
+      </div>`;
+    apriOv('ov-kpi');
+    return;
+  }
+
+  if(tipo === 'riscosso') {
+    title.textContent = 'Riscosso — chi ha pagato';
+    const filtrati = clienti.filter(cl => riscCliente(cl.id) > 0);
+    filtrati.sort((a,b) => riscCliente(b.id) - riscCliente(a.id));
+    const totRisc = filtrati.reduce((s,cl) => s + riscCliente(cl.id), 0);
+    const rows = filtrati.map(cl => {
+      const risc = riscCliente(cl.id);
+      const tot = totCliente(cl.id);
+      const perc = tot > 0 ? Math.round(risc/tot*100) : 0;
+      return `<div class="check-row" style="cursor:pointer" onclick="chiudi('ov-kpi');apriDettaglioCliente('${cl.id}')">
+        <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(cl.nome)}</div>
+        <div class="check-info"><div class="check-label">${cl.nome}</div><div class="check-sub">${perc}% del totale ${fmtS(tot)}</div></div>
+        <div class="check-amount" style="color:var(--green-mid)">${fmt(risc)}</div>
+      </div>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="kpi-summary">
+        <div class="kpi-summary-label">Riscosso totale</div>
+        <div class="kpi-summary-value" style="color:var(--green-mid)">${fmt(totRisc)}</div>
+        <div class="kpi-summary-sub">${filtrati.length} ${filtrati.length===1?'cliente ha pagato':'clienti hanno pagato'} qualcosa</div>
+      </div>
+      <div class="kpi-list">${rows || '<div class="kpi-empty">Nessun pagamento ricevuto ancora.</div>'}</div>`;
+    apriOv('ov-kpi');
+    return;
+  }
+
+  if(tipo === 'residuo') {
+    title.textContent = 'Residuo — clienti aperti';
+    const filtrati = clienti.filter(cl => resCliente(cl.id) > 0);
+    filtrati.sort((a,b) => resCliente(b.id) - resCliente(a.id));
+    const totRes = filtrati.reduce((s,cl) => s + resCliente(cl.id), 0);
+    const rows = filtrati.map(cl => {
+      const res = resCliente(cl.id);
+      const tot = totCliente(cl.id);
+      const perc = tot > 0 ? Math.round(res/tot*100) : 0;
+      return `<div class="check-row" style="cursor:pointer" onclick="chiudi('ov-kpi');apriDettaglioCliente('${cl.id}')">
+        <div class="avatar ${avCol(cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(cl.nome)}</div>
+        <div class="check-info"><div class="check-label">${cl.nome}</div><div class="check-sub">${perc}% del totale ${fmtS(tot)}</div></div>
+        <div class="check-amount" style="color:var(--amber-mid)">${fmt(res)}</div>
+      </div>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="kpi-summary">
+        <div class="kpi-summary-label">Residuo totale</div>
+        <div class="kpi-summary-value" style="color:var(--amber-mid)">${fmt(totRes)}</div>
+        <div class="kpi-summary-sub">${filtrati.length} ${filtrati.length===1?'cliente con saldo aperto':'clienti con saldo aperto'}</div>
+      </div>
+      <div class="kpi-list">${rows || '<div class="kpi-empty">🎉 Tutti i piani sono saldati!</div>'}</div>`;
+    apriOv('ov-kpi');
+    return;
+  }
+
+  if(tipo === 'scadute') {
+    title.textContent = 'Rate scadute';
+    // Raccolgo tutte le rate scadute
+    const scadute = [];
+    clienti.forEach(cl => {
+      contrattiDiCliente(cl.id).filter(c => c.tipo !== 'sospeso').forEach(c => {
+        c.rate.forEach((r,i) => {
+          if(!r.pagata && r.data < og) {
+            scadute.push({cl, c, r, i, diff: diffGg(r.data)});
+          }
+        });
+      });
+    });
+    scadute.sort((a,b) => a.r.data.localeCompare(b.r.data));
+    const totScad = scadute.reduce((s,x) => s + x.r.importo, 0);
+    const rows = scadute.map(x => {
+      const gg = Math.abs(x.diff);
+      return `<div class="check-row" style="cursor:pointer" onclick="chiudi('ov-kpi');apriDettaglioIncassi('${x.cl.id}')">
+        <div class="avatar ${avCol(x.cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(x.cl.nome)}</div>
+        <div class="check-info">
+          <div class="check-label">${x.cl.nome}<span class="check-tag tag-scad">SCADUTA</span></div>
+          <div class="check-sub">${x.c.desc} · Rata ${x.i+1} · ${fmtD(x.r.data)} · da ${gg} ${gg===1?'giorno':'giorni'}</div>
+        </div>
+        <div class="check-amount" style="color:var(--red-mid)">${fmt(x.r.importo)}</div>
+      </div>`;
+    }).join('');
+    body.innerHTML = `
+      <div class="kpi-summary">
+        <div class="kpi-summary-label">Rate scadute</div>
+        <div class="kpi-summary-value" style="color:var(--red-mid)">${scadute.length}</div>
+        <div class="kpi-summary-sub">Totale arretrato: ${fmt(totScad)}</div>
+      </div>
+      <div class="kpi-list">${rows || '<div class="kpi-empty">🎉 Nessuna rata scaduta!</div>'}</div>`;
+    apriOv('ov-kpi');
+    return;
+  }
+
+  if(tipo === 'arrivo') {
+    title.textContent = 'In arrivo + sospesi';
+    // Sospesi non ricevuti + rate non pagate in scadenza entro 14gg
+    const items = [];
+    clienti.forEach(cl => {
+      contrattiDiCliente(cl.id).forEach(c => {
+        if(c.tipo === 'sospeso' && c.pagato !== true && resC(c) > 0) {
+          items.push({tipo:'sospeso', cl, c});
+        } else if(c.tipo !== 'sospeso') {
+          c.rate.forEach((r,i) => {
+            if(!r.pagata) {
+              const d = diffGg(r.data);
+              if(d > 0 && d <= 14) items.push({tipo:'rata', cl, c, r, i, diff:d});
+            }
+          });
+        }
+      });
+    });
+    // Ordino: prima sospesi, poi rate per data
+    items.sort((a,b) => {
+      if(a.tipo === b.tipo) {
+        if(a.tipo === 'rata') return a.r.data.localeCompare(b.r.data);
+        return 0;
+      }
+      return a.tipo === 'sospeso' ? -1 : 1;
+    });
+    const tot = items.reduce((s,x) => s + (x.tipo==='sospeso' ? x.c.totale : x.r.importo), 0);
+    const rows = items.map(x => {
+      if(x.tipo === 'sospeso') {
+        return `<div class="check-row" style="cursor:pointer" onclick="chiudi('ov-kpi');apriDettaglioIncassi('${x.cl.id}')">
+          <div class="avatar ${avCol(x.cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(x.cl.nome)}</div>
+          <div class="check-info">
+            <div class="check-label">${x.cl.nome}<span class="check-tag tag-sosp">SOSPESO</span></div>
+            <div class="check-sub">${x.c.desc} · da ricevere</div>
+          </div>
+          <div class="check-amount" style="color:var(--amber-mid)">${fmt(x.c.totale)}</div>
+        </div>`;
+      } else {
+        const lbl = x.diff === 1 ? 'domani' : `tra ${x.diff} giorni`;
+        return `<div class="check-row" style="cursor:pointer" onclick="chiudi('ov-kpi');apriDettaglioIncassi('${x.cl.id}')">
+          <div class="avatar ${avCol(x.cl.colorIdx||0)}" style="width:32px;height:32px;font-size:11px">${iniz(x.cl.nome)}</div>
+          <div class="check-info">
+            <div class="check-label">${x.cl.nome}</div>
+            <div class="check-sub">${x.c.desc} · Rata ${x.i+1} · ${fmtD(x.r.data)} · ${lbl}</div>
+          </div>
+          <div class="check-amount" style="color:var(--amber-mid)">${fmt(x.r.importo)}</div>
+        </div>`;
+      }
+    }).join('');
+    body.innerHTML = `
+      <div class="kpi-summary">
+        <div class="kpi-summary-label">In arrivo + sospesi</div>
+        <div class="kpi-summary-value" style="color:var(--amber-mid)">${items.length}</div>
+        <div class="kpi-summary-sub">Totale atteso: ${fmt(tot)}</div>
+      </div>
+      <div class="kpi-list">${rows || '<div class="kpi-empty">Nessuna scadenza nei prossimi 14 giorni.</div>'}</div>`;
+    apriOv('ov-kpi');
+    return;
+  }
+};
 
 // ── DETTAGLIO INCASSI per cliente (dalla dashboard) ─────
 window.apriDettaglioIncassi = (cid) => {
